@@ -10,8 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (user.is_superadmin) {
             navLinks.innerHTML += `
                 <li><a href="/admin">Users</a></li>
-                <li><a href="/roles">Roles</a></li>
-                <li><a href="/permissions">Permissions</a></li>
+                <li><a href="/roles & permissions">Roles</a></li>
             `;
         }
     }

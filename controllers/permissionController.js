@@ -1,23 +1,17 @@
 import * as PermissionModel from '../models/permissionModel.js';
 
-// ✅ 1. CREATE PERMISSION (Master Action list)
+// ✅ 1. CREATE OR UPDATE PERMISSION
 export const createPermission = async (req, res) => {
     try {
         const { permission_key, description } = req.body;
-
         if (!permission_key) {
-            return res.status(400).json({ message: 'Permission key is required (e.g., USER_DELETE)' });
+            return res.status(400).json({ message: 'Permission key is required' });
         }
 
-        const newPermission = await PermissionModel.createPermission({ permission_key, description });
-        
-        res.status(201).json({ 
-            message: 'Permission created/updated successfully', 
-            permission: newPermission 
-        });
+        const newPerm = await PermissionModel.createPermission({ permission_key, description });
+        res.status(201).json({ message: 'Permission saved', data: newPerm });
     } catch (error) {
-        console.error('Create Permission Error:', error.message);
-        res.status(500).json({ message: 'Internal Server Error' });
+        res.status(500).json({ message: 'Error processing permission' });
     }
 };
 
@@ -27,7 +21,6 @@ export const getAllPermissions = async (req, res) => {
         const permissions = await PermissionModel.getAllPermissions();
         res.status(200).json(permissions);
     } catch (error) {
-        console.error('Get Permissions Error:', error.message);
         res.status(500).json({ message: 'Error fetching permissions' });
     }
 };
@@ -35,38 +28,31 @@ export const getAllPermissions = async (req, res) => {
 // ✅ 3. FIND PERMISSION BY KEY
 export const getPermissionByKey = async (req, res) => {
     try {
-        const { key } = req.params; // Expecting /api/permissions/:key
+        const { key } = req.params;
         const permission = await PermissionModel.findPermissionByKey(key);
 
-        if (!permission || permission.length === 0) {
+        if (!permission) {
             return res.status(404).json({ message: 'Permission not found' });
         }
-
         res.status(200).json(permission);
     } catch (error) {
-        res.status(500).json({ message: 'Error fetching permission' });
+        res.status(500).json({ message: 'Error searching permission' });
     }
 };
 
-// ✅ 4. UPDATE PERMISSION DESCRIPTION
+// ✅ 4. UPDATE DESCRIPTION BY ID
 export const updatePermissionDescription = async (req, res) => {
     try {
-        const { id } = req.params; // Expecting /api/permissions/:id
+        const { id } = req.params;
         const { description } = req.body;
 
-        if (!description) {
-            return res.status(400).json({ message: 'Description is required for update' });
-        }
-
         const updated = await PermissionModel.updatePermission(id, description);
-
-        if (!updated || updated.length === 0) {
+        if (!updated) {
             return res.status(404).json({ message: 'Permission ID not found' });
         }
-
-        res.status(200).json({ message: 'Permission updated', data: updated });
+        res.status(200).json({ message: 'Update successful', data: updated });
     } catch (error) {
-        res.status(500).json({ message: 'Error updating permission' });
+        res.status(500).json({ message: 'Error updating description' });
     }
 };
 
@@ -77,16 +63,14 @@ export const deletePermission = async (req, res) => {
         const result = await PermissionModel.deletePermission(id);
         res.status(200).json(result);
     } catch (error) {
-        console.error('Delete Permission Error:', error.message);
         res.status(500).json({ message: 'Error deleting permission' });
     }
 };
 
-// ✅ 6. SEED SYSTEM PERMISSIONS (Bulk Setup)
+// ✅ 6. SEED PERMISSIONS
 export const seedSystemPermissions = async (req, res) => {
     try {
-        const { permissions } = req.body; // Expecting array of {key, description}
-        
+        const { permissions } = req.body;
         if (!Array.isArray(permissions)) {
             return res.status(400).json({ message: 'Permissions must be an array' });
         }
@@ -94,6 +78,6 @@ export const seedSystemPermissions = async (req, res) => {
         const result = await PermissionModel.seedPermissions(permissions);
         res.status(200).json(result);
     } catch (error) {
-        res.status(500).json({ message: 'Error seeding permissions' });
+        res.status(500).json({ message: 'Error seeding data' });
     }
 };

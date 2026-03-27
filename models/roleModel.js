@@ -88,17 +88,21 @@ export const getRolePermissions = async (role_id) => {
 export const getUserRBAC = async (user_id) => {
     const query = `
         SELECT 
-            ARRAY_AGG(DISTINCT r.role_name) AS roles,
-            ARRAY_AGG(DISTINCT p.permission_key) AS permissions
-        FROM user_roles ur
+            u.is_superadmin,
+            COALESCE(ARRAY_AGG(DISTINCT r.role_name) FILTER (WHERE r.role_name IS NOT NULL), '{}') AS roles,
+            COALESCE(ARRAY_AGG(DISTINCT p.permission_key) FILTER (WHERE p.permission_key IS NOT NULL), '{}') AS permissions
+        FROM users u
+        LEFT JOIN user_roles ur ON u.user_id = ur.user_id
         LEFT JOIN roles r ON ur.role_id = r.role_id
         LEFT JOIN role_permissions rp ON r.role_id = rp.role_id
         LEFT JOIN permissions p ON rp.permission_id = p.permission_id
-        WHERE ur.user_id = $1`;
+        WHERE u.user_id = $1
+        GROUP BY u.user_id`;
     
     const result = await pool.query(query, [user_id]);
     return result.rows[0];
 };
+
 
 // ✅ 10. DELETE ROLE (Safe Delete)
 export const deleteRole = async (role_id) => {

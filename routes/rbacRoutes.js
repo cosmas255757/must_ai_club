@@ -17,6 +17,7 @@ router.delete('/roles/:role_id', RoleCtrl.deleteRole);
 router.get('/permissions', PermCtrl.getAllPermissions);
 router.post('/permissions', PermCtrl.createPermission);
 router.post('/permissions/seed', PermCtrl.seedSystemPermissions);
+router.put('/permissions/:id', PermCtrl.updatePermissionDescription);
 
 // Assignments
 router.post('/assign-role', RoleCtrl.assignRoleToUser);

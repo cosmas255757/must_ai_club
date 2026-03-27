@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import rbacRoutes from './routes/rbacRoutes.js';
 
 // Import local modules
 import apiRoutes from './routes/index.js';
@@ -26,6 +27,8 @@ app.use(morgan('dev'));
 // ✅ 2. STATIC FILES SETUP
 // Priority 1: Serve CSS/JS/Images from 'public' (e.g. /css/style.css)
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/api/admin', rbacRoutes); 
+
 
 // Priority 2: Serve HTML files from 'public/pages' with extension support
 // This allows both /profile and /profile.html to work automatically

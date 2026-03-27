@@ -46,7 +46,6 @@ export const requirePermission = (requiredPermission) => {
 };
 
 // ✅ 3. REQUIRE ROLE (Broad Authorization)
-// Matches role_name from your 'roles' table (e.g., 'Student', 'AI Mentor')
 export const requireRole = (requiredRole) => {
     return (req, res, next) => {
         const { is_superadmin, roles } = req.user;

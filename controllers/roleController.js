@@ -24,7 +24,17 @@ export const getAllRoles = async (req, res) => {
     }
 };
 
-// ✅ 3. ASSIGN PERMISSION TO A ROLE
+// ✅ 3. GET ALL PERMISSIONS (Master List)
+export const getAllPermissions = async (req, res) => {
+    try {
+        const permissions = await RoleModel.getAllPermissions();
+        res.status(200).json(permissions);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching permissions' });
+    }
+};
+
+// ✅ 4. ASSIGN PERMISSION TO A ROLE
 export const assignPermissionToRole = async (req, res) => {
     try {
         const { role_id, permission_id } = req.body;
@@ -39,7 +49,7 @@ export const assignPermissionToRole = async (req, res) => {
     }
 };
 
-// ✅ 4. ASSIGN ROLE TO A USER
+// ✅ 5. ASSIGN ROLE TO A USER
 export const assignRoleToUser = async (req, res) => {
     try {
         const { user_id, role_id } = req.body;
@@ -54,10 +64,24 @@ export const assignRoleToUser = async (req, res) => {
     }
 };
 
-// ✅ 5. REMOVE ROLE FROM A USER
+// ✅ 6. GET FULL RBAC SUMMARY FOR A USER
+export const getUserRBAC = async (req, res) => {
+    try {
+        const { user_id } = req.params;
+        const rbacData = await RoleModel.getUserRBAC(user_id);
+        
+        if (!rbacData) return res.status(404).json({ message: 'User not found' });
+        
+        res.status(200).json(rbacData);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching user RBAC data' });
+    }
+};
+
+// ✅ 7. REMOVE ROLE FROM A USER
 export const removeRoleFromUser = async (req, res) => {
     try {
-        const { user_id, role_id } = req.params; // Expecting /:user_id/:role_id
+        const { user_id, role_id } = req.params; 
         await RoleModel.removeRoleFromUser(user_id, role_id);
         res.status(200).json({ message: 'Role removed from user successfully' });
     } catch (error) {
@@ -65,18 +89,7 @@ export const removeRoleFromUser = async (req, res) => {
     }
 };
 
-// ✅ 6. GET PERMISSIONS FOR A SPECIFIC ROLE
-export const getRolePermissions = async (req, res) => {
-    try {
-        const { role_id } = req.params;
-        const permissions = await RoleModel.getRolePermissions(role_id);
-        res.status(200).json(permissions);
-    } catch (error) {
-        res.status(500).json({ message: 'Error fetching role permissions' });
-    }
-};
-
-// ✅ 7. DELETE A ROLE
+// ✅ 8. DELETE A ROLE
 export const deleteRole = async (req, res) => {
     try {
         const { role_id } = req.params;

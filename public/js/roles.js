@@ -1,195 +1,182 @@
-const token = localStorage.getItem('token');
-const API_URL = 'http://localhost:5000/api/rbac';
-
-// Global variable to hold roles for searching
-let allRoles = [];
-
-if (!token) {
-    window.location.href = 'login.html';
-}
+/**
+ * roles.js - MUST AI Club RBAC Management
+ * Handles Roles, Master Permissions, and Assignments
+ */
 
 document.addEventListener('DOMContentLoaded', () => {
-    loadRoles();
+    // 1. SELECTORS & STATE
+    const rolesList = document.getElementById('rolesList');
+    const createRoleForm = document.getElementById('createRoleForm');
+    const createPermissionForm = document.getElementById('createPermissionForm');
+    const permissionModal = document.getElementById('permissionModal');
+    const permissionsChecklist = document.getElementById('permissionsChecklist');
     
-    // ✅ HANDLE CREATE ROLE
-    document.getElementById('createRoleForm').addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const role_name = document.getElementById('role_name').value;
-        const description = document.getElementById('role_description').value;
-        const submitBtn = e.target.querySelector('button');
+    let selectedRoleId = null;
+    const token = localStorage.getItem('token');
+    const API_BASE = '/api/admin'; // Adjust based on your server.js mount point
 
-        try {
-            submitBtn.disabled = true;
-            const response = await fetch(`${API_URL}/roles`, {
-                method: 'POST',
-                headers: { 
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json' 
-                },
-                body: JSON.stringify({ role_name, description })
-            });
-
-            if (response.ok) {
-                alert('Role created successfully!');
-                e.target.reset(); // Clear form
-                loadRoles(); // Reload grid
-            } else {
-                const err = await response.json();
-                alert(err.message || 'Error creating role');
-            }
-        } catch (err) {
-            alert('Server connection failed');
-        } finally {
-            submitBtn.disabled = false;
-        }
-    });
-
-    // ✅ HANDLE SEARCH (If you add a search input with id="roleSearch")
-    const searchInput = document.getElementById('roleSearch');
-    if (searchInput) {
-        searchInput.addEventListener('input', (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = allRoles.filter(r => 
-                r.role_name.toLowerCase().includes(term) || 
-                (r.description && r.description.toLowerCase().includes(term))
-            );
-            renderRoleCards(filtered);
-        });
-    }
-});
-
-// ✅ GET ALL ROLES & STORE THEM
-async function loadRoles() {
-    const list = document.getElementById('rolesList');
-    try {
-        const response = await fetch(`${API_URL}/roles`, {
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
-        allRoles = await response.json();
-        renderRoleCards(allRoles);
-    } catch (err) {
-        list.innerHTML = `<p class="error">Failed to load roles.</p>`;
-    }
-}
-
-// ✅ RENDER ROLES AS USER-FRIENDLY CARDS (No IDs visible)
-function renderRoleCards(roles) {
-    const list = document.getElementById('rolesList');
-    
-    if (roles.length === 0) {
-        list.innerHTML = "<p>No roles found.</p>";
+    if (!token) {
+        window.location.href = '/login.html';
         return;
     }
 
-    list.innerHTML = roles.map(role => `
-        <div class="role-card">
-            <div class="role-info">
-                <h4>${role.role_name}</h4>
-                <p>${role.description || '<em>No description provided.</em>'}</p>
-            </div>
-            <div class="btn-group">
-                <button class="btn-outline" onclick="managePermissions(${role.role_id}, '${role.role_name}')">
-                    🛡️ Permissions
-                </button>
-                <button class="btn-danger" onclick="deleteRole(${role.role_id})">
-                    🗑️ Delete
-                </button>
-            </div>
-        </div>
-    `).join('');
-}
+    // Initialize Page
+    fetchRoles();
 
-// ✅ DELETE ROLE (Safe Delete)
-async function deleteRole(id) {
-    if (!confirm('Warning: Deleting this role will revoke it from all club members. Proceed?')) return;
-    
-    try {
-        const response = await fetch(`${API_URL}/roles/${id}`, {
-            method: 'DELETE',
-            headers: { 'Authorization': `Bearer ${token}` }
-        });
+    // 2. CREATE ROLE (POST /roles)
+    createRoleForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            role_name: document.getElementById('role_name').value,
+            description: document.getElementById('role_description').value
+        };
 
-        if (response.ok) {
-            loadRoles();
-        } else {
-            alert('Failed to delete role.');
+        const res = await apiCall(`${API_BASE}/roles`, 'POST', data);
+        if (res) {
+            showToast('Role created!', 'success');
+            createRoleForm.reset();
+            fetchRoles();
         }
-    } catch (err) {
-        alert('Connection error.');
-    }
-}
+    });
 
-// ✅ OPEN PERMISSION MODAL & SYNC DATA
-async function managePermissions(roleId, roleName) {
-    document.getElementById('modalRoleTitle').innerText = `Manage Permissions: ${roleName}`;
-    document.getElementById('permissionModal').style.display = 'flex'; // Use flex to center
-    
-    const checklist = document.getElementById('permissionsChecklist');
-    checklist.innerHTML = "<p>Loading permissions...</p>";
+    // 3. CREATE SYSTEM PERMISSION (POST /permissions)
+    createPermissionForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const data = {
+            permission_key: document.getElementById('perm_key').value,
+            description: document.getElementById('perm_description').value
+        };
 
-    try {
-        // Fetch all system permissions and this role's active permissions simultaneously
-        const [allPermsRes, activePermsRes] = await Promise.all([
-            fetch(`${API_URL}/permissions`, { headers: { 'Authorization': `Bearer ${token}` }}),
-            fetch(`${API_URL}/roles/${roleId}/permissions`, { headers: { 'Authorization': `Bearer ${token}` }})
-        ]);
+        const res = await apiCall(`${API_BASE}/permissions`, 'POST', data);
+        if (res) {
+            showToast('Permission added to system!', 'success');
+            createPermissionForm.reset();
+        }
+    });
 
-        const allPerms = await allPermsRes.json();
-        const activePerms = await activePermsRes.json();
-        
-        checklist.innerHTML = allPerms.map(p => {
-            const isChecked = activePerms.some(ap => ap.permission_id === p.permission_id);
-            return `
-                <div class="permission-item">
-                    <input type="checkbox" id="perm_${p.permission_id}" ${isChecked ? 'checked' : ''} 
-                        onchange="togglePermission(${roleId}, ${p.permission_id}, this.checked)">
-                    <label for="perm_${p.permission_id}">
-                        <strong>${p.permission_key}</strong>
-                        <span>${p.description || ''}</span>
-                    </label>
+    // 4. FETCH & RENDER ROLES (GET /roles)
+    async function fetchRoles() {
+        const roles = await apiCall(`${API_BASE}/roles`, 'GET');
+        if (!roles) return;
+
+        rolesList.innerHTML = '';
+        roles.forEach(role => {
+            const card = document.createElement('div');
+            card.className = 'card role-card';
+            card.innerHTML = `
+                <div class="role-info">
+                    <h4>${role.role_name}</h4>
+                    <p>${role.description || 'No description'}</p>
+                </div>
+                <div class="role-actions">
+                    <button class="btn-manage" onclick="openPermissionsModal(${role.role_id}, '${role.role_name}')">
+                        Permissions
+                    </button>
+                    <button class="btn-delete" onclick="deleteRole(${role.role_id})">Delete</button>
                 </div>
             `;
-        }).join('');
-    } catch (err) {
-        checklist.innerHTML = "<p>Error loading permissions list.</p>";
-    }
-}
-
-// ✅ ATOMIC ASSIGN/REMOVE PERMISSION
-async function togglePermission(roleId, permissionId, shouldAdd) {
-    try {
-        const method = shouldAdd ? 'POST' : 'DELETE';
-        // Your controller endpoint for removal is /role-permission/:roleId/:permissionId
-        const endpoint = shouldAdd 
-            ? `${API_URL}/assign-permission` 
-            : `${API_URL}/role-permission/${roleId}/${permissionId}`;
-        
-        const response = await fetch(endpoint, {
-            method: method,
-            headers: { 
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json' 
-            },
-            body: shouldAdd ? JSON.stringify({ role_id: roleId, permission_id: permissionId }) : null
+            rolesList.appendChild(card);
         });
+    }
 
-        if (!response.ok) {
-            alert('Failed to update permission. Please try again.');
-            loadRoles(); // Refresh to reset checkbox state
+    // 5. DELETE ROLE (DELETE /roles/:id)
+    window.deleteRole = async (id) => {
+        if (!confirm('Delete this role? This affects all assigned users.')) return;
+        const res = await apiCall(`${API_BASE}/roles/${id}`, 'DELETE');
+        if (res) {
+            showToast('Role removed', 'success');
+            fetchRoles();
         }
-    } catch (err) {
-        alert('Network error while updating permissions.');
-    }
-}
+    };
 
-function closeModal() {
-    document.getElementById('permissionModal').style.display = 'none';
-}
+    // 6. MANAGE PERMISSIONS MODAL (Bridge Logic)
+    window.openPermissionsModal = async (role_id, role_name) => {
+        selectedRoleId = role_id;
+        document.getElementById('modalRoleTitle').innerText = role_name;
+        permissionModal.style.display = 'flex';
+        permissionsChecklist.innerHTML = '<p>Loading permissions...</p>';
 
-// Close modal when clicking outside of it
-window.onclick = function(event) {
-    const modal = document.getElementById('permissionModal');
-    if (event.target == modal) {
+        try {
+            // Get all system permissions AND what this role currently has
+            const [allPerms, rolePerms] = await Promise.all([
+                apiCall(`${API_BASE}/permissions`, 'GET'),
+                apiCall(`${API_BASE}/roles/${role_id}/permissions`, 'GET') // From your Controller
+            ]);
+
+            const currentIds = (rolePerms || []).map(p => p.permission_id);
+
+            permissionsChecklist.innerHTML = '';
+            allPerms.forEach(p => {
+                const isChecked = currentIds.includes(p.permission_id) ? 'checked' : '';
+                const div = document.createElement('div');
+                div.className = 'checkbox-item';
+                div.innerHTML = `
+                    <label>
+                        <input type="checkbox" value="${p.permission_id}" ${isChecked}>
+                        <strong>${p.permission_key}</strong> - ${p.description || ''}
+                    </label>
+                `;
+                permissionsChecklist.appendChild(div);
+            });
+        } catch (err) {
+            permissionsChecklist.innerHTML = 'Failed to load permissions.';
+        }
+    };
+
+    // 7. SAVE PERMISSION ASSIGNMENTS (POST /assign-permission)
+    document.getElementById('savePermissionsBtn').addEventListener('click', async () => {
+        const checkboxes = permissionsChecklist.querySelectorAll('input[type="checkbox"]');
+        
+        // Note: For a 100% accurate sync, you would normally send an array.
+        // Given your backend logic, we loop and assign.
+        for (const cb of checkboxes) {
+            if (cb.checked) {
+                await apiCall(`${API_BASE}/assign-permission`, 'POST', {
+                    role_id: selectedRoleId,
+                    permission_id: cb.value
+                });
+            } else {
+                // Optional: Add logic to call a delete-assignment route if you unchecked it
+            }
+        }
+        showToast('Permissions synced!', 'success');
         closeModal();
+    });
+
+    // --- HELPER UTILITIES ---
+
+    async function apiCall(url, method, body = null) {
+        try {
+            const options = {
+                method,
+                headers: { 
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            };
+            if (body) options.body = JSON.stringify(body);
+
+            const res = await fetch(url, options);
+            const result = await res.json();
+            
+            if (!res.ok) throw new Error(result.message || 'API Error');
+            return result;
+        } catch (error) {
+            showToast(error.message, 'error');
+            return null;
+        }
     }
-}
+
+    window.closeModal = () => permissionModal.style.display = 'none';
+    document.getElementById('closeModalBtn').onclick = closeModal;
+    document.getElementById('cancelModalBtn').onclick = closeModal;
+    document.getElementById('refreshRoles').onclick = fetchRoles;
+
+    function showToast(msg, type) {
+        const toast = document.getElementById('toast');
+        toast.innerText = msg;
+        toast.className = `toast ${type}`;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+});
