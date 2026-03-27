@@ -1,6 +1,6 @@
 import pool from '../config/db.js';
 
-// ✅ CREATE USER (Atomic Transaction: User + Profile + Role)
+// CREATE USER (Atomic Transaction: User + Profile + Role)
 export const createUser = async (userData) => {
     const { username, email, phone_number, password_hash, full_name, role_name = 'Student', is_superadmin = false } = userData;
 
@@ -82,20 +82,6 @@ export const findUserById = async (user_id) => {
 };
 
 
-// ✅ GET ALL USERS (Admin View)
-export const getAllUsers = async (limit = 10, offset = 0) => {
-    const query = `
-        SELECT u.user_id, u.username, u.email, u.is_active, up.full_name, u.created_at
-        FROM users u
-        LEFT JOIN user_profiles up ON u.user_id = up.user_id
-        ORDER BY u.created_at DESC
-        LIMIT $1 OFFSET $2`;
-    
-    const result = await pool.query(query, [limit, offset]);
-    return result.rows;
-};
-
-// ✅ UPDATE PROFILE DATA
 // ✅ UPDATE USER & PROFILE (Transaction)
 export const updateUserProfile = async (user_id, data) => {
     const client = await pool.connect();
@@ -145,11 +131,60 @@ export const updateUserProfile = async (user_id, data) => {
     }
 };
 
-// ✅ TOGGLE USER STATUS (Deactivate/Activate)
+// ✅ GET ALL USERS (Admin View with Profile Details)
+export const getAllUsers = async (limit = 10, offset = 0) => {
+    const query = `
+        SELECT 
+            up.full_name, 
+            u.email, 
+            up.student_id_number, 
+            u.phone_number, 
+            u.created_at AS joined_date, 
+            u.is_active AS status,
+            u.user_id -- Used to trigger the toggle action
+        FROM users u
+        LEFT JOIN user_profiles up ON u.user_id = up.user_id
+        ORDER BY u.created_at DESC
+        LIMIT $1 OFFSET $2`;
+    
+    const result = await pool.query(query, [limit, offset]);
+    return result.rows;
+};
+
+// ✅ TOGGLE USER STATUS (Activate/Deactivate)
 export const updateUserStatus = async (user_id, is_active) => {
     const result = await pool.query(
-        `UPDATE users SET is_active = $1, updated_at = CURRENT_TIMESTAMP WHERE user_id = $2 RETURNING user_id, is_active`,
+        `UPDATE users 
+         SET is_active = $1, updated_at = CURRENT_TIMESTAMP 
+         WHERE user_id = $2 
+         RETURNING user_id, is_active AS status`,
         [is_active, user_id]
     );
     return result.rows[0];
+};
+
+// ✅ SEARCH MEMBERS (Admin View)
+export const searchMembers = async (searchTerm, limit = 10, offset = 0) => {
+    const query = `
+        SELECT 
+            up.full_name, 
+            u.email, 
+            up.student_id_number, 
+            u.phone_number, 
+            u.created_at AS joined_date, 
+            u.is_active AS status,
+            u.user_id
+        FROM users u
+        LEFT JOIN user_profiles up ON u.user_id = up.user_id
+        WHERE 
+            up.full_name ILIKE $1 OR 
+            u.email ILIKE $1 OR 
+            up.student_id_number ILIKE $1
+        ORDER BY u.created_at DESC
+        LIMIT $2 OFFSET $3`;
+
+    // Wrapping search term in % symbols for partial matching (e.g., "John" matches "John Doe")
+    const formattedSearch = `%${searchTerm}%`;
+    const result = await pool.query(query, [formattedSearch, limit, offset]);
+    return result.rows;
 };

@@ -1,126 +1,314 @@
-/* 1. ROOT DESIGN SYSTEM */
+/* =========================================
+   1. ROOT DESIGN SYSTEM
+   ========================================= */
 :root {
   --primary: #6366f1;       /* Indigo */
   --secondary: #06b6d4;     /* Cyan */
-  --tertiary: #f59e0b;      /* Amber */
   --success: #10b981;
+  --danger: #ef4444;
   --bg-dark: #0a0c10;
   --card-bg: rgba(23, 27, 34, 0.95);
   --table-hover: rgba(255, 255, 255, 0.03);
   --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 2. DASHBOARD CONTAINER PLACEMENT */
-.admin-container, .admin-panel {
-  max-width: 1200px;
+body {
+  background-color: var(--bg-dark);
+  color: #f8fafc;
+  font-family: 'Inter', sans-serif;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+/* =========================================
+   2. MODERN NAVIGATION BAR
+   ========================================= */
+.main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(10, 12, 16, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 0;
+  transition: var(--transition);
+}
+
+.nav-container {
+  max-width: 1300px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 2rem;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-decoration: none;
+  background: linear-gradient(90deg, #06b6d4, #6366f1);
+  -webkit-background-clip: text; /* Fixed */
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: -1px;
+  transition: transform 0.3s ease;
+}
+
+.logo:hover {
+  transform: scale(1.05);
+}
+
+#nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+#nav-links li a {
+  text-decoration: none;
+  color: #f8fafc;
+  font-weight: 500;
+  font-size: 0.95rem;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+#nav-links li a::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  bottom: -4px;
+  left: 0;
+  background: var(--secondary);
+  transition: width 0.3s ease;
+}
+
+#nav-links li a:hover::after {
+  width: 100%;
+}
+
+.nav-auth {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+#nav-username {
+  color: var(--secondary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  border-right: 1px solid rgba(255, 255, 255, 0.2);
+  padding-right: 1.5rem;
+}
+
+.btn-logout {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  padding: 8px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.btn-logout:hover {
+  background: #ef4444;
+  color: white;
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+/* =========================================
+   3. HIGH-VISIBILITY HEADER (Animated)
+   ========================================= */
+#headerti {
+    color: #FFFFFF; 
+    font-size: 2.8rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    display: inline-block;
+    position: relative;
+    text-shadow: 0px 0px 10px rgba(6, 182, 212, 0.8), 0px 0px 20px rgba(99, 102, 241, 0.4);
+    animation: textGlow 3s ease-in-out infinite alternate;
+}
+
+#headerti::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: #06b6d4;
+    border-radius: 2px;
+    box-shadow: 0px 0px 15px #06b6d4;
+    animation: lineExtend 1.5s ease-out forwards;
+}
+
+@keyframes textGlow {
+    from { text-shadow: 0px 0px 10px rgba(6, 182, 212, 0.8); }
+    to { text-shadow: 0px 0px 25px rgba(6, 182, 212, 1), 0px 0px 10px #6366f1; }
+}
+
+@keyframes lineExtend {
+    from { width: 0; opacity: 0; }
+    to { width: 100%; opacity: 1; }
+}
+
+/* =========================================
+   4. DASHBOARD & TABLE STYLING
+   ========================================= */
+.admin-container {
+  max-width: 1300px;
   margin: 2rem auto;
   padding: 2.5rem;
   background: var(--card-bg);
   border-radius: 24px;
   border: 1px solid rgba(255, 255, 255, 0.05);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-  animation: slideInUp 0.7s var(--transition);
+  animation: slideInUp 0.6s var(--transition);
 }
 
-h2 {
-  font-size: 1.8rem;
-  margin-bottom: 2rem;
-  background: linear-gradient(90deg, var(--secondary), var(--primary));
-  /* -webkit-background-clip: text; */
-  -webkit-text-fill-color: transparent;
-  letter-spacing: -1px;
+.table-responsive {
+  overflow-x: auto;
+  border-radius: 12px;
 }
 
-/* 3. ADVANCED RESPONSIVE TABLE */
-#userTable, #membersTable {
+#membersTable {
   width: 100%;
   border-collapse: separate;
-  border-spacing: 0 8px; /* Creates the "floating row" look */
-  margin-top: 1rem;
+  border-spacing: 0 10px;
 }
 
 thead th {
-  background: rgba(99, 102, 241, 0.1);
   color: var(--secondary);
   text-transform: uppercase;
   font-size: 0.75rem;
-  letter-spacing: 1px;
-  padding: 1.2rem;
+  letter-spacing: 1.5px;
+  padding: 1rem 1.5rem;
   text-align: left;
-  border-bottom: 2px solid var(--primary);
+  border-bottom: 1px solid rgba(99, 102, 241, 0.2);
 }
 
-/* 4. ROW ANIMATIONS & TRANSLATIONS */
 tbody tr {
   background: rgba(255, 255, 255, 0.02);
   transition: var(--transition);
-  cursor: default;
 }
 
 tbody tr:hover {
   background: var(--table-hover);
-  transform: scale(1.01) translateX(5px);
-  box-shadow: -5px 0 15px rgba(6, 182, 212, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
 tbody td {
-  padding: 1.2rem;
+  padding: 1.2rem 1.5rem;
   color: #cbd5e1;
-  border-top: 1px solid rgba(255, 255, 255, 0.03);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+  vertical-align: middle;
 }
 
-/* First and last cell rounding for floating effect */
-tbody td:first-child { border-radius: 12px 0 0 12px; border-left: 1px solid rgba(255, 255, 255, 0.03); }
-tbody td:last-child { border-radius: 0 12px 12px 0; border-right: 1px solid rgba(255, 255, 255, 0.03); }
+tbody td:first-child { border-radius: 12px 0 0 12px; }
+tbody td:last-child { border-radius: 0 12px 12px 0; }
 
-/* 5. STATUS BADGES & BUTTONS */
-.status-active {
-  color: var(--success);
-  background: rgba(16, 185, 129, 0.1);
-  padding: 4px 12px;
+/* =========================================
+   5. BADGES & TOGGLE BUTTONS
+   ========================================= */
+.status-badge {
+  padding: 6px 12px;
   border-radius: 20px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
+  display: inline-block;
 }
 
-.btn-action {
-  padding: 6px 16px;
+.status-badge.active {
+  background: rgba(16, 185, 129, 0.15);
+  color: var(--success);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.status-badge.inactive {
+  background: rgba(239, 68, 68, 0.15);
+  color: var(--danger);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.btn-toggle {
+  padding: 8px 16px;
   border-radius: 8px;
   border: none;
-  background: var(--primary);
-  color: white;
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
 }
 
-.btn-action:hover {
-  transform: translateY(-2px) rotate(2deg);
-  filter: brightness(1.2);
-}
+.btn-toggle.activate { background: var(--success); color: #fff; }
+.btn-toggle.deactivate { background: rgba(255, 255, 255, 0.05); color: #f8fafc; border: 1px solid rgba(255, 255, 255, 0.1); }
 
-/* 6. MOBILE RESPONSIVENESS (STACKING) */
+/* =========================================
+   6. RESPONSIVENESS & ANIMATIONS
+   ========================================= */
 @media (max-width: 900px) {
-  #userListContainer {
-    overflow-x: auto; /* Allow horizontal scroll on tablets */
-  }
+  .admin-container { padding: 1rem; margin: 1rem; }
+}
 
-  /* On small phones, transform table into cards */
-  @media (max-width: 600px) {
-    table, thead, tbody, th, td, tr { display: block; }
-    thead tr { position: absolute; top: -9999px; left: -9999px; }
-    tr { margin-bottom: 1.5rem; border: 1px solid var(--primary); border-radius: 15px; }
-    td { border: none; position: relative; padding-left: 50%; text-align: right; }
-    td:before {
-      content: attr(data-label);
-      position: absolute; left: 15px; width: 45%; 
-      text-align: left; font-weight: bold; color: var(--secondary);
-    }
+@media (max-width: 768px) {
+  .nav-container { padding: 0 1rem; }
+  #nav-links, #nav-username { display: none; }
+  #headerti { font-size: 1.8rem; text-align: center; display: block; }
+  
+  /* Table to Card View */
+  table, thead, tbody, th, td, tr { display: block; }
+  thead tr { position: absolute; top: -9999px; left: -9999px; }
+  tr { margin-bottom: 1rem; background: rgba(255, 255, 255, 0.03) !important; border-radius: 16px; padding: 10px; }
+  td { border: none; position: relative; padding-left: 50% !important; text-align: right; border-bottom: 1px solid rgba(255, 255, 255, 0.02); }
+  td:before {
+    content: attr(data-label);
+    position: absolute; left: 15px; width: 45%; text-align: left; font-weight: bold; color: var(--secondary); font-size: 0.8rem;
   }
 }
 
-/* 7. ENTRANCE ANIMATION */
 @keyframes slideInUp {
-  from { opacity: 0; transform: translateY(40px) rotateX(-10deg); }
-  to { opacity: 1; transform: translateY(0) rotateX(0); }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+
+/* --- SEARCH BAR STYLING --- */
+.search-wrapper {
+    position: relative;
+    max-width: 500px;
+    margin-bottom: 2rem;
+}
+
+.search-wrapper input {
+    width: 100%;
+    padding: 12px 20px 12px 45px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: #fff;
+    font-size: 1rem;
+    outline: none;
+    transition: var(--transition);
+}
+
+.search-wrapper input:focus {
+    border-color: var(--secondary);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+}
+
+.search-icon {
+    position: absolute;
+    left: 15px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.5;
 }

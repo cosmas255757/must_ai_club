@@ -30,7 +30,6 @@ export const getMyProfile = async (req, res) => {
 
 
 // ✅ 2. UPDATE PROFILE (Self)
-// ✅ UPDATE PROFILE CONTROLLER (Handles both tables)
 export const updateMyProfile = async (req, res) => {
     try {
         // Destructure all fields from req.body to match the new logic
@@ -90,13 +89,22 @@ export const updateMyProfile = async (req, res) => {
 // ✅ 3. GET ALL USERS (Superadmin/Staff View)
 export const getAllUsers = async (req, res) => {
     try {
-        const { limit = 10, offset = 0 } = req.query;
-        const users = await UserModel.getAllUsers(parseInt(limit), parseInt(offset));
-        res.status(200).json(users);
+        const limit = parseInt(req.query.limit) || 10;
+        const offset = parseInt(req.query.offset) || 0;
+
+        const users = await UserModel.getAllUsers(limit, offset);
+        
+        res.status(200).json({
+            success: true,
+            count: users.length,
+            data: users
+        });
     } catch (error) {
+        console.error('Fetch Users Error:', error);
         res.status(500).json({ message: 'Error fetching users list' });
     }
 };
+
 
 // ✅ 4. GET SPECIFIC USER BY ID (Admin View)
 export const getUserById = async (req, res) => {
@@ -120,21 +128,46 @@ export const toggleUserStatus = async (req, res) => {
         const { id } = req.params;
         const { is_active } = req.body;
 
+        // Validation
         if (typeof is_active !== 'boolean') {
             return res.status(400).json({ message: 'is_active must be a boolean' });
         }
 
         const updated = await UserModel.updateUserStatus(id, is_active);
 
+        // Since the model returns result.rows, we check if the first element exists
         if (!updated || updated.length === 0) {
             return res.status(404).json({ message: 'User not found' });
         }
 
         res.status(200).json({ 
             message: `User ${is_active ? 'activated' : 'deactivated'} successfully`, 
-            data: updated 
+            // Returns: { user_id, status }
+            data: updated[0] 
         });
     } catch (error) {
+        console.error('Toggle Status Error:', error);
         res.status(500).json({ message: 'Error updating user status' });
+    }
+};
+
+export const searchUsers = async (req, res) => {
+    try {
+        const { q, limit = 10, offset = 0 } = req.query;
+
+        if (!q) {
+            return res.status(400).json({ message: 'Search query is required' });
+        }
+
+        const users = await UserModel.searchMembers(q, parseInt(limit), parseInt(offset));
+        
+        res.status(200).json({
+            success: true,
+            count: users.length,
+            data: users
+        });
+    } catch (error) {
+        console.error('Search Error:', error);
+        res.status(500).json({ message: 'Error performing search' });
     }
 };
