@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 2. ✅ FETCH ALL USERS (Initial Load)
     const fetchUsers = async () => {
         try {
-            const response = await fetch('http://localhost:5000/api/users/all?limit=50&offset=0', {
+            const response = await fetch('/api/users/all?limit=50&offset=0', {
                 headers: { 
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json' 
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:5000/api/users/search?q=${encodeURIComponent(query)}`, {
+            const response = await fetch(`/api/users/search?q=${encodeURIComponent(query)}`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             const result = await response.json();
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         if (!confirm(`Are you sure you want to ${actionText} this member?`)) return;
 
         try {
-            const response = await fetch(`http://localhost:5000/api/users/${userId}/status`, {
+            const response = await fetch(`/api/users/${userId}/status`, {
                 method: 'PATCH',
                 headers: {
                     'Authorization': `Bearer ${token}`,

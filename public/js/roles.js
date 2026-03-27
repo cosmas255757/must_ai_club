@@ -1,7 +1,3 @@
-/**
- * roles.js - MUST AI Club RBAC Management
- * Handles Roles, Master Permissions, and Assignments
- */
 
 document.addEventListener('DOMContentLoaded', () => {
     // 1. SELECTORS & STATE
@@ -100,7 +96,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Get all system permissions AND what this role currently has
             const [allPerms, rolePerms] = await Promise.all([
                 apiCall(`${API_BASE}/permissions`, 'GET'),
-                apiCall(`${API_BASE}/roles/${role_id}/permissions`, 'GET') // From your Controller
+                apiCall(`${API_BASE}/roles/${role_id}/permissions`, 'GET') 
             ]);
 
             const currentIds = (rolePerms || []).map(p => p.permission_id);
@@ -127,7 +123,6 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('savePermissionsBtn').addEventListener('click', async () => {
         const checkboxes = permissionsChecklist.querySelectorAll('input[type="checkbox"]');
         
-        // Note: For a 100% accurate sync, you would normally send an array.
         // Given your backend logic, we loop and assign.
         for (const cb of checkboxes) {
             if (cb.checked) {
@@ -136,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     permission_id: cb.value
                 });
             } else {
-                // Optional: Add logic to call a delete-assignment route if you unchecked it
+               
             }
         }
         showToast('Permissions synced!', 'success');

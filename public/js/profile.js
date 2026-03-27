@@ -16,7 +16,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     try {
         // 2. Fetch Profile Data
-        const response = await fetch('http://localhost:5000/api/users/profile', {
+        const response = await fetch('/api/users/profile', {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`,
@@ -151,7 +151,7 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         try {
-            const response = await fetch('http://localhost:5000/api/users/profile', {
+            const response = await fetch('/api/users/profile', {
                 method: 'PUT', // Matches your backend update route
                 headers: {
                     'Authorization': `Bearer ${token}`,
