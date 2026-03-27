@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Roles - MUST AI Club</title>
+    <link rel="stylesheet" href="../css/roles.css">
+</head>
+<body>
+    <!-- 1. NAVIGATION BAR -->
+    <nav class="main-nav">
+        <div class="nav-container">
+            <a href="/profile" class="logo">MUST AI Club</a>
+            <ul id="nav-links">
+                <li><a href="/profile">My Profile</a></li>
+                <!-- Admin links will be injected here -->
+            </ul>
+            <div class="nav-auth">
+                <span id="nav-username"></span>
+                <button id="nav-logout-btn" class="btn-logout">Logout</button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 2. MAIN ADMIN CONTENT -->
+    <main class="admin-container">
+        <header class="admin-header">
+            <h1>Club Role Management</h1>
+            <p>Define what members can do within the MUST AI Club.</p>
+        </header>
+
+        <section class="admin-content-grid">
+            <!-- Left Side: Create Role -->
+            <aside class="card create-card">
+                <h3>Add New Role</h3>
+                <form id="createRoleForm" class="role-form">
+                    <div class="form-group">
+                        <label for="role_name">Role Name</label>
+                        <input type="text" id="role_name" placeholder="e.g. AI Mentor" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="role_description">Description</label>
+                        <input type="text" id="role_description" placeholder="What does this role do?">
+                    </div>
+                    <button type="submit" class="btn-primary">Create Role</button>
+                </form>
+            </aside>
+
+            <!-- Right Side: Existing Roles List -->
+            <section class="roles-section">
+                <h3>Existing Roles</h3>
+                <div class="roles-grid" id="rolesList">
+                    <div class="loading">Loading roles...</div>
+                    <!-- Role Cards will be injected here by roles.js -->
+                </div>
+            </section>
+        </section>
+    </main>
+
+    <!-- 3. MODALS (Hidden by default) -->
+    <div id="permissionModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <header class="modal-header">
+                <h3 id="modalRoleTitle">Manage Permissions</h3>
+                <span class="close-btn" onclick="closeModal()" role="button" aria-label="Close">&times;</span>
+            </header>
+            <form id="permissionsChecklist" class="checklist">
+                <!-- Checkboxes injected here -->
+            </form>
+            <footer class="modal-footer">
+                <button class="btn-save" id="savePermissionsBtn">Save Changes</button>
+            </footer>
+        </div>
+    </div>
+
+    <!-- 4. SCRIPTS -->
+    <script src="../js/roles.js"></script>
+    <script src="../js/navbar.js"></script>
+</body>
+</html>

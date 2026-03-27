@@ -1,0 +1,173 @@
+/* 1. ADVANCED LAYOUT & DESIGN SYSTEM */
+:root {
+  --primary: #6366f1;
+  --secondary: #06b6d4;
+  --tertiary: #a855f7;
+  --bg-dark: #0a0c10;
+  --card-bg: rgba(23, 27, 34, 0.95);
+  --glass: rgba(255, 255, 255, 0.03);
+  --text-main: #f8fafc;
+  --text-dim: #64748b;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 2. ADMIN CONTAINER POSITIONING */
+.admin-container {
+  max-width: 1100px;
+  margin: 3rem auto;
+  padding: 0 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  animation: pageEntry 0.6s ease-out;
+}
+
+@keyframes pageEntry {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 3. CARD STYLING & 3D HOVER */
+.card {
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  transition: var(--transition);
+}
+
+.card:hover {
+  border-color: rgba(99, 102, 241, 0.3);
+  transform: translateY(-2px);
+}
+
+/* 4. INLINE FORM WITH ADVANCED PLACEMENT */
+.inline-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto;
+  gap: 1rem;
+  margin: 1.5rem 0;
+}
+
+@media (max-width: 768px) {
+  .inline-form { grid-template-columns: 1fr; }
+}
+
+.inline-form input {
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.8rem 1.2rem;
+  border-radius: 12px;
+  color: white;
+  font-family: 'Monaco', monospace; /* Tech feel for keys */
+  transition: var(--transition);
+}
+
+.inline-form input:focus {
+  outline: none;
+  border-color: var(--secondary);
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.02);
+}
+
+/* 5. SEARCH & TABLE HEADER */
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+#permSearch {
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.6rem 1rem;
+  border-radius: 20px;
+  color: white;
+  width: 250px;
+  transition: var(--transition);
+}
+
+#permSearch:focus {
+  width: 300px;
+  border-color: var(--tertiary);
+  box-shadow: 0 0 15px rgba(168, 85, 247, 0.2);
+}
+
+/* 6. PERMISSION LIST ITEMS (TRANSLATIONS) */
+.permission-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Designed for items injected via JS */
+.perm-item {
+  display: grid;
+  grid-template-columns: 200px 1fr auto;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: rgba(255, 255, 255, 0.02);
+  border-radius: 12px;
+  border-left: 4px solid var(--primary);
+  transition: var(--transition);
+}
+
+.perm-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+  transform: translateX(10px) rotate(0.2deg);
+  border-left-color: var(--secondary);
+}
+
+.perm-key {
+  font-weight: 700;
+  color: var(--secondary);
+  font-family: 'Courier New', monospace;
+}
+
+.perm-desc {
+  color: var(--text-dim);
+  font-size: 0.9rem;
+}
+
+/* 7. ANIMATED BUTTONS */
+.btn-primary {
+  background: linear-gradient(135deg, var(--primary), var(--tertiary));
+  color: white;
+  border: none;
+  padding: 0.8rem 1.5rem;
+  border-radius: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.2);
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+}
+
+/* 8. HINTS & UTILITIES */
+.hint {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin-top: 0.5rem;
+  font-style: italic;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--secondary);
+  letter-spacing: 2px;
+  animation: glowPulse 1.5s infinite alternate;
+}
+
+@keyframes glowPulse {
+  from { opacity: 0.4; text-shadow: 0 0 0px var(--secondary); }
+  to { opacity: 1; text-shadow: 0 0 10px var(--secondary); }
+}

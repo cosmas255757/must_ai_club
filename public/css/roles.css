@@ -1,0 +1,219 @@
+/* 1. ADVANCED ROOT & DESIGN SYSTEM */
+:root {
+  --primary: #4f46e5;       /* Royal Indigo */
+  --secondary: #0ea5e9;     /* Sky Blue */
+  --tertiary: #8b5cf6;      /* Vivid Violet */
+  --bg-admin: #0a0c10;      /* Dark Dashboard Grey */
+  --card-bg: rgba(23, 27, 34, 0.95);
+  --glass: rgba(255, 255, 255, 0.03);
+  --text-dim: #94a3b8;
+  --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: radial-gradient(at 0% 0%, #111827 0, transparent 50%), 
+              radial-gradient(at 50% 0%, #070b14 0, transparent 50%);
+  background-color: var(--bg-admin);
+  color: #f1f5f9;
+  font-family: 'Inter', sans-serif;
+  line-height: 1.6;
+}
+
+/* 2. NAVIGATION BAR (FIXED & GLASS) */
+.main-nav {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: rgba(10, 12, 16, 0.8);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 0.75rem 2rem;
+}
+
+.nav-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-weight: 800;
+  font-size: 1.4rem;
+  text-decoration: none;
+  background: linear-gradient(to right, var(--secondary), var(--tertiary));
+  /* -webkit-background-clip: text; */
+  -webkit-text-fill-color: transparent;
+}
+
+#nav-links {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+}
+
+#nav-links a {
+  color: var(--text-dim);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: var(--transition);
+}
+
+#nav-links a:hover { color: white; transform: translateY(-2px); }
+
+.btn-logout {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-logout:hover { background: #ef4444; color: white; }
+
+/* 3. MAIN ADMIN LAYOUT GRID */
+.admin-container {
+  max-width: 1400px;
+  margin: 3rem auto;
+  padding: 0 2rem;
+}
+
+.admin-header {
+  margin-bottom: 3rem;
+  animation: slideDown 0.6s ease-out;
+}
+
+.admin-header h1 { font-size: 2.5rem; letter-spacing: -1px; }
+.admin-header p { color: var(--text-dim); }
+
+.admin-content-grid {
+  display: grid;
+  grid-template-columns: 350px 1fr; /* Sidebar-style placement */
+  gap: 2.5rem;
+  align-items: start;
+}
+
+/* 4. CARDS & FORMS */
+.card {
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+.form-group { margin-bottom: 1.5rem; }
+label { display: block; margin-bottom: 0.5rem; color: var(--text-dim); font-size: 0.85rem; }
+
+input {
+  width: 100%;
+  padding: 0.8rem;
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  color: white;
+  transition: var(--transition);
+}
+
+input:focus {
+  outline: none;
+  border-color: var(--primary);
+  background: rgba(255, 255, 255, 0.08);
+  transform: scale(1.01);
+}
+
+.btn-primary {
+  width: 100%;
+  padding: 1rem;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.btn-primary:hover {
+  filter: brightness(1.2);
+  transform: translateY(-3px) rotate(0.5deg);
+  box-shadow: 0 5px 15px rgba(79, 70, 229, 0.4);
+}
+
+/* 5. ROLES DISPLAY AREA */
+.roles-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+/* Individual Role Card (Targeted by JS) */
+.role-item {
+  background: var(--glass);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  padding: 1.5rem;
+  border-radius: 16px;
+  transition: var(--transition);
+  animation: fadeIn 0.5s ease forwards;
+}
+
+.role-item:hover {
+  border-color: var(--secondary);
+  transform: translateY(-5px);
+}
+
+/* 6. ADVANCED MODAL (TRANSLATIONS & SCALE) */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none; /* Controlled by JS */
+  place-items: center;
+  z-index: 2000;
+  backdrop-filter: blur(10px);
+}
+
+.modal-content {
+  background: var(--bg-admin);
+  width: 90%;
+  max-width: 500px;
+  border-radius: 24px;
+  padding: 2.5rem;
+  border: 1px solid var(--primary);
+  transform: translateY(50px) scale(0.9);
+  transition: var(--transition);
+}
+
+/* Animation trigger class for JS */
+.modal.active { display: grid; }
+.modal.active .modal-content { transform: translateY(0) scale(1); }
+
+/* 7. RESPONSIVENESS */
+@media (max-width: 1024px) {
+  .admin-content-grid { grid-template-columns: 1fr; }
+  .create-card { order: 2; }
+  .roles-section { order: 1; }
+}
+
+@media (max-width: 640px) {
+  .main-nav { padding: 1rem; }
+  .nav-links { display: none; } /* Hide links on mobile for hamburger menu (not included) */
+  .admin-container { margin: 1.5rem auto; }
+  .admin-header h1 { font-size: 1.8rem; }
+}
+
+/* 8. KEYFRAMES */
+@keyframes slideDown {
+  from { opacity: 0; transform: translateY(-20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
