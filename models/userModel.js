@@ -60,22 +60,27 @@ export const findUserByEmail = async (email) => {
     return result.rows[0]; 
 };
 
-// ✅ FIND USER BY ID (Detailed Profile)
+// FIND USER BY ID (Detailed Profile with Permissions)
 export const findUserById = async (user_id) => {
     const query = `
-        SELECT u.user_id, u.username, u.email, u.phone_number, u.is_active, u.is_superadmin,
-               up.full_name, up.student_id_number, up.department, up.github_url, up.bio, up.profile_pic_url,
-               ARRAY_AGG(DISTINCT r.role_name) FILTER (WHERE r.role_name IS NOT NULL) AS roles
+        SELECT 
+            u.user_id, u.username, u.email, u.phone_number, u.is_active, u.is_superadmin,
+            up.full_name, up.student_id_number, up.department, up.github_url, up.bio, up.profile_pic_url,
+            ARRAY_AGG(DISTINCT r.role_name) FILTER (WHERE r.role_name IS NOT NULL) AS roles,
+            ARRAY_AGG(DISTINCT p.permission_key) FILTER (WHERE p.permission_key IS NOT NULL) AS permissions
         FROM users u
         LEFT JOIN user_profiles up ON u.user_id = up.user_id
         LEFT JOIN user_roles ur ON u.user_id = ur.user_id
         LEFT JOIN roles r ON ur.role_id = r.role_id
+        LEFT JOIN role_permissions rp ON r.role_id = rp.role_id
+        LEFT JOIN permissions p ON rp.permission_id = p.permission_id
         WHERE u.user_id = $1
         GROUP BY u.user_id, up.profile_id`;
 
     const result = await pool.query(query, [user_id]);
     return result.rows[0];
 };
+
 
 // ✅ GET ALL USERS (Admin View)
 export const getAllUsers = async (limit = 10, offset = 0) => {
@@ -91,22 +96,53 @@ export const getAllUsers = async (limit = 10, offset = 0) => {
 };
 
 // ✅ UPDATE PROFILE DATA
+// ✅ UPDATE USER & PROFILE (Transaction)
 export const updateUserProfile = async (user_id, data) => {
-    const { full_name, department, bio, github_url, student_id_number } = data;
-    
-    const result = await pool.query(
-        `UPDATE user_profiles
-         SET full_name = COALESCE($1, full_name), 
-             department = COALESCE($2, department), 
-             bio = COALESCE($3, bio), 
-             github_url = COALESCE($4, github_url),
-             student_id_number = COALESCE($5, student_id_number),
-             updated_at = CURRENT_TIMESTAMP
-         WHERE user_id = $6
-         RETURNING *`,
-        [full_name, department, bio, github_url, student_id_number, user_id]
-    );
-    return result.rows[0];
+    const client = await pool.connect();
+
+    try {
+        await client.query('BEGIN');
+
+        // 1. Update Core User Data (users table)
+        const userUpdate = await client.query(
+            `UPDATE users 
+             SET username = COALESCE($1, username),
+                 email = COALESCE($2, email),
+                 phone_number = COALESCE($3, phone_number),
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE user_id = $4
+             RETURNING username, email, phone_number`,
+            [data.username, data.email, data.phone_number, user_id]
+        );
+
+        // 2. Update Extended Profile Data (user_profiles table)
+        const profileUpdate = await client.query(
+            `UPDATE user_profiles
+             SET full_name = COALESCE($1, full_name), 
+                 department = COALESCE($2, department), 
+                 bio = COALESCE($3, bio), 
+                 github_url = COALESCE($4, github_url),
+                 student_id_number = COALESCE($5, student_id_number),
+                 updated_at = CURRENT_TIMESTAMP
+             WHERE user_id = $6
+             RETURNING full_name, department, bio, github_url, student_id_number`,
+            [data.full_name, data.department, data.bio, data.github_url, data.student_id_number, user_id]
+        );
+
+        await client.query('COMMIT');
+
+        // Merge results into one object for the response
+        return { 
+            ...userUpdate.rows[0], 
+            ...profileUpdate.rows[0] 
+        };
+
+    } catch (error) {
+        await client.query('ROLLBACK');
+        throw error;
+    } finally {
+        client.release();
+    }
 };
 
 // ✅ TOGGLE USER STATUS (Deactivate/Activate)

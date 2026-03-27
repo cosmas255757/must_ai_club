@@ -1,15 +1,21 @@
 document.addEventListener('DOMContentLoaded', async () => {
-    const token = localStorage.getItem('token');
-    const profileContent = document.getElementById('profileContent');
-    const loading = document.getElementById('loading');
-    const errorDisplay = document.getElementById('error');
+    const elements = {
+        profileContent: document.getElementById('profileContent'),
+        loading: document.getElementById('loading'),
+        errorDisplay: document.getElementById('error'),
+        logoutBtn: document.getElementById('logoutBtn')
+    };
 
+    const token = localStorage.getItem('token');
+
+    // 1. Auth Guard
     if (!token) {
         window.location.href = 'login.html';
         return;
     }
 
     try {
+        // 2. Fetch Profile Data
         const response = await fetch('http://localhost:5000/api/users/profile', {
             method: 'GET',
             headers: {
@@ -18,104 +24,164 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        const data = await response.json();
+        const result = await response.json();
 
-        if (response.ok) {
-            // ✅ FIX: Check if data is an array or an object
-            const user = Array.isArray(data) ? data[0] : data;
+        // 3. Handle Unauthorized or Expired Token
+        if (response.status === 401 || response.status === 403) {
+            handleLogout();
+            return;
+        }
 
-            // ✅ VALIDATION: Ensure user exists before setting text
-            if (!user) {
-                throw new Error("User data not found in response");
+        if (response.ok && result.success) {
+            const user = result.data;
+
+            if (!user) throw new Error("User data object is empty");
+
+            // 4. Map Standard Fields (Directly from SQL/Controller)
+            setText('full_name', user.full_name);
+            setText('username', user.username);
+            setText('email', user.email);
+            setText('phone_number', user.phone_number);
+            setText('student_id_number', user.student_id_number);
+            setText('department', user.department, 'Not set');
+            setText('bio', user.bio, 'No bio provided');
+
+            // 5. Link Logic (GitHub)
+            const githubEl = document.getElementById('github_url');
+            if (githubEl) {
+                githubEl.innerHTML = user.github_url 
+                    ? `<a href="${user.github_url}" target="_blank" style="color: #007bff;">${user.github_url}</a>`
+                    : 'Not linked';
             }
 
-            document.getElementById('full_name').innerText = user.full_name || 'N/A';
-            document.getElementById('username').innerText = user.username || 'N/A';
-            document.getElementById('email').innerText = user.email || 'N/A';
-            document.getElementById('department').innerText = user.department || 'Not set';
-            document.getElementById('bio').innerText = user.bio || 'No bio yet';
+            // 6. Role Logic (Superadmin + Array Join)
+            const rolesArray = Array.isArray(user.roles) ? user.roles : [];
+            let roleText = rolesArray.length > 0 ? rolesArray.join(', ') : 'Student';
             
-            // Handle roles array correctly
-            const rolesList = Array.isArray(user.roles) ? user.roles.join(', ') : 'Student';
-            document.getElementById('roles').innerText = rolesList;
+            if (user.is_superadmin) {
+                roleText = `⭐ Super Admin (${roleText})`;
+            }
+            setText('roles', roleText);
 
-            loading.style.display = 'none';
-            profileContent.style.display = 'block';
+            // 7. Permissions Logic
+            const permissionsArray = Array.isArray(user.permissions) ? user.permissions : [];
+            setText('permissions', permissionsArray.join(', '), 'No specific permissions');
+
+            // 8. Toggle Visibility
+            elements.loading.style.display = 'none';
+            elements.profileContent.style.display = 'block';
+
         } else {
-            localStorage.removeItem('token');
-            window.location.href = 'login.html';
+            throw new Error(result.message || "Failed to load profile");
         }
 
     } catch (err) {
         console.error("Profile Fetch Error:", err);
-        loading.style.display = 'none';
-        errorDisplay.innerText = "Error: " + err.message;
-        errorDisplay.style.display = 'block';
+        elements.loading.style.display = 'none';
+        elements.errorDisplay.innerText = "Error: " + err.message;
+        elements.errorDisplay.style.display = 'block';
     }
-});
 
-document.getElementById('logoutBtn').addEventListener('click', () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    window.location.href = 'login.html';
+    // Helper: Set text content safely
+    function setText(id, value, fallback = 'N/A') {
+        const el = document.getElementById(id);
+        if (el) el.innerText = value || fallback;
+    }
+
+    // Helper: Logout cleanup
+    function handleLogout() {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = 'login.html';
+    }
+
+    // Logout Event
+    elements.logoutBtn?.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleLogout();
+    });
 });
 
 //===================================================================================
 //=======================================================================================
 
-// --- Add this inside your DOMContentLoaded or at the bottom ---
-
 // 1. Open Modal and Pre-fill data
-document.getElementById('openEditBtn').addEventListener('click', () => {
-    // Get current text values to show in the form
-    document.getElementById('edit_full_name').value = document.getElementById('full_name').innerText;
-    document.getElementById('edit_department').value = document.getElementById('department').innerText === 'Not set' ? '' : document.getElementById('department').innerText;
-    document.getElementById('edit_bio').value = document.getElementById('bio').innerText === 'No bio yet' ? '' : document.getElementById('bio').innerText;
-    // (Add github and student_id logic if you have those IDs in your HTML)
-    
-    document.getElementById('editModal').style.display = 'block';
-});
 
-// 2. Handle Form Submission
-document.getElementById('editProfileForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+document.addEventListener('DOMContentLoaded', () => {
+    const editModal = document.getElementById('editModal');
+    const openEditBtn = document.getElementById('openEditBtn');
+    const editForm = document.getElementById('editProfileForm');
     const token = localStorage.getItem('token');
-    const saveBtn = document.getElementById('saveBtn');
 
-    const updatedData = {
-        full_name: document.getElementById('edit_full_name').value,
-        student_id_number: document.getElementById('edit_student_id').value,
-        department: document.getElementById('edit_department').value,
-        github_url: document.getElementById('edit_github').value,
-        bio: document.getElementById('edit_bio').value
-    };
+    // 1. OPEN MODAL & PRE-FILL DATA
+    openEditBtn?.addEventListener('click', () => {
+        // Pull current values from the profile display fields
+        document.getElementById('edit_username').value = document.getElementById('username').innerText.replace('N/A', '');
+        document.getElementById('edit_email').value = document.getElementById('email').innerText.replace('N/A', '');
+        document.getElementById('edit_phone_number').value = document.getElementById('phone_number').innerText.replace('N/A', '');
+        document.getElementById('edit_full_name').value = document.getElementById('full_name').innerText.replace('N/A', '');
+        document.getElementById('edit_student_id_number').value = document.getElementById('student_id_number').innerText.replace('N/A', '');
+        document.getElementById('edit_department').value = document.getElementById('department').innerText.replace('Not set', '');
+        document.getElementById('edit_bio').value = document.getElementById('bio').innerText.replace('No bio yet', '');
+        
+        // Extract URL from GitHub link if it exists
+        const githubLink = document.querySelector('#github_url a');
+        document.getElementById('edit_github_url').value = githubLink ? githubLink.href : '';
 
-    try {
+        editModal.style.display = 'block';
+    });
+
+    // 2. SUBMIT UPDATES TO BACKEND
+    editForm?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const saveBtn = document.getElementById('saveBtn');
         saveBtn.disabled = true;
-        saveBtn.innerText = "Saving...";
+        saveBtn.innerText = 'Saving...';
 
-        const response = await fetch('http://localhost:5000/api/users/profile', {
-            method: 'PUT', // Ensure this matches your route (PUT or PATCH)
-            headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(updatedData)
-        });
+        const updatedData = {
+            username: document.getElementById('edit_username').value,
+            email: document.getElementById('edit_email').value,
+            phone_number: document.getElementById('edit_phone_number').value,
+            full_name: document.getElementById('edit_full_name').value,
+            student_id_number: document.getElementById('edit_student_id_number').value,
+            department: document.getElementById('edit_department').value,
+            github_url: document.getElementById('edit_github_url').value,
+            bio: document.getElementById('edit_bio').value
+        };
 
-        const result = await response.json();
+        try {
+            const response = await fetch('http://localhost:5000/api/users/profile', {
+                method: 'PUT', // Matches your backend update route
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(updatedData)
+            });
 
-        if (response.ok) {
-            alert("Profile updated successfully!");
-            location.reload(); // Refresh to show new data
-        } else {
-            alert(result.message || "Failed to update profile");
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                alert('Profile updated successfully!');
+                location.reload(); // Refresh to show new data
+            } else {
+                // Display specific backend error (e.g., "Email already exists")
+                alert('Error: ' + (result.message || 'Failed to update profile'));
+            }
+        } catch (err) {
+            console.error('Update Error:', err);
+            alert('A network error occurred. Please try again.');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.innerText = 'Save Changes';
         }
-    } catch (err) {
-        console.error("Update Error:", err);
-        alert("Connection error");
-    } finally {
-        saveBtn.disabled = false;
-        saveBtn.innerText = "Save Changes";
-    }
+    });
+
+    // Close modal when clicking outside of it
+    window.onclick = (event) => {
+        if (event.target == editModal) {
+            editModal.style.display = 'none';
+        }
+    };
 });

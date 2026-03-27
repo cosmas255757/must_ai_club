@@ -53,7 +53,8 @@ h2 {
   font-weight: 800;
   margin-bottom: 2rem;
   background: linear-gradient(135deg, var(--secondary), var(--tertiary));
-  /* -webkit-background-clip: text; */
+  -webkit-background-clip: text; /* Restored for gradient visibility */
+  background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
 }
@@ -148,7 +149,41 @@ a:hover {
   letter-spacing: 0.5px;
 }
 
-/* 9. ADVANCED ANIMATIONS (TRANSLATIONS & ROTATIONS) */
+/* 9. REGISTER HEADER ID - ADVANCED STYLING */
+#headofregister {
+    font-size: 2rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 2rem;
+    letter-spacing: -1px;
+    text-transform: uppercase;
+    line-height: 1.2;
+    
+    background: linear-gradient(
+        135deg, 
+        var(--tertiary) 0%,   /* Pulse Purple */
+        var(--secondary) 50%,  /* Cyber Cyan */
+        var(--primary) 100%    /* Electric Indigo */
+    );
+    -webkit-background-clip: text; /* Restored for gradient visibility */
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    
+    filter: drop-shadow(0 0 10px rgba(16, 185, 129, 0.25));
+    
+    transition: var(--transition);
+    cursor: pointer;
+    user-select: none;
+    animation: registerEntrance 1.2s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+#headofregister:hover {
+    transform: scale(1.02) translateY(-3px) rotate(-0.5deg);
+    filter: drop-shadow(0 0 20px rgba(6, 182, 212, 0.6));
+    letter-spacing: 1px;
+}
+
+/* 10. ADVANCED ANIMATIONS KEYFRAMES */
 @keyframes containerEntry {
   from { opacity: 0; transform: scale(0.8) rotate(-2deg); }
   to { opacity: 1; transform: scale(1) rotate(0); }
@@ -159,13 +194,26 @@ a:hover {
   to { opacity: 1; transform: translateX(0); }
 }
 
+@keyframes registerEntrance {
+    0% {
+        opacity: 0;
+        transform: translateY(30px) scale(0.85);
+        filter: blur(10px) brightness(0.5);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0) brightness(1);
+    }
+}
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-5px); }
   75% { transform: translateX(5px); }
 }
 
-/* 10. DEVICE RESPONSIVENESS */
+/* 11. DEVICE RESPONSIVENESS */
 @media (max-width: 480px) {
   body { padding: 0; }
   .register-container {
@@ -176,5 +224,9 @@ a:hover {
     justify-content: center;
     max-width: 100%;
     border: none;
+  }
+  #headofregister {
+    font-size: 1.6rem;
+    margin-bottom: 1.5rem;
   }
 }

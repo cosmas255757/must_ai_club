@@ -1,28 +1,55 @@
 import * as UserModel from '../models/userModel.js';
 
-// ✅ 1. GET CURRENT USER PROFILE (Self)
+//  1. GET CURRENT USER PROFILE (Self)
 export const getMyProfile = async (req, res) => {
     try {
-        // req.user.user_id comes from the verifyToken middleware
+        // req.user.user_id comes from your verifyToken/auth middleware
         const user = await UserModel.findUserById(req.user.user_id);
         
         if (!user) {
-            return res.status(404).json({ message: 'User profile not found' });
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User profile not found' 
+            });
         }
 
-        res.status(200).json(user);
+        // Returns: full_name, username, email, student_id_number, github_url, 
+        // phone_number, department, bio, roles (array), and permissions (array)
+        res.status(200).json({
+            success: true,
+            data: user
+        });
     } catch (error) {
         console.error('Get Profile Error:', error.message);
-        res.status(500).json({ message: 'Error fetching profile' });
+        res.status(500).json({ 
+            success: false, 
+            message: 'Internal server error while fetching profile' 
+        });
     }
 };
 
+
 // ✅ 2. UPDATE PROFILE (Self)
+// ✅ UPDATE PROFILE CONTROLLER (Handles both tables)
 export const updateMyProfile = async (req, res) => {
     try {
-        const { full_name, department, bio, github_url, student_id_number } = req.body;
+        // Destructure all fields from req.body to match the new logic
+        const { 
+            username, 
+            email, 
+            phone_number, 
+            full_name, 
+            department, 
+            bio, 
+            github_url, 
+            student_id_number 
+        } = req.body;
         
+        // Pass the full data object to the model
         const updatedProfile = await UserModel.updateUserProfile(req.user.user_id, {
+            username,
+            email,
+            phone_number,
             full_name,
             department,
             bio,
@@ -31,18 +58,34 @@ export const updateMyProfile = async (req, res) => {
         });
 
         res.status(200).json({ 
+            success: true,
             message: 'Profile updated successfully', 
-            profile: updatedProfile 
+            data: updatedProfile 
         });
+
     } catch (error) {
         console.error('Update Profile Error:', error.message);
-        // Handle UNIQUE constraint error for student_id_number
+
+        // 23505 is the Postgres code for Unique Violation (Email, Username, or Student ID)
         if (error.code === '23505') {
-            return res.status(400).json({ message: 'Student ID number already exists' });
+            let field = "Information";
+            if (error.detail.includes('email')) field = "Email";
+            if (error.detail.includes('username')) field = "Username";
+            if (error.detail.includes('student_id_number')) field = "Student ID";
+            
+            return res.status(400).json({ 
+                success: false, 
+                message: `${field} already exists. Please use another one.` 
+            });
         }
-        res.status(500).json({ message: 'Error updating profile' });
+
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error updating profile. Please try again later.' 
+        });
     }
 };
+
 
 // ✅ 3. GET ALL USERS (Superadmin/Staff View)
 export const getAllUsers = async (req, res) => {
