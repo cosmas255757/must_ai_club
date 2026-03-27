@@ -4,22 +4,25 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-// ✅ Use connectionString to match your DATABASE_URL in .env
+// ✅ Optimized for Neon & Render
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
-    // Add SSL config if you plan to deploy to platforms like Render/Heroku later
-    /* ssl: { rejectUnauthorized: false } */
+    // Neon requires SSL. This config works for both Local and Production.
+    ssl: process.env.DATABASE_URL.includes('localhost') 
+        ? false 
+        : { rejectUnauthorized: false }
 });
 
 // ✅ Log successful connection
 pool.on('connect', () => {
-    console.log('✅ PostgreSQL Pool Connected');
+    console.log('✅ PostgreSQL Pool Connected to Neon');
 });
 
 // ✅ Critical: Handle errors on idle clients
 pool.on('error', (err) => {
     console.error('❌ Unexpected database error on idle client', err);
-    process.exit(-1);
+    // Don't exit in production unless it's a fatal startup error
+    if (process.env.NODE_ENV !== 'production') process.exit(-1);
 });
 
 export default pool;

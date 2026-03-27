@@ -4,13 +4,13 @@ import dotenv from 'dotenv';
 import morgan from 'morgan';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import rbacRoutes from './routes/rbacRoutes.js';
 
-// Import local modules
+// Import RBAC and API routes
+import rbacRoutes from './routes/rbacRoutes.js';
 import apiRoutes from './routes/index.js';
 import pool from './config/db.js';
 
-// Setup __dirname for ES Modules
+// Setup __dirname for ES Modules (Required for Render/Linux)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,29 +19,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// ✅ 1. MIDDLEWARES
+// ✅ 1. CORE MIDDLEWARES
 app.use(cors());
-app.use(express.json());
-app.use(morgan('dev'));
+app.use(express.json()); // Essential for parsing POST request bodies
+app.use(morgan('dev'));  // Logs requests to the console
 
-// ✅ 2. STATIC FILES SETUP
-// Priority 1: Serve CSS/JS/Images from 'public' (e.g. /css/style.css)
-app.use(express.static(path.join(__dirname, 'public')));
+// ✅ 2. API ROUTES (Mount before Static files)
 app.use('/api/admin', rbacRoutes); 
+app.use('/api', apiRoutes);
 
+// ✅ 3. STATIC FILES SETUP
+// Serves CSS, JS, and Images from 'public' folder
+app.use(express.static(path.join(__dirname, 'public')));
 
-// Priority 2: Serve HTML files from 'public/pages' with extension support
-// This allows both /profile and /profile.html to work automatically
+// Serves HTML files from 'public/pages' (allows /profile instead of /profile.html)
 app.use(express.static(path.join(__dirname, 'public', 'pages'), { 
     extensions: ['html'] 
 }));
 
-// ✅ 3. FRONTEND PAGE ROUTES (Manual fallbacks for clean navigation)
+// ✅ 4. FRONTEND PAGE FALLBACKS
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'pages', 'login.html'));
 });
 
-// These explicit routes ensure absolute reliability
 app.get('/login', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'pages', 'login.html'));
 });
@@ -54,23 +54,19 @@ app.get('/profile', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'pages', 'profile.html'));
 });
 
-// ✅ 4. DATABASE CONNECTION CHECK
+// ✅ 5. DATABASE CONNECTION CHECK (Initial Startup)
 const checkDbConnection = async () => {
     try {
         const res = await pool.query('SELECT NOW()');
-        // Fixed: res.rows[0].now instead of res.rows.now
-        console.log('✅ Database Connected:', res.rows[0].now);
+        console.log('✅ PostgreSQL Connected to Neon:', res.rows[0].now);
     } catch (err) {
         console.error('❌ Database Connection Error:', err.message);
-        process.exit(1);
+        // On Render, we want to know why it failed, but let the health check handle restarts
     }
 };
 checkDbConnection();
 
-// ✅ 5. API ROUTES
-app.use('/api', apiRoutes);
-
-// ✅ 6. HEALTH CHECK
+// ✅ 6. HEALTH CHECK (Used by Render to monitor uptime)
 app.get('/health', (req, res) => {
     res.status(200).json({ status: 'OK', message: 'Server is running' });
 });
@@ -86,6 +82,8 @@ app.use((err, req, res, next) => {
 
 // ✅ 8. START SERVER
 app.listen(PORT, () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log(`👉 Access Login: http://localhost:${PORT}/login`);
+    console.log(`🚀 Server running on port ${PORT}`);
+    if (process.env.NODE_ENV !== 'production') {
+        console.log(`👉 Local Access: http://localhost:${PORT}/login`);
+    }
 });
