@@ -1,101 +1,119 @@
-import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
-import { createUser, findUserByEmail } from '../models/userModel.js';
+import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import { createStudent, findUserByEmail, createUserByAdmin, findUserById } from "../models/userModel.js";
+import dotenv from "dotenv";
 
-const JWT_SECRET = process.env.JWT_SECRET;
-const JWT_EXPIRES = process.env.JWT_EXPIRES_IN || '24h';
+dotenv.config();
 
-// ✅ 1. REGISTER USER
-export const register = async (req, res) => {
-    try {
-        const { username, email, phone_number, password, full_name } = req.body;
+// -------------------------
+// STUDENT REGISTRATION
+// -------------------------
+export const registerStudent = async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
 
-        // Validation: Ensure no missing fields for the schema
-        if (!username || !email || !password || !full_name || !phone_number) {
-            return res.status(400).json({ message: 'All fields are required' });
-        }
-
-        // Check if user already exists
-        const existingUser = await findUserByEmail(email);
-        if (existingUser) {
-            return res.status(409).json({ message: 'Email already in use' });
-        }
-
-        // Hash password
-        const salt = await bcrypt.genSalt(10);
-        const password_hash = await bcrypt.hash(password, salt);
-
-        // Create User (This handles user, profile, and default 'Student' role in one transaction)
-        const newUser = await createUser({
-            username,
-            email,
-            phone_number,
-            password_hash,
-            full_name,
-            role_name: 'Student', // Default role for new signups
-            is_superadmin: false   // Security: block superadmin elevation via registration
-        });
-
-        res.status(201).json({
-            message: 'User registered successfully',
-            user: {
-                user_id: newUser.user_id,
-                username: newUser.username,
-                email: newUser.email
-            }
-        });
-
-    } catch (error) {
-        console.error('Registration Error:', error.message);
-        res.status(500).json({ message: 'Internal Server Error' });
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "All fields are required" });
     }
+
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await createStudent(name, email, hashedPassword);
+
+    res.status(201).json({ message: "Student registered successfully", user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };
 
-// ✅ 2. LOGIN USER
-export const login = async (req, res) => {
-    try {
-        const { email, password } = req.body;
+// -------------------------
+// ADMIN REGISTRATION (Facilitator or Sponsor)
+// -------------------------
+export const registerUserByAdmin = async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
+    const adminUserId = req.user.id;
 
-        // 1. Fetch user (Model includes joined roles and permissions)
-        const user = await findUserByEmail(email);
-
-        // 2. Validate Credentials
-        if (!user || !(await bcrypt.compare(password, user.password_hash))) {
-            return res.status(401).json({ message: 'Invalid email or password' });
-        }
-
-        // 3. Check Account Status (is_active from users table)
-        if (!user.is_active) {
-            return res.status(403).json({ message: 'Account deactivated' });
-        }
-
-        // 4. Generate JWT with RBAC Claims
-        // Claims match exactly what the authorize middleware expects
-        const token = jwt.sign(
-            { 
-                user_id: user.user_id, 
-                is_superadmin: user.is_superadmin,
-                roles: user.roles || [],
-                permissions: user.permissions || [] 
-            },
-            JWT_SECRET,
-            { expiresIn: JWT_EXPIRES }
-        );
-
-        // 5. Success Response
-        res.status(200).json({
-            message: 'Login successful',
-            token,
-            user: {
-                user_id: user.user_id,
-                username: user.username,
-                roles: user.roles,
-                is_superadmin: user.is_superadmin
-            }
-        });
-
-    } catch (error) {
-        console.error('Login Error:', error.message);
-        res.status(500).json({ message: 'Internal Server Error' });
+    const adminUser = await findUserById(adminUserId);
+    if (!adminUser || adminUser.role !== "admin") {
+      return res.status(403).json({ message: "Forbidden: Admin only" });
     }
+
+    if (!name || !email || !password || !role) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    const validRoles = ["facilitator", "sponsor"];
+    if (!validRoles.includes(role)) {
+      return res.status(400).json({ message: "Invalid role" });
+    }
+
+    const existingUser = await findUserByEmail(email);
+    if (existingUser) {
+      return res.status(400).json({ message: "Email already registered" });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const user = await createUserByAdmin(name, email, hashedPassword, role);
+
+    res.status(201).json({ message: `${role} registered successfully`, user });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
+// -------------------------
+// LOGIN
+// -------------------------
+export const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({ message: "Email and password required" });
+    }
+
+    const user = await findUserByEmail(email);
+    if (!user) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    if (user.status !== "active") {
+      return res.status(403).json({ message: `User is ${user.status}` });
+    }
+
+    const isMatch = await bcrypt.compare(password, user.password);
+    if (!isMatch) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.json({
+      message: "Login successful",
+      token,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        status: user.status,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Server error" });
+  }
 };

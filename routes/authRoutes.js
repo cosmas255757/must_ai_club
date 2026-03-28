@@ -1,9 +1,18 @@
-import express from 'express';
-import { register, login } from '../controllers/authController.js';
+import express from "express";
+import { registerStudent, registerUserByAdmin, login } from "../controllers/authController.js";
+import { authenticate } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post('/register', register);
-router.post('/login', login);
+// -------------------------
+// PUBLIC ROUTES
+// -------------------------
+router.post("/register", registerStudent); 
+router.post("/login", login);             
+
+// -------------------------
+// ADMIN ONLY ROUTES
+// -------------------------
+router.post("/register/admin", authenticate, registerUserByAdmin);
 
 export default router;
