@@ -12,7 +12,7 @@ function createNavbar() {
                 <li><a href="index.html">Home</a></li>
                 <li><a href="about.html">About</a></li>
                 <li><a href="contact.html">Contact</a></li>
-                <li><a href="auth.html" class="btn-primary">Login / Sign Up</a></li>
+                <li><a href="auth.html" class="btn-primary">Login</a></li>
             </ul>
         </nav>
     `;
