@@ -150,7 +150,7 @@ footer {
 
     .nav-links {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
         position: absolute;
         top: 100%;
         left: 0;
