@@ -1,10 +1,8 @@
-// js/navfooter.js
-
 function createNavbar() {
     const header = document.createElement('header');
     header.innerHTML = `
         <nav>
-            <a href="index.html" class="logo">EduPlatform</a>
+            <a href="index.html" class="logo"> Must AI Platform</a>
             <button class="menu-toggle" id="mobile-menu">
                 <span class="bar"></span>
                 <span class="bar"></span>
@@ -20,13 +18,12 @@ function createNavbar() {
     `;
     document.body.prepend(header);
 
-    // Mobile Menu Logic
     const menuBtn = document.getElementById('mobile-menu');
     const navMenu = document.getElementById('nav-menu');
 
     menuBtn.addEventListener('click', () => {
         navMenu.classList.toggle('active');
-        menuBtn.classList.toggle('is-active'); // For animating the bars if you want
+        menuBtn.classList.toggle('is-active'); 
     });
 }
 
@@ -40,7 +37,6 @@ function createFooter() {
     document.body.appendChild(footer);
 }
 
-// Initialize
 document.addEventListener('DOMContentLoaded', () => {
     createNavbar();
     createFooter();

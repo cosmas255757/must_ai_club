@@ -1,19 +1,17 @@
-/* 1. Global Reset & Modern Variables */
 :root {
-    --primary: #3b82f6;       /* Bright AI Blue */
+    --primary: #3b82f6;
     --primary-hover: #2563eb;
     --accent: #f59e0b;        
-    --dark-deep: #020617;     /* Darkest Blue */
-    --dark-card: rgba(30, 41, 59, 0.5); /* Translucent Slate */
-    --text-main: #f8fafc;     /* Off-white for high visibility */
-    --text-muted: #94a3b8;    /* Soft gray for secondary text */
+    --dark-deep: #020617;    
+    --dark-card: rgba(30, 41, 59, 0.5); 
+    --text-main: #f8fafc;     
+    --text-muted: #94a3b8;     
     --white: #ffffff;
     --glass-border: rgba(255, 255, 255, 0.1);
     --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* 2. Page Animation */
 @keyframes pageReveal {
     from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: translateY(0); }
@@ -36,7 +34,6 @@ body {
     overflow-x: hidden;
 }
 
-/* 3. Typography Visibility Fix */
 h1, h2, h3 {
     color: var(--white);
     margin-bottom: 1rem;
@@ -50,7 +47,7 @@ p {
     font-size: 1.1rem;
 }
 
-/* 4. Navigation (Glassmorphism) */
+
 header {
     background: rgba(15, 23, 42, 0.8);
     backdrop-filter: blur(12px);
@@ -95,7 +92,6 @@ nav {
     color: var(--primary);
 }
 
-/* 5. Buttons */
 .btn-primary {
     background: var(--primary);
     color: var(--white) !important;
@@ -114,7 +110,7 @@ nav {
     box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
 }
 
-/* 6. Main Content Area */
+
 main {
     max-width: 1100px;
     margin: 3rem auto;
@@ -123,7 +119,7 @@ main {
     animation: pageReveal 0.8s ease-out forwards;
 }
 
-/* 7. Footer */
+
 footer {
     background: rgba(2, 6, 23, 0.9);
     border-top: 1px solid var(--glass-border);
@@ -132,7 +128,7 @@ footer {
     text-align: center;
 }
 
-/* 8. Mobile Menu & Toggle */
+
 .menu-toggle {
     display: none;
     background: none;
@@ -142,25 +138,50 @@ footer {
     color: var(--white);
 }
 
-@media (max-width: 768px) {
+
+@media screen and (max-width: 768px) {
     .menu-toggle {
-        display: block;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        cursor: pointer;
+        z-index: 1001;
     }
 
     .nav-links {
+        display: none;
+        flex-direction: column;
         position: absolute;
         top: 100%;
         left: 0;
         width: 100%;
-        background: #0f172a;
-        flex-direction: column;
-        padding: 3rem;
-        gap: 2rem;
-        border-bottom: 1px solid var(--glass-border);
-        display: none; 
+        background-color: #333;
+        padding: 20px 0;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
     }
 
     .nav-links.active {
-        display: flex; 
+        display: flex;
+    }
+
+    .nav-links li {
+        margin: 15px 0;
+    }
+
+    .menu-toggle.is-active .bar:nth-child(2) {
+        opacity: 0;
+    }
+
+    .menu-toggle.is-active .bar:nth-child(1) {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .menu-toggle.is-active .bar:nth-child(3) {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+
+    .bar {
+        transition: 0.3s;
     }
 }
