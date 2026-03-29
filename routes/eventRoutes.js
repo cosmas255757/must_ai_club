@@ -11,29 +11,35 @@ import {
   myEvents,
 } from "../controllers/eventController.js";
 
-import { authenticate } from "../middleware/authMiddleware.js";
+import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // -------------------------
 // PUBLIC ROUTES
 // -------------------------
-router.get("/", listEvents);        
-router.get("/:id", getEvent);      
+router.get("/", listEvents);        // Anyone can see the list of events
+router.get("/:id", getEvent);       // Anyone can see event details
+
 // -------------------------
-// PROTECTED ROUTES
+// PROTECTED ROUTES (Logged-in Users Only)
 // -------------------------
-router.use(authenticate);
+router.use(protect); // All routes below this line require a valid JWT token
 
-router.post("/", addEvent);       
-router.put("/:id", editEvent);      
-router.delete("/:id", removeEvent); 
+// --- Management (Facilitators & Admin Only) ---
+// Only staff can create, update, or delete events
+router.post("/", authorizeRoles("facilitator", "admin"), addEvent);       
+router.put("/:id", authorizeRoles("facilitator", "admin"), editEvent);      
+router.delete("/:id", authorizeRoles("facilitator", "admin"), removeEvent); 
 
-router.post("/join", joinEvent);    
-router.post("/leave", leaveEvent);  
+// --- Participation (Students, Sponsors, etc.) ---
+router.post("/join", joinEvent);    // Adds a record to 'event_participants'
+router.post("/leave", leaveEvent);  // Removes a record from 'event_participants'
 
-router.get("/:eventId/participants", getParticipants);
-
+// View personal schedule
 router.get("/me/events", myEvents);
+
+// --- Admin/Facilitator View ---
+router.get("/:eventId/participants", authorizeRoles("facilitator", "admin"), getParticipants);
 
 export default router;

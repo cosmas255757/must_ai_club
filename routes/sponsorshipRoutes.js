@@ -5,25 +5,29 @@ import {
   listSponsorships,
   editSponsorship,
   removeSponsorship,
+ // mySponsorships,
 } from "../controllers/sponsorshipController.js";
 
-import { authenticate } from "../middleware/authMiddleware.js";
+import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // -------------------------
-// PROTECTED ROUTES
+// PROTECTED ROUTES (Logged-in Only)
 // -------------------------
-router.use(authenticate);
+router.use(protect);
 
-router.post("/", createSponsorship);
+// --- Creating & Managing (Sponsors & Admin Only) ---
+// Only a 'sponsor' can create a record in the sponsorships table.
+// The 'sponsor_id' will be automatically set from req.user.id in the controller.
+router.post("/", authorizeRoles("sponsor", "admin"), createSponsorship);
+router.put("/:id", authorizeRoles("sponsor", "admin"), editSponsorship);
+router.delete("/:id", authorizeRoles("sponsor", "admin"), removeSponsorship);
 
-router.get("/", listSponsorships);
-
+// --- Viewing Sponsorships ---
+// Admins see all contributions; Sponsors see their own history.
+router.get("/", authorizeRoles("admin"), listSponsorships); 
+//router.get("/me", authorizeRoles("sponsor"), mySponsorships);
 router.get("/:id", getSponsorship);
-
-router.put("/:id", editSponsorship);
-
-router.delete("/:id", removeSponsorship);
 
 export default router;

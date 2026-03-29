@@ -1,5 +1,3 @@
-// src/routes/projectRoutes.js
-
 import express from "express";
 import {
   addProject,
@@ -9,18 +7,26 @@ import {
   removeProject,
 } from "../controllers/projectController.js";
 
-import { authenticate } from "../middleware/authMiddleware.js";
+import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // -------------------------
-// PROTECTED ROUTES
+// PROTECTED ROUTES (Logged-in Only)
 // -------------------------
-router.use(authenticate); 
+router.use(protect); 
 
-router.post("/", addProject);       
+// --- Submission (Students Only) ---
+// Only students should be able to submit new projects to the 'projects' table
+router.post("/", authorizeRoles("student"), addProject);       
+
+// --- Viewing Projects ---
+// Students see their own, Facilitators/Admins see all for grading
 router.get("/", listProjects);        
 router.get("/:id", getProject);        
+
+// --- Management (Student Owner or Admin) ---
+// Students edit their own submissions; Admins can manage any project
 router.put("/:id", editProject);       
 router.delete("/:id", removeProject);  
 
