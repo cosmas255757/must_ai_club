@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Facilitator Dashboard</title>
+    <script src="../js/guard.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav>
+        <h1>Facilitator Panel</h1>
+        <button onclick="logout()">Logout</button>
+    </nav>
+    <main>
+        <h2 id="welcome-msg">Hello, Facilitator</h2>
+        <div class="grid">
+            <a href="manage-courses.html" class="card">Manage Courses</a>
+            <a href="review-projects.html" class="card">Review Projects</a>
+            <a href="announcements.html" class="card">Post Announcements</a>
+            <a href="profile.html" class="card">Profile Settings</a>
+        </div>
+    </main>
+    <script src="../js/utils.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        document.getElementById("welcome-msg").innerText = `Welcome, Facilitator ${user.name}`;
+    </script>
+</body>
+</html>

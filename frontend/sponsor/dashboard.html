@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sponsor Dashboard</title>
+    <script src="../js/guard.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav>
+        <h1>Sponsor Portal</h1>
+        <button onclick="logout()">Logout</button>
+    </nav>
+    <main>
+        <h2 id="welcome-msg">Sponsor Dashboard</h2>
+        <div class="grid">
+            <a href="contributions.html" class="card">My Contributions</a>
+            <a href="reports.html" class="card">Impact Reports</a>
+            <a href="sponsored-events.html" class="card">Events Sponsored</a>
+            <a href="profile.html" class="card">Organization Profile</a>
+        </div>
+    </main>
+    <script src="../js/utils.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        document.getElementById("welcome-msg").innerText = `Partner: ${user.name}`;
+    </script>
+</body>
+</html>

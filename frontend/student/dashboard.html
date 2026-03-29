@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Dashboard - MUST AI HUB</title>
+    <script src="../js/guard.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav>
+        <h1>Student Hub</h1>
+        <button onclick="logout()">Logout</button>
+    </nav>
+    <main>
+        <h2 id="welcome-msg">Welcome, Student!</h2>
+        <div class="grid">
+            <a href="courses.html" class="card">My Courses</a>
+            <a href="events.html" class="card">Upcoming Events</a>
+            <a href="projects.html" class="card">Submit Project</a>
+            <a href="profile.html" class="card">My Profile</a>
+        </div>
+    </main>
+    <script src="../js/utils.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        document.getElementById("welcome-msg").innerText = `Welcome, ${user.name}!`;
+    </script>
+</body>
+</html>

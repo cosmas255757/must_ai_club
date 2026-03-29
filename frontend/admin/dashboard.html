@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>System Admin</title>
+    <script src="../js/guard.js"></script>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <nav>
+        <h1>Admin Control Center</h1>
+        <button onclick="logout()">Logout</button>
+    </nav>
+    <main>
+        <h2 id="welcome-msg">System Overview</h2>
+        <div class="grid">
+            <a href="user-management.html" class="card">User Management</a>
+            <a href="system-reports.html" class="card">System Reports</a>
+            <a href="logs.html" class="card">Activity Logs</a>
+            <a href="profile.html" class="card">Admin Profile</a>
+        </div>
+    </main>
+    <script src="../js/utils.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        document.getElementById("welcome-msg").innerText = `Administrator: ${user.name}`;
+    </script>
+</body>
+</html>

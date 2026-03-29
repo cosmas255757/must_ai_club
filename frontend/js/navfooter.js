@@ -30,7 +30,6 @@ function createNavbar() {
 function createFooter() {
     const footer = document.createElement('footer');
     
-    // Applying styles directly via JS
     Object.assign(footer.style, {
         background: 'rgba(10, 15, 29, 0.95)',
         backdropFilter: 'blur(10px)',
