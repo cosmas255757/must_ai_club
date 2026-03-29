@@ -32,7 +32,7 @@ app.use("/api/announcements", announcementRoutes);
 app.use("/api/reviews", projectReviewRoutes);
 app.use("/api/events", eventRoutes);
 app.use("/api/sponsorships", sponsorshipRoutes);
-app.use("/api/enrollments", enrollmentRoutes); // Added
+//app.use("/api/enrollments", enrollmentRoutes); // Added
 
 // --- Static HTML Routes ---
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "frontend", "index.html")));
