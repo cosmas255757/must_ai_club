@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - MUST AI HUB</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+</head>
+<body>
+
+    <main class="auth-container">
+        <!-- Login Form (Visible by Default) -->
+        <div id="login-container" class="auth-box">
+            <h2>Welcome Back</h2>
+            <p>Enter your details to access your account</p>
+            
+            <form id="login-form">
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="email@example.com" required>
+                </div>
+                <div class="input-group">
+                    <label>Password</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary w-100">Sign In</button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Don't have an account? <a href="javascript:void(0)" onclick="showRegister()">Create Account</a></p>
+            </div>
+        </div>
+
+        <!-- Register Form (Hidden by Default) -->
+        <div id="register-container" class="auth-box hidden">
+            <h2>Join the Hub</h2>
+            <p>Start your journey in AI innovation</p>
+            
+            <form id="register-form">
+                <!-- Hidden role field: Defaults to student -->
+                <input type="hidden" name="role" value="student">
+                
+                <div class="input-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="John Doe" required>
+                </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="john@must.ac.tz" required>
+                </div>
+                <div class="input-group">
+                    <label>Create Password</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <button type="submit" class="btn-primary w-100">Register</button>
+            </form>
+            
+            <div class="auth-footer">
+                <p>Already have an account? <a href="javascript:void(0)" onclick="showLogin()">Sign In here</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/navfooter.js"></script>
+    <script>
+        function showRegister() {
+            document.getElementById('login-container').classList.add('hidden');
+            document.getElementById('register-container').classList.remove('hidden');
+            document.title = "Register - MUST AI HUB";
+        }
+
+        function showLogin() {
+            document.getElementById('register-container').classList.add('hidden');
+            document.getElementById('login-container').classList.remove('hidden');
+            document.title = "Login - MUST AI HUB";
+        }
+    </script>
+</body>
+</html>

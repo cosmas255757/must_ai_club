@@ -1,0 +1,166 @@
+/* 1. Global Reset & Modern Variables */
+:root {
+    --primary: #3b82f6;       /* Bright AI Blue */
+    --primary-hover: #2563eb;
+    --accent: #f59e0b;        
+    --dark-deep: #020617;     /* Darkest Blue */
+    --dark-card: rgba(30, 41, 59, 0.5); /* Translucent Slate */
+    --text-main: #f8fafc;     /* Off-white for high visibility */
+    --text-muted: #94a3b8;    /* Soft gray for secondary text */
+    --white: #ffffff;
+    --glass-border: rgba(255, 255, 255, 0.1);
+    --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+    --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* 2. Page Animation */
+@keyframes pageReveal {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, sans-serif;
+    color: var(--text-main);
+    line-height: 1.6;
+    /* Beautiful Dark Bluish Gradient */
+    background: radial-gradient(circle at top right, #1e293b, #020617);
+    background-attachment: fixed;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* 3. Typography Visibility Fix */
+h1, h2, h3 {
+    color: var(--white);
+    margin-bottom: 1rem;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+}
+
+p {
+    color: var(--text-muted);
+    margin-bottom: 1.2rem;
+    font-size: 1.1rem;
+}
+
+/* 4. Navigation (Glassmorphism) */
+header {
+    background: rgba(15, 23, 42, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--glass-border);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+nav {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 2rem;
+}
+
+.logo {
+    font-size: 1.6rem;
+    font-weight: 800;
+    color: var(--primary);
+    text-decoration: none;
+    letter-spacing: -1px;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    align-items: center;
+    gap: 2.5rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.nav-links a:hover {
+    color: var(--primary);
+}
+
+/* 5. Buttons */
+.btn-primary {
+    background: var(--primary);
+    color: var(--white) !important;
+    padding: 0.7rem 1.5rem;
+    border-radius: 10px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    transition: var(--transition);
+    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
+}
+
+.btn-primary:hover {
+    background: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
+}
+
+/* 6. Main Content Area */
+main {
+    max-width: 1100px;
+    margin: 3rem auto;
+    padding: 2rem;
+    min-height: 75vh;
+    animation: pageReveal 0.8s ease-out forwards;
+}
+
+/* 7. Footer */
+footer {
+    background: rgba(2, 6, 23, 0.9);
+    border-top: 1px solid var(--glass-border);
+    color: var(--text-muted);
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+/* 8. Mobile Menu & Toggle */
+.menu-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.8rem;
+    cursor: pointer;
+    color: var(--white);
+}
+
+@media (max-width: 768px) {
+    .menu-toggle {
+        display: block;
+    }
+
+    .nav-links {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        width: 100%;
+        background: #0f172a;
+        flex-direction: column;
+        padding: 3rem;
+        gap: 2rem;
+        border-bottom: 1px solid var(--glass-border);
+        display: none; 
+    }
+
+    .nav-links.active {
+        display: flex; 
+    }
+}
