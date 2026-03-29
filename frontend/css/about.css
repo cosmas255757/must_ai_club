@@ -1,66 +1,119 @@
-/* Container Spacing */
-.about-container {
-    max-width: 1100px;
-    margin: 4rem auto;
-    padding: 60px 40px !important;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 40px;
-    backdrop-filter: blur(15px);
+.about-overview-section {
+    padding: 60px 20px;
+    background: #0a0f1d;
+    display: flex;
+    justify-content: center;
 }
 
-.mission {
-    text-align: center;
-    margin-bottom: 60px;
-}
-
-/* Ecosystem Grid */
-.ecosystem-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-    gap: 30px;
-    margin-bottom: 60px;
-}
-
-.eco-card {
+.about-content {
+    max-width: 1000px;
     background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    padding: 40px 30px;
+    border: 1px solid rgba(56, 189, 248, 0.2);
     border-radius: 24px;
+    padding: 40px;
     text-align: center;
-    transition: transform 0.4s ease, border 0.4s ease;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInBox 0.8s ease forwards;
 }
 
-.eco-card:hover {
-    transform: translateY(-10px);
-    border-color: var(--primary);
-    background: rgba(99, 102, 241, 0.05);
-}
-
-.eco-card .icon {
-    font-size: 3rem;
+.about-content h2 {
+    color: #38bdf8;
+    font-size: 2.2rem;
     margin-bottom: 20px;
+    letter-spacing: 1px;
 }
 
-.eco-card h3 {
-    font-size: 1.5rem;
+.about-content p {
+    color: #cbd5e1;
+    line-height: 1.8;
+    font-size: 1.1rem;
     margin-bottom: 15px;
-    color: var(--text-white);
 }
 
-/* Staggered Animations (Reusing your logic) */
-.reveal-1 { animation: fadeInUp 0.8s ease-out 0.2s forwards; opacity: 0; }
-.reveal-2 { animation: fadeInUp 0.8s ease-out 0.4s forwards; opacity: 0; }
-.reveal-3 { animation: fadeInUp 0.8s ease-out 0.6s forwards; opacity: 0; }
-.reveal-4 { animation: fadeInUp 0.8s ease-out 0.8s forwards; opacity: 0; }
-
-.cta-box {
-    text-align: center;
-    padding-top: 40px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+.mission-vision-section {
+    padding: 40px 20px 80px 20px;
+    background: #0a0f1d;
 }
 
-.cta-box h2 {
-    margin-bottom: 25px;
-    color: var(--text-white);
+.mission-vision-section .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px;
+}
+
+.card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 35px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    opacity: 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background: #38bdf8;
+}
+
+.mission-card {
+    animation: fadeInBox 0.8s ease 0.3s forwards;
+}
+
+.vision-card {
+    animation: fadeInBox 0.8s ease 0.5s forwards;
+}
+
+.card h2 {
+    color: #f8fafc;
+    font-size: 1.6rem;
+    margin-bottom: 15px;
+}
+
+.card p {
+    color: #94a3b8;
+    line-height: 1.6;
+    font-size: 1rem;
+}
+
+.card:hover {
+    transform: scale(1.02);
+    border-color: #38bdf8;
+    box-shadow: 0 10px 30px rgba(56, 189, 248, 0.1);
+}
+
+@keyframes fadeInBox {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 850px) {
+    .mission-vision-section .container {
+        grid-template-columns: 1fr;
+    }
+
+    .about-content {
+        padding: 30px 20px;
+    }
+
+    .about-content h2 {
+        font-size: 1.8rem;
+    }
+
+    .card {
+        padding: 25px;
+    }
 }
