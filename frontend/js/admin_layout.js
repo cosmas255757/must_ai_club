@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const currentPath = window.location.pathname;
 
+    // 1. Inject Advanced Responsive & Admin Themed CSS
     const style = document.createElement('style');
     style.innerHTML = `
         :root {
@@ -11,32 +12,161 @@ document.addEventListener("DOMContentLoaded", () => {
             --sidebar-width: 260px;
         }
 
-        * { box-sizing: border-box; transition: all 0.2s ease; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: #f1f5f9; display: flex; flex-direction: column; min-height: 100vh; }
-
-        .app-container { display: flex; flex: 1; }
-
-        /* Sidebar */
-        .sidebar { 
-            width: var(--sidebar-width); background: var(--primary); color: white; 
-            display: flex; flex-direction: column; padding: 30px 20px; height: 100vh; position: fixed; 
-        }
-        .sidebar h2 { color: var(--accent); font-size: 1.1rem; margin-bottom: 40px; text-align: center; letter-spacing: 2px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 15px;}
+        * { box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         
-        .sidebar nav a { 
-            color: #94a3b8; text-decoration: none; padding: 14px 18px; margin: 8px 0; 
-            border-radius: 12px; display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 0.9rem;
+        body { 
+            margin: 0; 
+            font-family: 'Inter', sans-serif; 
+            background: #f1f5f9; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        .sidebar nav a:hover { color: white; background: var(--secondary); }
-        .sidebar nav a.active { background: var(--accent); color: white; box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3); }
 
-        .main-content { flex: 1; margin-left: var(--sidebar-width); padding: 40px; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .app-container { display: flex; flex: 1; position: relative; }
+
+        /* Mobile Header */
+        .mobile-header {
+            display: none;
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        /* Sidebar Styling */
+        .sidebar { 
+            width: var(--sidebar-width); 
+            background: var(--primary); 
+            color: white; 
+            display: flex; 
+            flex-direction: column; 
+            padding: 30px 20px; 
+            height: 100vh;
+            position: fixed;
+            left: 0;
+            top: 0;
+            z-index: 1050;
+        }
+
+        .sidebar h2 { 
+            color: var(--accent); 
+            font-size: 1.1rem; 
+            margin-bottom: 40px; 
+            text-align: center; 
+            letter-spacing: 2px; 
+            border-bottom: 1px solid rgba(255,255,255,0.1); 
+            padding-bottom: 15px;
+        }
+
+        .sidebar nav a { 
+            color: #94a3b8; 
+            text-decoration: none; 
+            padding: 14px 18px; 
+            margin: 8px 0; 
+            border-radius: 12px; 
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .sidebar nav a:hover { color: white; background: var(--secondary); transform: translateX(5px); }
+        
+        .sidebar nav a.active { 
+            background: var(--accent); 
+            color: white; 
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+        }
+
+        .terminate-btn { 
+            margin-top: auto; 
+            background: var(--accent); 
+            border: none; 
+            color: white; 
+            padding: 14px; 
+            cursor: pointer; 
+            border-radius: 12px;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+        .terminate-btn:hover { filter: brightness(1.2); }
+
+        /* Main Content Area */
+        .main-content { 
+            flex: 1; 
+            margin-left: var(--sidebar-width); 
+            padding: 40px; 
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Mobile Overlay */
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 1040;
+            opacity: 0;
+        }
+
+        /* Responsive Logic */
+        @media (max-width: 992px) {
+            .mobile-header { display: flex; }
+            
+            .sidebar { 
+                transform: translateX(-100%); 
+                width: 280px; 
+            }
+            
+            .sidebar.active { 
+                transform: translateX(0); 
+                box-shadow: 10px 0 30px rgba(0,0,0,0.5);
+            }
+
+            .sidebar.active ~ .menu-overlay {
+                display: block;
+                opacity: 1;
+            }
+
+            .main-content { 
+                margin-left: 0; 
+                padding: 20px; 
+            }
+
+            .menu-toggle { 
+                background: none; 
+                border: none; 
+                color: white; 
+                font-size: 1.5rem; 
+                cursor: pointer; 
+            }
+        }
     `;
     document.head.appendChild(style);
 
+    // 2. Wrap Body in Component Structure
+    const originalContent = document.body.innerHTML;
     document.body.innerHTML = `
+        <div class="mobile-header">
+            <strong>ADMIN COMMAND</strong>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+        </div>
         <div class="app-container">
-            <aside class="sidebar">
+            <aside class="sidebar" id="sidebar">
                 <h2>ADMIN COMMAND</h2>
                 <nav>
                     <a href="dashboard" class="${currentPath.includes('dashboard') ? 'active' : ''}">🛡️ System Overview</a>
@@ -45,21 +175,39 @@ document.addEventListener("DOMContentLoaded", () => {
                     <a href="system-reports" class="${currentPath.includes('system-reports') ? 'active' : ''}">📈 System Reports</a>
                     <a href="profile" class="${currentPath.includes('profile') ? 'active' : ''}">👤 Admin Profile</a>
                 </nav>
-                <button style="margin-top:auto; background:var(--accent); border:none; color:white; padding:12px; border-radius:10px; cursor:pointer; font-weight:bold;" onclick="logout()">Terminate Session</button>
+                <button class="terminate-btn" onclick="logout()">Terminate Session</button>
             </aside>
-            <main class="main-content">${document.body.innerHTML}</main>
+            <div class="menu-overlay" id="menuOverlay"></div>
+            <main class="main-content" id="mainContent">
+                ${originalContent}
+            </main>
         </div>
+        <footer style="text-align: center; padding: 25px; color: #64748b; font-size: 0.85rem; border-top: 1px solid #e2e8f0; background: white; margin-left: var(--sidebar-width); transition: margin 0.3s;">
+             <p>&copy; ${new Date().getFullYear()} MUST AI HUB - Root Administration. Unauthorized access is logged.</p>
+        </footer>
     `;
-        // 3. Toggle Mobile Menu Logic
+
+    // 3. Toggle Mobile Menu Logic
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
+    const menuOverlay = document.getElementById("menuOverlay");
+    const footer = document.querySelector('footer');
 
-    if (menuToggle) {
-        menuToggle.addEventListener("click", () => {
-            sidebar.classList.toggle("active");
-            menuToggle.innerText = sidebar.classList.contains("active") ? "✕" : "☰";
-        });
+    function toggleMenu() {
+        const isActive = sidebar.classList.toggle("active");
+        menuToggle.innerText = isActive ? "✕" : "☰";
+    }
+
+    if (menuToggle) menuToggle.addEventListener("click", toggleMenu);
+    if (menuOverlay) menuOverlay.addEventListener("click", toggleMenu);
+
+    // Adjust footer margin for mobile
+    if (window.innerWidth <= 992) {
+        footer.style.marginLeft = "0";
     }
 });
 
-function logout() { localStorage.clear(); window.location.href = "/auth"; }
+function logout() {
+    localStorage.clear();
+    window.location.href = "/auth";
+}

@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", () => {
     const currentPath = window.location.pathname;
 
-    // 1. Inject Responsive & Animated CSS
+    // 1. Inject Responsive, Animated & Optimized CSS
     const style = document.createElement('style');
     style.innerHTML = `
         :root {
@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         * { box-sizing: border-box; transition: all 0.3s ease; }
+        
         body { 
             margin: 0; 
             font-family: 'Inter', sans-serif; 
@@ -24,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
             overflow-x: hidden;
         }
 
-        /* Layout Animation */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", () => {
             align-items: center;
             position: sticky;
             top: 0;
-            z-index: 1000;
+            z-index: 1100;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
@@ -58,7 +58,8 @@ document.addEventListener("DOMContentLoaded", () => {
             position: fixed;
             left: 0;
             top: 0;
-            z-index: 999;
+            z-index: 1050;
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .sidebar h2 { 
@@ -82,10 +83,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         .sidebar nav a:hover { color: white; background: var(--secondary); transform: translateX(5px); }
+        
         .sidebar nav a.active { 
             background: var(--accent); 
             color: var(--primary); 
             box-shadow: 0 4px 15px rgba(56, 189, 248, 0.3);
+            font-weight: bold;
         }
 
         .logout-btn { 
@@ -97,6 +100,7 @@ document.addEventListener("DOMContentLoaded", () => {
             cursor: pointer; 
             border-radius: 10px;
             font-weight: bold;
+            transition: 0.3s;
         }
         .logout-btn:hover { background: var(--danger); color: white; }
 
@@ -118,17 +122,49 @@ document.addEventListener("DOMContentLoaded", () => {
             border-top: 1px solid #e2e8f0;
         }
 
+        /* Mobile Overlay (Darken background when menu is open) */
+        .menu-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(2px);
+            z-index: 1040;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
         /* Responsive Logic */
         @media (max-width: 992px) {
             .mobile-header { display: flex; }
+            
             .sidebar { 
                 transform: translateX(-100%); 
-                width: 100%;
-                height: 100%;
+                width: 280px; /* Partial screen width on mobile */
             }
-            .sidebar.active { transform: translateX(0); }
-            .main-content, footer { margin-left: 0; padding: 20px; }
-            .menu-toggle { background: none; border: none; color: white; font-size: 1.5rem; cursor: pointer; }
+            
+            .sidebar.active { 
+                transform: translateX(0); 
+                box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+            }
+
+            .sidebar.active ~ .menu-overlay {
+                display: block;
+                opacity: 1;
+            }
+
+            .main-content, footer { 
+                margin-left: 0; 
+                padding: 20px; 
+            }
+
+            .menu-toggle { 
+                background: none; 
+                border: none; 
+                color: white; 
+                font-size: 1.5rem; 
+                cursor: pointer; 
+            }
         }
     `;
     document.head.appendChild(style);
@@ -152,6 +188,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 </nav>
                 <button class="logout-btn" onclick="logout()">Log Out</button>
             </aside>
+            <div class="menu-overlay" id="menuOverlay"></div>
             <main class="main-content">
                 ${originalContent}
             </main>
@@ -164,13 +201,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // 3. Toggle Mobile Menu Logic
     const menuToggle = document.getElementById("menuToggle");
     const sidebar = document.getElementById("sidebar");
+    const menuOverlay = document.getElementById("menuOverlay");
 
-    if (menuToggle) {
-        menuToggle.addEventListener("click", () => {
-            sidebar.classList.toggle("active");
-            menuToggle.innerText = sidebar.classList.contains("active") ? "✕" : "☰";
-        });
+    function toggleMenu() {
+        const isActive = sidebar.classList.toggle("active");
+        menuToggle.innerText = isActive ? "✕" : "☰";
     }
+
+    if (menuToggle) menuToggle.addEventListener("click", toggleMenu);
+    if (menuOverlay) menuOverlay.addEventListener("click", toggleMenu); // Click background to close
 });
 
 function logout() {
