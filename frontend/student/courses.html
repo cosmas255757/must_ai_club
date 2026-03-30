@@ -2,19 +2,190 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses - MUST AI HUB</title>
+    <style>
+        /* Course Page Specific Styling */
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 35px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-container input {
+            width: 100%;
+            padding: 12px 20px 12px 45px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        .search-container input:focus { border-color: #38bdf8; box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1); }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #94a3b8;
+        }
+
+        /* Course Grid */
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .course-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .course-card:hover {
+            transform: translateY(-10px);
+            border-color: #38bdf8;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05);
+        }
+
+        .course-thumbnail {
+            height: 160px;
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            position: relative;
+        }
+
+        .level-badge {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            background: rgba(56, 189, 248, 0.2);
+            color: #38bdf8;
+            backdrop-filter: blur(8px);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .course-content { padding: 25px; flex: 1; display: flex; flex-direction: column; }
+        .course-title { font-size: 1.25rem; color: #1e293b; margin: 0 0 10px 0; font-weight: 700; }
+        .course-desc { color: #64748b; font-size: 0.95rem; line-height: 1.6; margin-bottom: 20px; }
+
+        .course-footer {
+            margin-top: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 20px;
+            border-top: 1px solid #f1f5f9;
+        }
+
+        .enroll-btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .enroll-btn:hover { background: #38bdf8; color: #0f172a; }
+
+        .course-meta { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
+    </style>
     <script src="../js/guard.js"></script>
 </head>
 <body>
-    <h1>Available Courses</h1>
-    <div id="course-list">
-        <p>Loading courses available...</p>
+
+    <div class="course-header">
+        <div>
+            <h1>Available Courses</h1>
+            <p style="color: #64748b;">Expand your knowledge with our curated AI modules.</p>
+        </div>
+        
+        <div class="search-container">
+            <span class="search-icon">🔍</span>
+            <input type="text" placeholder="Search for courses or topics...">
+        </div>
     </div>
-    <script>
-        const user = JSON.parse(localStorage.getItem("user"));
-        document.getElementById("welcome-msg").innerText = `Welcome, ${user.name}!`;
-    </script>
+
+    <!-- Course List Container -->
+    <div class="course-grid" id="course-list">
+        
+        <!-- Course Card 1 -->
+        <div class="course-card">
+            <div class="course-thumbnail">
+                🧠
+                <span class="level-badge">Beginner</span>
+            </div>
+            <div class="course-content">
+                <h3 class="course-title">Deep Learning Fundamentals</h3>
+                <p class="course-desc">Master the basics of neural networks, backpropagation, and deep learning architectures.</p>
+                <div class="course-footer">
+                    <span class="course-meta">⏱ 12 Weeks</span>
+                    <button class="enroll-btn">Enroll Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Card 2 -->
+        <div class="course-card">
+            <div class="course-thumbnail">
+                🤖
+                <span class="level-badge">Intermediate</span>
+            </div>
+            <div class="course-content">
+                <h3 class="course-title">Computer Vision with OpenCV</h3>
+                <p class="course-desc">Build real-time image recognition systems and object detection models from scratch.</p>
+                <div class="course-footer">
+                    <span class="course-meta">⏱ 8 Weeks</span>
+                    <button class="enroll-btn">Enroll Now</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Course Card 3 -->
+        <div class="course-card">
+            <div class="course-thumbnail">
+                💬
+                <span class="level-badge">Advanced</span>
+            </div>
+            <div class="course-content">
+                <h3 class="course-title">Natural Language Processing</h3>
+                <p class="course-desc">Explore Large Language Models, Sentiment Analysis, and Transformers in AI.</p>
+                <div class="course-footer">
+                    <span class="course-meta">⏱ 10 Weeks</span>
+                    <button class="enroll-btn">Enroll Now</button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- The Layout script handles the sidebar and responsive transitions -->
     <script src="../js/student_layout.js"></script>
 </body>
 </html>
