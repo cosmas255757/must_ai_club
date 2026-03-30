@@ -19,7 +19,6 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // 1. Serve all static assets (CSS, JS, Images) from the frontend folder
-// The 'extensions' option allows visiting /auth instead of /auth.html
 app.use(express.static(path.join(__dirname, "frontend"), {
     extensions: ['html']
 }));
@@ -33,13 +32,10 @@ app.get("/about", (req, res) => res.sendFile(path.join(__dirname, "frontend", "a
 app.get("/auth", (req, res) => res.sendFile(path.join(__dirname, "frontend", "auth.html")));
 app.get("/contact", (req, res) => res.sendFile(path.join(__dirname, "frontend", "contact.html")));
 
-// --- 2. Advanced Role-Based Routing ---
-// This handles paths like /student/dashboard, /facilitator/review-projects, etc.
 app.get("/:role/:page", (req, res, next) => {
     const roles = ["admin", "student", "facilitator", "sponsor"];
     const { role, page } = req.params;
 
-    // Check if the requested role folder exists in our system
     if (roles.includes(role)) {
         // Build the path to the specific HTML file in that role's folder
         const fileName = page.endsWith('.html') ? page : `${page}.html`;
@@ -47,7 +43,6 @@ app.get("/:role/:page", (req, res, next) => {
         
         return res.sendFile(filePath, (err) => {
             if (err) {
-                // If file doesn't exist (e.g. /student/wrong-page), show the main dashboard for that role
                 return res.sendFile(path.join(__dirname, "frontend", role, "dashboard.html"));
             }
         });
@@ -55,7 +50,6 @@ app.get("/:role/:page", (req, res, next) => {
     next();
 });
 
-// 3. Simple Dashboard Alias (Handles /student, /admin, etc. directly)
 app.get("/:role", (req, res, next) => {
     const roles = ["admin", "student", "facilitator", "sponsor"];
     if (roles.includes(req.params.role)) {
@@ -64,13 +58,11 @@ app.get("/:role", (req, res, next) => {
     next();
 });
 
-// --- Global Error Handler ---
 app.use((err, req, res, next) => {
     console.error("Server Error:", err.stack);
     res.status(500).json({ message: "An internal server error occurred." });
 });
 
-// --- Start Server ---
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 MUST AI HUB Server running on port ${PORT}`);

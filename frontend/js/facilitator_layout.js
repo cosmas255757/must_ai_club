@@ -60,6 +60,16 @@ document.addEventListener("DOMContentLoaded", () => {
             <main class="main-content">${originalContent}</main>
         </div>
     `;
+        // 3. Toggle Mobile Menu Logic
+    const menuToggle = document.getElementById("menuToggle");
+    const sidebar = document.getElementById("sidebar");
+
+    if (menuToggle) {
+        menuToggle.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+            menuToggle.innerText = sidebar.classList.contains("active") ? "✕" : "☰";
+        });
+    }
 });
 
 function logout() { localStorage.clear(); window.location.href = "/auth"; }
