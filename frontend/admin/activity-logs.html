@@ -5,17 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activity Logs - Admin Command</title>
     <style>
-        .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        /* Responsive Header */
+        .log-header { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            margin-bottom: 30px; 
+            flex-wrap: wrap; 
+            gap: 20px;
+        }
         
-        /* Terminal Styling */
+        .log-header h1 { margin: 0; font-size: 1.8rem; }
+
+        /* Filter Pills Responsiveness */
+        .filter-group { 
+            display: flex; 
+            gap: 8px; 
+            flex-wrap: wrap; 
+        }
+
+        /* Terminal Styling - Optimized for Mobile */
         .terminal-container {
             background: #0f172a;
             border-radius: 20px;
-            padding: 30px;
+            padding: 20px; /* Reduced padding for mobile */
             box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             border: 1px solid #334155;
             min-height: 500px;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
         }
@@ -26,15 +42,52 @@
             margin-bottom: 20px;
             padding-bottom: 15px;
             border-bottom: 1px solid #1e293b;
+            align-items: center;
         }
-        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
         .red { background: #ef4444; }
         .yellow { background: #f59e0b; }
         .green { background: #10b981; }
 
-        .log-table { width: 100%; border-collapse: collapse; font-family: 'Fira Code', 'Courier New', monospace; }
-        .log-table th { text-align: left; color: #64748b; font-size: 0.8rem; padding: 10px; border-bottom: 1px solid #1e293b; }
-        .log-table td { padding: 12px 10px; color: #94a3b8; font-size: 0.85rem; border-bottom: 1px solid #1e293b; }
+        .terminal-path {
+            margin-left: 10px; 
+            color: #475569; 
+            font-size: 0.75rem; 
+            font-family: monospace;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Table Scroll Container */
+        .scroll-wrapper {
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .log-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            font-family: 'Fira Code', 'Courier New', monospace; 
+            min-width: 600px; /* Ensures table doesn't squish too much */
+        }
+        
+        .log-table th { 
+            text-align: left; 
+            color: #64748b; 
+            font-size: 0.75rem; 
+            padding: 12px 10px; 
+            border-bottom: 1px solid #1e293b; 
+            text-transform: uppercase;
+        }
+        
+        .log-table td { 
+            padding: 12px 10px; 
+            color: #94a3b8; 
+            font-size: 0.8rem; 
+            border-bottom: 1px solid #1e293b; 
+            white-space: nowrap;
+        }
         
         /* Highlighting Actions */
         .action-text { color: #f8fafc; font-weight: 600; }
@@ -44,13 +97,21 @@
         .filter-pill {
             background: #1e293b;
             color: #94a3b8;
-            padding: 6px 15px;
-            border-radius: 20px;
+            padding: 8px 16px;
+            border-radius: 12px;
             font-size: 0.8rem;
             border: 1px solid #334155;
             cursor: pointer;
+            transition: 0.3s;
         }
         .filter-pill.active { background: #ef4444; color: white; border-color: #ef4444; }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 600px) {
+            .terminal-container { padding: 15px; }
+            .log-header h1 { font-size: 1.5rem; }
+            .log-header p { font-size: 0.85rem; }
+        }
     </style>
     <script src="../js/guard.js"></script>
 </head>
@@ -59,9 +120,9 @@
     <div class="log-header">
         <div>
             <h1>System Audit Logs</h1>
-            <p style="color: #64748b;">Real-time tracking of all database transactions and user actions.</p>
+            <p style="color: #64748b;">Tracking database transactions and user actions.</p>
         </div>
-        <div style="display: flex; gap: 10px;">
+        <div class="filter-group">
             <button class="filter-pill active">All Logs</button>
             <button class="filter-pill">Auth</button>
             <button class="filter-pill">Database</button>
@@ -73,10 +134,10 @@
             <div class="dot red"></div>
             <div class="dot yellow"></div>
             <div class="dot green"></div>
-            <span style="margin-left: 10px; color: #475569; font-size: 0.8rem; font-family: monospace;">root@must-ai-hub:~# tail -f activity_logs</span>
+            <span class="terminal-path">root@must-ai-hub:~# tail -f activity_logs</span>
         </div>
 
-        <div style="overflow-x: auto;">
+        <div class="scroll-wrapper">
             <table class="log-table">
                 <thead>
                     <tr>
@@ -87,26 +148,23 @@
                     </tr>
                 </thead>
                 <tbody id="log-body">
-                    <!-- Example Entry 1 -->
                     <tr>
                         <td class="timestamp">2024-11-20 14:22:01</td>
                         <td class="user-ref">usr_8821...</td>
                         <td class="action-text">USER_REGISTERED</td>
                         <td style="color: #10b981;">SUCCESS</td>
                     </tr>
-                    <!-- Example Entry 2 -->
                     <tr>
                         <td class="timestamp">2024-11-20 14:25:45</td>
                         <td class="user-ref">adm_0001...</td>
-                        <td class="action-text">USER_SUSPENDED: student_id_102</td>
+                        <td class="action-text">USER_SUSPENDED: id_102</td>
                         <td style="color: #10b981;">SUCCESS</td>
                     </tr>
-                    <!-- Example Entry 3 -->
                     <tr>
                         <td class="timestamp">2024-11-20 14:30:12</td>
                         <td class="user-ref">usr_9910...</td>
-                        <td class="action-text">PROJECT_SUBMISSION_FAILED</td>
-                        <td style="color: #ef4444;">ERROR (Invalid File)</td>
+                        <td class="action-text">PROJECT_SUBMIT_FAILED</td>
+                        <td style="color: #ef4444;">ERROR (File Type)</td>
                     </tr>
                 </tbody>
             </table>
