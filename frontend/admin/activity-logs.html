@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Activity Logs - Admin Command</title>
     <style>
-        /* Responsive Header */
+        /* Base Flex Header */
         .log-header { 
             display: flex; 
             justify-content: space-between; 
@@ -15,20 +15,15 @@
             gap: 20px;
         }
         
-        .log-header h1 { margin: 0; font-size: 1.8rem; }
+        .log-header h1 { margin: 0; font-size: 1.8rem; color: #0f172a; }
 
-        /* Filter Pills Responsiveness */
-        .filter-group { 
-            display: flex; 
-            gap: 8px; 
-            flex-wrap: wrap; 
-        }
+        .filter-group { display: flex; gap: 8px; flex-wrap: wrap; }
 
-        /* Terminal Styling - Optimized for Mobile */
+        /* Terminal Container */
         .terminal-container {
             background: #0f172a;
             border-radius: 20px;
-            padding: 20px; /* Reduced padding for mobile */
+            padding: 25px;
             box-shadow: 0 20px 50px rgba(0,0,0,0.2);
             border: 1px solid #334155;
             min-height: 500px;
@@ -44,7 +39,7 @@
             border-bottom: 1px solid #1e293b;
             align-items: center;
         }
-        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
         .red { background: #ef4444; }
         .yellow { background: #f59e0b; }
         .green { background: #10b981; }
@@ -52,44 +47,35 @@
         .terminal-path {
             margin-left: 10px; 
             color: #475569; 
-            font-size: 0.75rem; 
+            font-size: 0.8rem; 
             font-family: monospace;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
         }
 
-        /* Table Scroll Container */
-        .scroll-wrapper {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
+        /* Desktop Table View */
+        .scroll-wrapper { overflow-x: auto; }
 
         .log-table { 
             width: 100%; 
             border-collapse: collapse; 
             font-family: 'Fira Code', 'Courier New', monospace; 
-            min-width: 600px; /* Ensures table doesn't squish too much */
         }
         
         .log-table th { 
             text-align: left; 
             color: #64748b; 
-            font-size: 0.75rem; 
-            padding: 12px 10px; 
+            font-size: 0.8rem; 
+            padding: 12px; 
             border-bottom: 1px solid #1e293b; 
             text-transform: uppercase;
         }
         
         .log-table td { 
-            padding: 12px 10px; 
+            padding: 12px; 
             color: #94a3b8; 
-            font-size: 0.8rem; 
+            font-size: 0.85rem; 
             border-bottom: 1px solid #1e293b; 
-            white-space: nowrap;
         }
         
-        /* Highlighting Actions */
         .action-text { color: #f8fafc; font-weight: 600; }
         .timestamp { color: #38bdf8; }
         .user-ref { color: #fbbf24; }
@@ -102,16 +88,68 @@
             font-size: 0.8rem;
             border: 1px solid #334155;
             cursor: pointer;
-            transition: 0.3s;
         }
         .filter-pill.active { background: #ef4444; color: white; border-color: #ef4444; }
+/* Advanced Mobile Log Transformation */
+@media (max-width: 768px) {
+    /* Hide the standard table header */
+    .log-table thead { display: none; }
 
-        /* Mobile specific adjustments */
-        @media (max-width: 600px) {
-            .terminal-container { padding: 15px; }
-            .log-header h1 { font-size: 1.5rem; }
-            .log-header p { font-size: 0.85rem; }
-        }
+    /* Transform each row into a standalone card */
+    .log-table tr {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* Two columns for compact data viewing */
+        gap: 12px;
+        padding: 20px 0;
+        border-bottom: 1px solid rgba(51, 65, 85, 0.5); /* Semi-transparent Slate */
+        position: relative;
+    }
+
+    /* Make cells block elements */
+    .log-table td {
+        display: block;
+        padding: 0;
+        border: none;
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+
+    /* Target the Action and Timestamp to span full width for better readability */
+    .log-table td:nth-child(1), 
+    .log-table td:nth-child(3) {
+        grid-column: span 2;
+        border-left: 3px solid var(--accent); /* Crimson accent strip */
+        padding-left: 12px;
+        margin-bottom: 4px;
+    }
+
+    /* Advanced Labels using Data Attributes */
+    .log-table td::before {
+        content: attr(data-label);
+        display: block;
+        font-family: 'Inter', sans-serif;
+        font-size: 0.65rem;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #475569; /* Muted Slate */
+        margin-bottom: 4px;
+    }
+
+    /* Adjust container spacing */
+    .terminal-container { 
+        padding: 15px; 
+        min-height: auto; 
+    }
+    
+    .log-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .log-header h1 { font-size: 1.4rem; }
+}
+
     </style>
     <script src="../js/guard.js"></script>
 </head>
@@ -120,7 +158,7 @@
     <div class="log-header">
         <div>
             <h1>System Audit Logs</h1>
-            <p style="color: #64748b;">Tracking database transactions and user actions.</p>
+            <p style="color: #64748b;">Real-time tracking of database transactions.</p>
         </div>
         <div class="filter-group">
             <button class="filter-pill active">All Logs</button>
@@ -134,7 +172,7 @@
             <div class="dot red"></div>
             <div class="dot yellow"></div>
             <div class="dot green"></div>
-            <span class="terminal-path">root@must-ai-hub:~# tail -f activity_logs</span>
+            <span class="terminal-path">root@must-ai-hub:~# tail -f logs</span>
         </div>
 
         <div class="scroll-wrapper">
@@ -148,23 +186,18 @@
                     </tr>
                 </thead>
                 <tbody id="log-body">
+                    <!-- Added data-label for mobile view -->
                     <tr>
-                        <td class="timestamp">2024-11-20 14:22:01</td>
-                        <td class="user-ref">usr_8821...</td>
-                        <td class="action-text">USER_REGISTERED</td>
-                        <td style="color: #10b981;">SUCCESS</td>
+                        <td class="timestamp" data-label="Timestamp">2024-11-20 14:22:01</td>
+                        <td class="user-ref" data-label="User ID">usr_8821...</td>
+                        <td class="action-text" data-label="Action">USER_REGISTERED</td>
+                        <td style="color: #10b981;" data-label="Status">SUCCESS</td>
                     </tr>
                     <tr>
-                        <td class="timestamp">2024-11-20 14:25:45</td>
-                        <td class="user-ref">adm_0001...</td>
-                        <td class="action-text">USER_SUSPENDED: id_102</td>
-                        <td style="color: #10b981;">SUCCESS</td>
-                    </tr>
-                    <tr>
-                        <td class="timestamp">2024-11-20 14:30:12</td>
-                        <td class="user-ref">usr_9910...</td>
-                        <td class="action-text">PROJECT_SUBMIT_FAILED</td>
-                        <td style="color: #ef4444;">ERROR (File Type)</td>
+                        <td class="timestamp" data-label="Timestamp">2024-11-20 14:25:45</td>
+                        <td class="user-ref" data-label="User ID">adm_0001...</td>
+                        <td class="action-text" data-label="Action">USER_SUSPENDED: id_102</td>
+                        <td style="color: #10b981;" data-label="Status">SUCCESS</td>
                     </tr>
                 </tbody>
             </table>
