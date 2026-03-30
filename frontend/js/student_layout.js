@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", () => {
             </main>
         </div>
         <footer>
-            <p>&copy; 2024 MUST AI HUB - Mbeya University of Science and Technology</p>
+              <p>&copy; ${new Date().getFullYear()} MUST AI HUB - Mbeya University of Science and Technology. All Rights Reserved.</p>
         </footer>
     `;
 
