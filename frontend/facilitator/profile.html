@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Facilitator Profile - MUST AI HUB</title>
+    <style>
+        .profile-container {
+            max-width: 850px;
+            margin: 0 auto;
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        /* Profile Banner & Header */
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .profile-banner {
+            height: 140px;
+            background: linear-gradient(135deg, #1e1b4b 0%, #4338ca 100%);
+        }
+        .profile-header-content {
+            padding: 0 40px 30px;
+            margin-top: -60px;
+            display: flex;
+            align-items: flex-end;
+            gap: 25px;
+        }
+        .avatar-box {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border: 6px solid #f8fafc;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .header-text h2 { margin: 0; color: #1e1b4b; font-size: 2rem; }
+        .header-text p { margin: 5px 0 0; color: #818cf8; font-weight: 700; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+
+        /* Information Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px 40px 40px;
+        }
+        .info-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+        }
+        .info-card label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        .info-card span {
+            font-size: 1.05rem;
+            color: #1e1b4b;
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .profile-actions {
+            padding: 0 40px 40px;
+            display: flex;
+            gap: 15px;
+        }
+        .btn-edit {
+            background: #1e1b4b;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-edit:hover { background: #312e81; }
+        .btn-sec {
+            background: white;
+            color: #64748b;
+            padding: 12px 25px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-sec:hover { background: #f8fafc; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <div class="profile-container">
+        <header style="margin-bottom: 25px;">
+            <h1>My Profile</h1>
+            <p style="color: #64748b;">Manage your facilitator credentials and account security.</p>
+        </header>
+
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+            
+            <div class="profile-header-content">
+                <div class="avatar-box">👨‍🏫</div>
+                <div class="header-text">
+                    <h2 id="fac-name">Loading...</h2>
+                    <p id="fac-role-badge">Lead Facilitator</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <label>Professional Email</label>
+                    <span id="fac-email">loading@must.ac.tz</span>
+                </div>
+                <div class="info-card">
+                    <label>Staff UUID</label>
+                    <span id="fac-id" style="font-family: monospace; font-size: 0.85rem;">---</span>
+                </div>
+                <div class="info-card">
+                    <label>Account Status</label>
+                    <span style="color: #10b981;">● Active Staff</span>
+                </div>
+                <div class="info-card">
+                    <label>Department</label>
+                    <span>Computer Science & AI</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn-edit">Update Profile</button>
+                <button class="btn-sec">Change Password</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                document.getElementById("fac-name").innerText = user.name;
+                document.getElementById("fac-email").innerText = user.email;
+                document.getElementById("fac-id").innerText = user.id;
+                // Capitalize role from ENUM
+                const roleName = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                document.getElementById("fac-role-badge").innerText = `Official ${roleName}`;
+            }
+        });
+    </script>
+    <script src="../js/facilitator_layout.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Logs - Admin Command</title>
+    <style>
+        .log-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        
+        /* Terminal Styling */
+        .terminal-container {
+            background: #0f172a;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+            border: 1px solid #334155;
+            min-height: 500px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #1e293b;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .red { background: #ef4444; }
+        .yellow { background: #f59e0b; }
+        .green { background: #10b981; }
+
+        .log-table { width: 100%; border-collapse: collapse; font-family: 'Fira Code', 'Courier New', monospace; }
+        .log-table th { text-align: left; color: #64748b; font-size: 0.8rem; padding: 10px; border-bottom: 1px solid #1e293b; }
+        .log-table td { padding: 12px 10px; color: #94a3b8; font-size: 0.85rem; border-bottom: 1px solid #1e293b; }
+        
+        /* Highlighting Actions */
+        .action-text { color: #f8fafc; font-weight: 600; }
+        .timestamp { color: #38bdf8; }
+        .user-ref { color: #fbbf24; }
+
+        .filter-pill {
+            background: #1e293b;
+            color: #94a3b8;
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            border: 1px solid #334155;
+            cursor: pointer;
+        }
+        .filter-pill.active { background: #ef4444; color: white; border-color: #ef4444; }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <div class="log-header">
+        <div>
+            <h1>System Audit Logs</h1>
+            <p style="color: #64748b;">Real-time tracking of all database transactions and user actions.</p>
+        </div>
+        <div style="display: flex; gap: 10px;">
+            <button class="filter-pill active">All Logs</button>
+            <button class="filter-pill">Auth</button>
+            <button class="filter-pill">Database</button>
+        </div>
+    </div>
+
+    <div class="terminal-container">
+        <div class="terminal-header">
+            <div class="dot red"></div>
+            <div class="dot yellow"></div>
+            <div class="dot green"></div>
+            <span style="margin-left: 10px; color: #475569; font-size: 0.8rem; font-family: monospace;">root@must-ai-hub:~# tail -f activity_logs</span>
+        </div>
+
+        <div style="overflow-x: auto;">
+            <table class="log-table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>User ID</th>
+                        <th>Action Performed</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="log-body">
+                    <!-- Example Entry 1 -->
+                    <tr>
+                        <td class="timestamp">2024-11-20 14:22:01</td>
+                        <td class="user-ref">usr_8821...</td>
+                        <td class="action-text">USER_REGISTERED</td>
+                        <td style="color: #10b981;">SUCCESS</td>
+                    </tr>
+                    <!-- Example Entry 2 -->
+                    <tr>
+                        <td class="timestamp">2024-11-20 14:25:45</td>
+                        <td class="user-ref">adm_0001...</td>
+                        <td class="action-text">USER_SUSPENDED: student_id_102</td>
+                        <td style="color: #10b981;">SUCCESS</td>
+                    </tr>
+                    <!-- Example Entry 3 -->
+                    <tr>
+                        <td class="timestamp">2024-11-20 14:30:12</td>
+                        <td class="user-ref">usr_9910...</td>
+                        <td class="action-text">PROJECT_SUBMISSION_FAILED</td>
+                        <td style="color: #ef4444;">ERROR (Invalid File)</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="../js/admin_layout.js"></script>
+</body>
+</html>

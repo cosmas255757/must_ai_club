@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impact Reports - MUST AI HUB</title>
+    <style>
+        .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(350px, 1fr)); gap: 25px; }
+        .report-card { background: white; border-radius: 20px; padding: 30px; border: 1px solid #e2e8f0; }
+        
+        .progress-bar-container { background: #f1f5f9; border-radius: 10px; height: 12px; margin: 20px 0 10px; overflow: hidden; }
+        .progress-fill { background: #10b981; height: 100%; border-radius: 10px; transition: width 1s ease-in-out; }
+        
+        .report-meta { display: flex; justify-content: space-between; font-size: 0.85rem; color: #64748b; font-weight: 600; }
+        .report-icon { font-size: 2.5rem; margin-bottom: 15px; display: block; }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <h1 style="margin-bottom: 30px;">Impact Analytics</h1>
+
+    <div class="report-grid">
+        <!-- Resource Allocation -->
+        <div class="report-card">
+            <span class="report-icon">🔧</span>
+            <h3>Hardware Utilization</h3>
+            <p>Percentage of donated GPU/Nanos currently in use by student projects.</p>
+            <div class="progress-bar-container">
+                <div class="progress-fill" style="width: 85%;"></div>
+            </div>
+            <div class="report-meta">
+                <span>85% Utilized</span>
+                <span>Goal: 100%</span>
+            </div>
+        </div>
+
+        <!-- Student Success -->
+        <div class="report-card">
+            <span class="report-icon">🎓</span>
+            <h3>Scholarship Completion</h3>
+            <p>Students sponsored by your organization who have completed their AI modules.</p>
+            <div class="progress-bar-container">
+                <div class="progress-fill" style="width: 62%;"></div>
+            </div>
+            <div class="report-meta">
+                <span>62% Success Rate</span>
+                <span>Target: 75%</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="../js/sponsor_layout.js"></script>
+</body>
+</html>

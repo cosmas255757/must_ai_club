@@ -2,28 +2,79 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Sponsor Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor Dashboard - MUST AI HUB</title>
+    <style>
+        .impact-hero {
+            background: #064e3b; color: white; padding: 40px; border-radius: 24px;
+            margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center;
+        }
+        .impact-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px; }
+        .stat-card { background: white; padding: 25px; border-radius: 20px; border: 1px solid #e2e8f0; text-align: center; }
+        .stat-card h3 { font-size: 2rem; margin: 0; color: #064e3b; }
+        .stat-card p { color: #64748b; margin: 5px 0 0; font-size: 0.9rem; }
+
+        .recent-table { background: white; border-radius: 20px; padding: 25px; border: 1px solid #e2e8f0; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th { text-align: left; color: #94a3b8; font-size: 0.8rem; text-transform: uppercase; padding-bottom: 10px; }
+        td { padding: 12px 0; border-top: 1px solid #f1f5f9; font-size: 0.95rem; }
+        .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.75rem; font-weight: bold; }
+    </style>
     <script src="../js/guard.js"></script>
-    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <nav>
-        <h1>Sponsor Portal</h1>
-        <button onclick="logout()">Logout</button>
-    </nav>
-    <main>
-        <h2 id="welcome-msg">Sponsor Dashboard</h2>
-        <div class="grid">
-            <a href="contributions.html" class="card">My Contributions</a>
-            <a href="reports.html" class="card">Impact Reports</a>
-            <a href="sponsored-events.html" class="card">Events Sponsored</a>
-            <a href="profile.html" class="card">Organization Profile</a>
+
+    <div class="impact-hero">
+        <div>
+            <h1>Your Impact, Optimized.</h1>
+            <p>Thank you for empowering the next generation of AI innovators at MUST.</p>
         </div>
-    </main>
-    <script src="../js/utils.js"></script>
-    <script>
-        const user = JSON.parse(localStorage.getItem("user"));
-        document.getElementById("welcome-msg").innerText = `Partner: ${user.name}`;
-    </script>
+        <div style="font-size: 4rem;">🌱</div>
+    </div>
+
+    <div class="impact-stats">
+        <div class="stat-card">
+            <h3>15</h3>
+            <p>Students Sponsored</p>
+        </div>
+        <div class="stat-card">
+            <h3>4</h3>
+            <p>Events Supported</p>
+        </div>
+        <div class="stat-card">
+            <h3>$2.5k</h3>
+            <p>Total Contribution</p>
+        </div>
+    </div>
+
+    <div class="recent-table">
+        <h2>Recent Contributions</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Type</th>
+                    <th>Amount/Resource</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Oct 12, 2024</td>
+                    <td><span class="badge" style="background:#dcfce7; color:#15803d;">Money</span></td>
+                    <td>$500.00</td>
+                    <td>Completed</td>
+                </tr>
+                <tr>
+                    <td>Nov 05, 2024</td>
+                    <td><span class="badge" style="background:#e0f2fe; color:#0369a1;">Tools</span></td>
+                    <td>5x NVIDIA Jetson Nano</td>
+                    <td>Delivered</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script src="../js/sponsor_layout.js"></script>
 </body>
 </html>

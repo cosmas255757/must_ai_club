@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Review Projects - Facilitator</title>
+    <style>
+        .review-container { display: grid; grid-template-columns: 1fr 350px; gap: 30px; align-items: start; }
+        
+        /* Submission Cards */
+        .submission-list { display: flex; flex-direction: column; gap: 20px; }
+        .submission-card { 
+            background: white; border-radius: 20px; padding: 25px; 
+            border: 1px solid #e2e8f0; cursor: pointer; transition: 0.3s;
+        }
+        .submission-card:hover { border-color: #818cf8; transform: translateX(5px); }
+        .submission-card.selected { border: 2px solid #818cf8; background: #f0f7ff; }
+
+        .user-info { display: flex; align-items: center; gap: 12px; margin-bottom: 15px; }
+        .user-avatar { width: 40px; height: 40px; background: #e0e7ff; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #4338ca; }
+        
+        /* Grading Panel */
+        .grading-panel { 
+            background: white; border-radius: 24px; padding: 30px; 
+            border: 1px solid #e2e8f0; position: sticky; top: 40px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        .grading-panel h3 { margin-top: 0; color: #1e1b4b; }
+        
+        .file-link { 
+            display: block; padding: 12px; background: #f8fafc; 
+            border-radius: 10px; color: #818cf8; text-decoration: none; 
+            text-align: center; margin-bottom: 20px; font-weight: 600; border: 1px dashed #cbd5e1;
+        }
+
+        textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-bottom: 20px; resize: none; }
+        
+        .decision-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-approve { background: #10b981; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+        .btn-reject { background: #ef4444; color: white; border: none; padding: 12px; border-radius: 10px; cursor: pointer; font-weight: 700; }
+
+        @media (max-width: 1100px) { .review-container { grid-template-columns: 1fr; } }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <header style="margin-bottom: 30px;">
+        <h1>Project Review Queue</h1>
+        <p>Assess student submissions and provide technical feedback.</p>
+    </header>
+
+    <div class="review-container">
+        <!-- List of Projects -->
+        <div class="submission-list" id="queue">
+            <!-- Project 1 -->
+            <div class="submission-card selected">
+                <div class="user-info">
+                    <div class="user-avatar">JD</div>
+                    <div>
+                        <strong>John Doe</strong><br>
+                        <small>Submitted 2 hours ago</small>
+                    </div>
+                </div>
+                <h3>CNN for Pest Detection</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Using ResNet-50 to identify fall armyworms in maize crops...</p>
+            </div>
+
+            <!-- Project 2 -->
+            <div class="submission-card">
+                <div class="user-info">
+                    <div class="user-avatar">AS</div>
+                    <div>
+                        <strong>Alice Smith</strong><br>
+                        <small>Submitted 5 hours ago</small>
+                    </div>
+                </div>
+                <h3>Swahili Sentiment Analyzer</h3>
+                <p style="color: #64748b; font-size: 0.9rem;">Fine-tuned BERT model for local language social media monitoring...</p>
+            </div>
+        </div>
+
+        <!-- Right Side: Grading Action -->
+        <div class="grading-panel">
+            <h3>Evaluation</h3>
+            <p style="font-size: 0.85rem; color: #64748b; margin-bottom: 15px;">Review the student's code and documentation before making a decision.</p>
+            
+            <a href="#" class="file-link">📄 View Project Files / GitHub</a>
+
+            <label style="font-weight: 600; display: block; margin-bottom: 8px;">Technical Feedback</label>
+            <textarea rows="6" placeholder="Provide constructive criticism or praise..."></textarea>
+
+            <div class="decision-btns">
+                <button class="btn-reject">Needs Revision</button>
+                <button class="btn-approve">Approve Project</button>
+            </div>
+            <p style="font-size: 0.75rem; color: #94a3b8; text-align: center; margin-top: 15px;">
+                * This will update the 'approved' status in the database.
+            </p>
+        </div>
+    </div>
+
+    <script src="../js/facilitator_layout.js"></script>
+</body>
+</html>

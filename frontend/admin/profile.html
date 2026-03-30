@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile - MUST AI HUB</title>
+    <style>
+        .profile-container {
+            max-width: 850px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Profile Banner & Header */
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        .profile-banner {
+            height: 140px;
+            background: linear-gradient(135deg, #0f172a 0%, #ef4444 100%);
+        }
+        .profile-header-content {
+            padding: 0 40px 30px;
+            margin-top: -60px;
+            display: flex;
+            align-items: flex-end;
+            gap: 25px;
+        }
+        .avatar-box {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border: 6px solid #f8fafc;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .header-text h2 { margin: 0; color: #0f172a; font-size: 2rem; }
+        .header-text p { margin: 5px 0 0; color: #ef4444; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px; }
+
+        /* Information Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px 40px 40px;
+        }
+        .info-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+        }
+        .info-card label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        .info-card span {
+            font-size: 1.05rem;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .profile-actions {
+            padding: 0 40px 40px;
+            display: flex;
+            gap: 15px;
+        }
+        .btn-primary {
+            background: #0f172a;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: #1e293b; }
+        .btn-danger {
+            background: white;
+            color: #ef4444;
+            padding: 12px 25px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-danger:hover { background: #fef2f2; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <div class="profile-container">
+        <header style="margin-bottom: 25px;">
+            <h1>Root Administrator</h1>
+            <p style="color: #64748b;">Manage your system credentials and authentication settings.</p>
+        </header>
+
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+            
+            <div class="profile-header-content">
+                <div class="avatar-box">🛡️</div>
+                <div class="header-text">
+                    <h2 id="adm-name">Loading Admin...</h2>
+                    <p id="adm-role-badge">System Root</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <label>Admin Email</label>
+                    <span id="adm-email">admin@must.ac.tz</span>
+                </div>
+                <div class="info-card">
+                    <label>System UUID</label>
+                    <span id="adm-id" style="font-family: monospace; font-size: 0.85rem;">---</span>
+                </div>
+                <div class="info-card">
+                    <label>Access Level</label>
+                    <span style="color: #ef4444;">● Superuser (Full)</span>
+                </div>
+                <div class="info-card">
+                    <label>Platform Status</label>
+                    <span>v1.0.4 Stable</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn-primary">Update Admin Details</button>
+                <button class="btn-danger">Reset Root Password</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                document.getElementById("adm-name").innerText = user.name;
+                document.getElementById("adm-email").innerText = user.email;
+                document.getElementById("adm-id").innerText = user.id;
+                document.getElementById("adm-role-badge").innerText = `Official ${user.role.toUpperCase()}`;
+            }
+        });
+    </script>
+    <script src="../js/admin_layout.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Profile - MUST AI HUB</title>
+    <style>
+        .profile-container {
+            max-width: 850px;
+            margin: 0 auto;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        /* Profile Banner & Header */
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        .profile-banner {
+            height: 140px;
+            background: linear-gradient(135deg, #0f172a 0%, #ef4444 100%);
+        }
+        .profile-header-content {
+            padding: 0 40px 30px;
+            margin-top: -60px;
+            display: flex;
+            align-items: flex-end;
+            gap: 25px;
+        }
+        .avatar-box {
+            width: 120px;
+            height: 120px;
+            background: white;
+            border: 6px solid #f8fafc;
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        .header-text h2 { margin: 0; color: #0f172a; font-size: 2rem; }
+        .header-text p { margin: 5px 0 0; color: #ef4444; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 2px; }
+
+        /* Information Grid */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            padding: 20px 40px 40px;
+        }
+        .info-card {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+        }
+        .info-card label {
+            display: block;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #94a3b8;
+            margin-bottom: 8px;
+            font-weight: 800;
+        }
+        .info-card span {
+            font-size: 1.05rem;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* Action Buttons */
+        .profile-actions {
+            padding: 0 40px 40px;
+            display: flex;
+            gap: 15px;
+        }
+        .btn-primary {
+            background: #0f172a;
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-primary:hover { background: #1e293b; }
+        .btn-danger {
+            background: white;
+            color: #ef4444;
+            padding: 12px 25px;
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-danger:hover { background: #fef2f2; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <div class="profile-container">
+        <header style="margin-bottom: 25px;">
+            <h1>Root Administrator</h1>
+            <p style="color: #64748b;">Manage your system credentials and authentication settings.</p>
+        </header>
+
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+            
+            <div class="profile-header-content">
+                <div class="avatar-box">🛡️</div>
+                <div class="header-text">
+                    <h2 id="adm-name">Loading Admin...</h2>
+                    <p id="adm-role-badge">System Root</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <label>Admin Email</label>
+                    <span id="adm-email">admin@must.ac.tz</span>
+                </div>
+                <div class="info-card">
+                    <label>System UUID</label>
+                    <span id="adm-id" style="font-family: monospace; font-size: 0.85rem;">---</span>
+                </div>
+                <div class="info-card">
+                    <label>Access Level</label>
+                    <span style="color: #ef4444;">● Superuser (Full)</span>
+                </div>
+                <div class="info-card">
+                    <label>Platform Status</label>
+                    <span>v1.0.4 Stable</span>
+                </div>
+            </div>
+
+            <div class="profile-actions">
+                <button class="btn-primary">Update Admin Details</button>
+                <button class="btn-danger">Reset Root Password</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                document.getElementById("adm-name").innerText = user.name;
+                document.getElementById("adm-email").innerText = user.email;
+                document.getElementById("adm-id").innerText = user.id;
+                document.getElementById("adm-role-badge").innerText = `Official ${user.role.toUpperCase()}`;
+            }
+        });
+    </script>
+    <script src="../js/admin_layout.js"></script>
+</body>
+</html>

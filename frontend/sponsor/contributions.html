@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Contribution - MUST AI HUB</title>
+    <style>
+        .form-card { background: white; border-radius: 24px; padding: 40px; border: 1px solid #e2e8f0; max-width: 700px; margin: 0 auto; box-shadow: 0 10px 25px rgba(0,0,0,0.05); }
+        .form-group { margin-bottom: 25px; }
+        .form-group label { display: block; font-weight: 700; color: #064e3b; margin-bottom: 10px; }
+        .form-group input, .form-group select, .form-group textarea { 
+            width: 100%; padding: 14px; border: 1px solid #cbd5e1; border-radius: 12px; font-family: inherit; font-size: 1rem;
+        }
+        .form-group select { appearance: none; background: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://w3.org" width="20" height="20" fill="gray"><path d="M7 10l5 5 5-5z"/></svg>') no-repeat right 15px center; }
+        
+        .submit-btn { background: #10b981; color: white; border: none; padding: 15px 30px; border-radius: 12px; font-weight: 700; cursor: pointer; width: 100%; font-size: 1.1rem; }
+        .submit-btn:hover { background: #059669; transform: translateY(-2px); }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <header style="text-align: center; margin-bottom: 40px;">
+        <h1>Submit Support</h1>
+        <p>Choose how you would like to empower the AI Hub today.</p>
+    </header>
+
+    <div class="form-card">
+        <form id="sponsorshipForm">
+            <div class="form-group">
+                <label>Contribution Type</label>
+                <select name="type" required>
+                    <option value="money">Financial Support (Money)</option>
+                    <option value="tools">Hardware/Equipment (Tools)</option>
+                    <option value="resources">Educational Material (Resources)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Amount (If Money) or Quantity</label>
+                <input type="number" name="amount" placeholder="e.g. 500000">
+            </div>
+
+            <div class="form-group">
+                <label>Description / Specification</label>
+                <textarea name="description" rows="4" placeholder="Detail the tools or specific area of support..."></textarea>
+            </div>
+
+            <button type="submit" class="submit-btn">Confirm Contribution 🤝</button>
+        </form>
+    </div>
+
+    <script src="../js/sponsor_layout.js"></script>
+</body>
+</html>

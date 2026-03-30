@@ -2,28 +2,71 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>System Admin</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - MUST AI HUB</title>
+    <style>
+        .admin-hero { background: white; padding: 30px; border-radius: 24px; border: 1px solid #e2e8f0; margin-bottom: 30px; display: flex; justify-content: space-between; align-items: center; }
+        .status-dot { height: 12px; width: 12px; background-color: #10b981; border-radius: 50%; display: inline-block; margin-right: 8px; }
+        
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stat-card { background: white; padding: 25px; border-radius: 20px; border-left: 5px solid var(--primary); box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
+        .stat-card h4 { margin: 0; color: #64748b; font-size: 0.8rem; text-transform: uppercase; }
+        .stat-card div { font-size: 1.8rem; font-weight: 800; color: #0f172a; margin-top: 10px; }
+
+        .system-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 30px; }
+        .log-preview { background: white; border-radius: 20px; padding: 25px; border: 1px solid #e2e8f0; }
+        .log-item { font-family: 'Courier New', Courier, monospace; font-size: 0.85rem; padding: 10px 0; border-bottom: 1px solid #f1f5f9; color: #334155; }
+    </style>
     <script src="../js/guard.js"></script>
-    <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
-    <nav>
-        <h1>Admin Control Center</h1>
-        <button onclick="logout()">Logout</button>
-    </nav>
-    <main>
-        <h2 id="welcome-msg">System Overview</h2>
-        <div class="grid">
-            <a href="user-management.html" class="card">User Management</a>
-            <a href="system-reports.html" class="card">System Reports</a>
-            <a href="logs.html" class="card">Activity Logs</a>
-            <a href="profile.html" class="card">Admin Profile</a>
+
+    <div class="admin-hero">
+        <div>
+            <h1>System Command Center</h1>
+            <p><span class="status-dot"></span> Database Online | <strong>v1.0.4 Stable</strong></p>
         </div>
-    </main>
-    <script src="../js/utils.js"></script>
-    <script>
-        const user = JSON.parse(localStorage.getItem("user"));
-        document.getElementById("welcome-msg").innerText = `Administrator: ${user.name}`;
-    </script>
+        <div style="text-align: right;">
+            <small style="color: #64748b;">Last Sync: Just now</small>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card" style="border-color: #3b82f6;">
+            <h4>Total Users</h4>
+            <div id="count-users">248</div>
+        </div>
+        <div class="stat-card" style="border-color: #10b981;">
+            <h4>Enrollments</h4>
+            <div id="count-enrollments">1,024</div>
+        </div>
+        <div class="stat-card" style="border-color: #f59e0b;">
+            <h4>Pending Reviews</h4>
+            <div id="count-reviews">14</div>
+        </div>
+        <div class="stat-card" style="border-color: #ef4444;">
+            <h4>System Logs</h4>
+            <div id="count-logs">5,620</div>
+        </div>
+    </div>
+
+    <div class="system-grid">
+        <div class="log-preview">
+            <h3 style="margin-top: 0;">Live Activity Stream</h3>
+            <div class="log-item">> USER_LOGIN: student_id_8812 - Success</div>
+            <div class="log-item">> COURSE_CREATE: facilitator_id_002 - Neural Networks</div>
+            <div class="log-item">> ENROLLMENT_NEW: user_id_9921 - Success</div>
+            <div class="log-item">> ADMIN_ACCESS: user_id_001 - Session Authorized</div>
+        </div>
+
+        <div class="log-preview" style="background: #0f172a; color: #94a3b8;">
+            <h3 style="color: white; margin-top: 0;">Quick Actions</h3>
+            <button style="width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; margin-bottom: 10px; cursor: pointer;">Backup Database</button>
+            <button style="width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; margin-bottom: 10px; cursor: pointer;">Clear Cache</button>
+            <button style="width: 100%; padding: 12px; background: #7f1d1d; border: none; color: white; border-radius: 8px; cursor: pointer;">Emergency Lockdown</button>
+        </div>
+    </div>
+
+    <script src="../js/admin_layout.js"></script>
 </body>
 </html>

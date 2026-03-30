@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Announcements - Facilitator</title>
+    <style>
+        /* Composer Box */
+        .composer-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05);
+        }
+        .composer-card h2 { margin-top: 0; font-size: 1.25rem; color: #1e1b4b; }
+        
+        .input-title {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            font-weight: 600;
+            outline: none;
+        }
+        .input-title:focus { border-color: #818cf8; }
+
+        .textarea-msg {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            font-family: inherit;
+            resize: none;
+            min-height: 120px;
+        }
+
+        .post-btn {
+            background: #818cf8;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            float: right;
+        }
+        .post-btn:hover { background: #6366f1; transform: translateY(-2px); }
+
+        /* Announcement Feed */
+        .feed-header { margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        .announcement-card {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .ann-content h3 { margin: 0 0 5px 0; font-size: 1.1rem; color: #1e293b; }
+        .ann-content p { margin: 0; color: #64748b; font-size: 0.9rem; }
+        .ann-meta { font-size: 0.75rem; color: #94a3b8; margin-top: 8px; display: block; }
+
+        .delete-btn {
+            background: rgba(239, 68, 68, 0.1);
+            color: #ef4444;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .delete-btn:hover { background: #ef4444; color: white; }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <header style="margin-bottom: 30px;">
+        <h1>Broadcast Hub</h1>
+        <p>Keep the AI community informed about latest updates and events.</p>
+    </header>
+
+    <!-- Post Creator -->
+    <div class="composer-card">
+        <h2>Post New Announcement</h2>
+        <form id="announcementForm">
+            <input type="text" class="input-title" placeholder="Announcement Title (e.g. Lab Maintenance)" required>
+            <textarea class="textarea-msg" placeholder="Write your message here..."></textarea>
+            <div style="overflow: hidden;">
+                <button type="submit" class="post-btn">Post to Feed 📢</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- History Feed -->
+    <div class="feed-header">
+        <h2>Past Announcements</h2>
+        <span style="font-size: 0.85rem; color: #94a3b8;">Total: 2 Active</span>
+    </div>
+
+    <div id="announcement-feed">
+        <!-- Example 1 -->
+        <div class="announcement-card">
+            <div class="ann-content">
+                <h3>MUST AI Hackathon 2024</h3>
+                <p>Registration ends tonight at midnight. Ensure your teams are formed!</p>
+                <span class="ann-meta">Posted 2 days ago</span>
+            </div>
+            <button class="delete-btn">Remove</button>
+        </div>
+
+        <!-- Example 2 -->
+        <div class="announcement-card">
+            <div class="ann-content">
+                <h3>GPU Cluster Update</h3>
+                <p>Scheduled maintenance for the training server at 2:00 PM today.</p>
+                <span class="ann-meta">Posted Yesterday</span>
+            </div>
+            <button class="delete-btn">Remove</button>
+        </div>
+    </div>
+
+    <script src="../js/facilitator_layout.js"></script>
+</body>
+</html>

@@ -18,7 +18,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve all static files from the frontend folder
+// 1. Serve all static assets (CSS, JS, Images) from the frontend folder
+// The 'extensions' option allows visiting /auth instead of /auth.html
 app.use(express.static(path.join(__dirname, "frontend"), {
     extensions: ['html']
 }));
@@ -26,34 +27,47 @@ app.use(express.static(path.join(__dirname, "frontend"), {
 // --- API Routes ---
 app.use("/api/auth", authRoutes); 
 
-// --- Public HTML Routes ---
+// --- Public Page Routes ---
 app.get("/", (req, res) => res.sendFile(path.join(__dirname, "frontend", "index.html")));
 app.get("/about", (req, res) => res.sendFile(path.join(__dirname, "frontend", "about.html")));
 app.get("/auth", (req, res) => res.sendFile(path.join(__dirname, "frontend", "auth.html")));
 app.get("/contact", (req, res) => res.sendFile(path.join(__dirname, "frontend", "contact.html")));
 
-// --- Flexible Role-Based Page Redirects ---
+// --- 2. Advanced Role-Based Routing ---
+// This handles paths like /student/dashboard, /facilitator/review-projects, etc.
 app.get("/:role/:page", (req, res, next) => {
     const roles = ["admin", "student", "facilitator", "sponsor"];
     const { role, page } = req.params;
 
+    // Check if the requested role folder exists in our system
     if (roles.includes(role)) {
+        // Build the path to the specific HTML file in that role's folder
         const fileName = page.endsWith('.html') ? page : `${page}.html`;
         const filePath = path.join(__dirname, "frontend", role, fileName);
         
         return res.sendFile(filePath, (err) => {
             if (err) {
-                next();
+                // If file doesn't exist (e.g. /student/wrong-page), show the main dashboard for that role
+                return res.sendFile(path.join(__dirname, "frontend", role, "dashboard.html"));
             }
         });
     }
     next();
 });
 
+// 3. Simple Dashboard Alias (Handles /student, /admin, etc. directly)
+app.get("/:role", (req, res, next) => {
+    const roles = ["admin", "student", "facilitator", "sponsor"];
+    if (roles.includes(req.params.role)) {
+        return res.sendFile(path.join(__dirname, "frontend", req.params.role, "dashboard.html"));
+    }
+    next();
+});
+
 // --- Global Error Handler ---
 app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(500).json({ message: "Something went wrong on the server!" });
+    console.error("Server Error:", err.stack);
+    res.status(500).json({ message: "An internal server error occurred." });
 });
 
 // --- Start Server ---

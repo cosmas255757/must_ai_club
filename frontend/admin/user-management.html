@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - Admin</title>
+    <style>
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .create-btn { background: #ef4444; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .create-btn:hover { background: #dc2626; transform: translateY(-2px); }
+
+        /* Search & Filter Bar */
+        .filter-bar { background: white; padding: 15px 25px; border-radius: 15px; border: 1px solid #e2e8f0; margin-bottom: 25px; display: flex; gap: 15px; align-items: center; }
+        .filter-bar input { flex: 1; padding: 10px; border: 1px solid #f1f5f9; border-radius: 8px; outline: none; }
+
+        /* User Table */
+        .table-container { background: white; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 18px 25px; color: #64748b; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 18px 25px; border-top: 1px solid #f1f5f9; font-size: 0.95rem; vertical-align: middle; }
+
+        .role-badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; text-transform: capitalize; }
+        .student { background: #e0f2fe; color: #0369a1; }
+        .facilitator { background: #e0e7ff; color: #4338ca; }
+        .sponsor { background: #dcfce7; color: #15803d; }
+        .admin { background: #fee2e2; color: #991b1b; }
+
+        .status-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; }
+        .active-status { background: #10b981; }
+        .suspended-status { background: #ef4444; }
+
+        .action-btn { background: none; border: none; cursor: pointer; font-size: 1.1rem; padding: 5px; }
+
+        /* Modal */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.7); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-content { background: white; width: 100%; max-width: 500px; border-radius: 24px; padding: 35px; animation: slideUp 0.3s ease; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #1e293b; }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <div class="page-header">
+        <h1>User Directory</h1>
+        <button class="create-btn" onclick="openModal()">+ Register Staff</button>
+    </div>
+
+    <div class="filter-bar">
+        <span>🔍</span>
+        <input type="text" placeholder="Search by name, email, or UUID...">
+        <select style="padding: 10px; border-radius: 8px; border: 1px solid #f1f5f9;">
+            <option>All Roles</option>
+            <option>Students</option>
+            <option>Facilitators</option>
+            <option>Sponsors</option>
+        </select>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Created At</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="user-list">
+                <!-- Example Row -->
+                <tr>
+                    <td><strong>John Kamau</strong></td>
+                    <td>john@must.ac.tz</td>
+                    <td><span class="role-badge facilitator">Facilitator</span></td>
+                    <td><span class="status-indicator active-status"></span> Active</td>
+                    <td>Nov 12, 2024</td>
+                    <td>
+                        <button class="action-btn" title="Suspend">🚫</button>
+                        <button class="action-btn" title="Delete" style="color: #ef4444;">🗑️</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td><strong>Sarah AI Corp</strong></td>
+                    <td>contact@ai-corp.com</td>
+                    <td><span class="role-badge sponsor">Sponsor</span></td>
+                    <td><span class="status-indicator active-status"></span> Active</td>
+                    <td>Nov 10, 2024</td>
+                    <td>
+                        <button class="action-btn" title="Suspend">🚫</button>
+                        <button class="action-btn" title="Delete" style="color: #ef4444;">🗑️</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Register Staff Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <h2 style="margin-top:0;">Register New Staff</h2>
+            <p style="color: #64748b; font-size: 0.9rem;">Manually create accounts for Facilitators and Sponsors.</p>
+            <form id="adminCreateUserForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" placeholder="Full Name" required>
+                </div>
+                <div class="form-group">
+                    <label>Email Address</label>
+                    <input type="email" placeholder="email@example.com" required>
+                </div>
+                <div class="form-group">
+                    <label>Temporary Password</label>
+                    <input type="password" placeholder="••••••••" required>
+                </div>
+                <div class="form-group">
+                    <label>Assign Role</label>
+                    <select required>
+                        <option value="facilitator">Facilitator</option>
+                        <option value="sponsor">Sponsor</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="button" class="create-btn" style="background:#f1f5f9; color:#475569;" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="create-btn" style="flex:1;">Create Account</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/admin_layout.js"></script>
+    <script>
+        function openModal() { document.getElementById('userModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('userModal').style.display = 'none'; }
+    </script>
+</body>
+</html>

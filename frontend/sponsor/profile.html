@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sponsor Profile - MUST AI HUB</title>
+    <style>
+        .profile-container { max-width: 850px; margin: 0 auto; animation: slideIn 0.5s ease-out; }
+        
+        /* Banner & Header */
+        .profile-card { background: white; border-radius: 24px; border: 1px solid #e2e8f0; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .profile-banner { height: 140px; background: linear-gradient(135deg, #064e3b 0%, #10b981 100%); }
+        
+        .profile-header-content { padding: 0 40px 30px; margin-top: -60px; display: flex; align-items: flex-end; gap: 25px; }
+        .avatar-box { 
+            width: 120px; height: 120px; background: white; border: 6px solid #f8fafc; border-radius: 30px; 
+            display: flex; align-items: center; justify-content: center; font-size: 3.5rem; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1); 
+        }
+        
+        .header-text h2 { margin: 0; color: #064e3b; font-size: 2rem; }
+        .header-text p { margin: 5px 0 0; color: #10b981; font-weight: 800; text-transform: uppercase; font-size: 0.85rem; letter-spacing: 1px; }
+
+        /* Info Grid */
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; padding: 20px 40px 40px; }
+        .info-card { background: #f0fdf4; padding: 20px; border-radius: 16px; border: 1px solid #dcfce7; }
+        .info-card label { display: block; font-size: 0.7rem; text-transform: uppercase; color: #059669; margin-bottom: 8px; font-weight: 800; }
+        .info-card span { font-size: 1.05rem; color: #064e3b; font-weight: 600; }
+
+        /* Buttons */
+        .btn-group { padding: 0 40px 40px; display: flex; gap: 15px; }
+        .btn-primary { background: #064e3b; color: white; padding: 12px 25px; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; }
+        .btn-primary:hover { background: #065f46; transform: translateY(-2px); }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <div class="profile-container">
+        <header style="margin-bottom: 25px;">
+            <h1>Partner Profile</h1>
+            <p style="color: #64748b;">Review your organizational details and support status.</p>
+        </header>
+
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+            
+            <div class="profile-header-content">
+                <div class="avatar-box">🏢</div>
+                <div class="header-text">
+                    <h2 id="spon-name">Loading Partner...</h2>
+                    <p id="spon-tier">Platinum Sponsor</p>
+                </div>
+            </div>
+
+            <div class="info-grid">
+                <div class="info-card">
+                    <label>Registered Email</label>
+                    <span id="spon-email">---</span>
+                </div>
+                <div class="info-card">
+                    <label>Sponsor ID</label>
+                    <span id="spon-id" style="font-family: monospace; font-size: 0.85rem;">---</span>
+                </div>
+                <div class="info-card">
+                    <label>Impact Status</label>
+                    <span style="color: #10b981;">● Active Partner</span>
+                </div>
+                <div class="info-card">
+                    <label>Total Contribution</label>
+                    <span>View in Dashboard</span>
+                </div>
+            </div>
+
+            <div class="btn-group">
+                <button class="btn-primary">Edit Organization Info</button>
+                <button class="btn-primary" style="background:white; color:#64748b; border:1px solid #e2e8f0;">Update Security</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                document.getElementById("spon-name").innerText = user.name;
+                document.getElementById("spon-email").innerText = user.email;
+                document.getElementById("spon-id").innerText = user.id;
+                // Format role for badge
+                const roleFormatted = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+                document.getElementById("spon-tier").innerText = `${roleFormatted} Partner`;
+            }
+        });
+    </script>
+    <script src="../js/sponsor_layout.js"></script>
+</body>
+</html>

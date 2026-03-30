@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Courses - Facilitator</title>
+    <style>
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .add-btn { background: #818cf8; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; }
+        .add-btn:hover { background: #6366f1; transform: translateY(-2px); }
+
+        /* Course Table */
+        .table-container { background: white; border-radius: 20px; border: 1px solid #e2e8f0; overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; text-align: left; }
+        th { background: #f8fafc; padding: 15px 20px; color: #64748b; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1px; }
+        td { padding: 18px 20px; border-top: 1px solid #f1f5f9; color: #1e293b; font-size: 0.95rem; }
+        
+        .status-pill { padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 700; }
+        .active-pill { background: #dcfce7; color: #15803d; }
+
+        /* Modal Overlay */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(30, 27, 75, 0.6); z-index: 2000; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-content { background: white; width: 90%; max-width: 550px; border-radius: 24px; padding: 35px; animation: popIn 0.3s ease; }
+        @keyframes popIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: #475569; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; font-family: inherit; }
+    </style>
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+
+    <div class="page-header">
+        <h1>My Published Courses</h1>
+        <button class="add-btn" onclick="openModal()">+ Create New Course</button>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Course Title</th>
+                    <th>Students</th>
+                    <th>Created At</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="facilitator-course-list">
+                <!-- Example Row -->
+                <tr>
+                    <td><strong>Neural Networks Deep Dive</strong></td>
+                    <td>42 Enrolled</td>
+                    <td>Oct 15, 2024</td>
+                    <td><span class="status-pill active-pill">Published</span></td>
+                    <td>
+                        <button style="background:none; border:none; color:#818cf8; cursor:pointer; font-weight:600;">Edit</button>
+                        <button style="background:none; border:none; color:#ef4444; cursor:pointer; font-weight:600; margin-left:10px;">Delete</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Create Course Modal -->
+    <div class="modal" id="courseModal">
+        <div class="modal-content">
+            <h2>New Course Module</h2>
+            <p style="color: #64748b; margin-bottom: 25px;">Fill in the details to publish a new learning track.</p>
+            
+            <form id="addCourseForm">
+                <div class="form-group">
+                    <label>Course Title</label>
+                    <input type="text" placeholder="e.g. Advanced Computer Vision" required>
+                </div>
+                <div class="form-group">
+                    <label>Module Description</label>
+                    <textarea rows="4" placeholder="What will students learn in this course?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Level</label>
+                    <select>
+                        <option>Beginner</option>
+                        <option>Intermediate</option>
+                        <option>Advanced</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 10px; margin-top: 30px;">
+                    <button type="button" class="add-btn" style="background:#f1f5f9; color:#475569;" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="add-btn" style="flex:1;">Publish Course 🚀</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/facilitator_layout.js"></script>
+    <script>
+        function openModal() { document.getElementById('courseModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('courseModal').style.display = 'none'; }
+    </script>
+</body>
+</html>
