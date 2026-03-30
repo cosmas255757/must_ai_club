@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
      <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses - MUST AI HUB</title>
-    <link rel="stylesheet" href="../css/style.css">
     <script src="../js/guard.js"></script>
 </head>
 <body>
@@ -12,7 +11,11 @@
     <div id="course-list">
         <p>Loading courses available...</p>
     </div>
-
+    <script src="../js/utils.js"></script>
+    <script>
+        const user = JSON.parse(localStorage.getItem("user"));
+        document.getElementById("welcome-msg").innerText = `Welcome, ${user.name}!`;
+    </script>
     <script src="../js/student_layout.js"></script>
 </body>
 </html>
