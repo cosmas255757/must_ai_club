@@ -2,42 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Courses - MUST AI HUB</title>
-    <link rel="stylesheet" href="../css/student.css">
-    <link rel="stylesheet" href="../css/style.css">
     <script src="../js/guard.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <h2>MUST AI HUB</h2>
-            <nav>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="courses.html" class="active">Courses</a>
-                <a href="events.html">Events</a>
-                <a href="projects.html">My Projects</a>
-                <a href="profile.html">Profile</a>
-            </nav>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </aside>
-
-        <main class="main-content">
-            <header>
-                <h1>Explore Courses</h1>
-                <input type="text" placeholder="Search courses..." id="courseSearch">
-            </header>
-            
-            <div id="course-list" class="grid">
-                <!-- Sample Static Card -->
-                <div class="card">
-                    <span class="status-badge">Beginner</span>
-                    <h3>Introduction to AI</h3>
-                    <p>Learn the basics of Machine Learning and Neural Networks.</p>
-                    <button class="btn-submit">Enroll Now</button>
-                </div>
-            </div>
-        </main>
+    <!-- 2. Just put your page-specific content here -->
+    <h1>Available Courses</h1>
+    <div id="course-list">
+        <p>Loading courses available...</p>
     </div>
-    <script src="../js/utils.js"></script>
+
+    <script src="../js/student_layout.js"></script>
 </body>
 </html>
