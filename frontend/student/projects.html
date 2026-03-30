@@ -2,43 +2,119 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Projects - MUST AI HUB</title>
-    <link rel="stylesheet" href="../css/student.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Header & Action Button */
+        .project-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
+        .submit-btn { background: #38bdf8; color: #0f172a; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .submit-btn:hover { background: #0ea5e9; transform: scale(1.05); }
+
+        /* Project Cards */
+        .project-grid { display: grid; grid-template-columns: 1fr; gap: 20px; }
+        .project-card { background: white; border-radius: 20px; border: 1px solid #e2e8f0; padding: 25px; display: flex; gap: 20px; flex-wrap: wrap; }
+        .status-indicator { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; flex-shrink: 0; }
+        
+        .project-info { flex: 1; min-width: 250px; }
+        .project-info h3 { margin: 0 0 5px 0; color: #1e293b; }
+        .project-info p { color: #64748b; font-size: 0.9rem; margin-bottom: 15px; }
+
+        /* Feedback Timeline */
+        .feedback-box { background: #f8fafc; border-radius: 12px; padding: 15px; border-left: 4px solid #38bdf8; }
+        .feedback-box h4 { margin: 0 0 5px 0; font-size: 0.85rem; text-transform: uppercase; color: #94a3b8; }
+        .feedback-text { font-style: italic; color: #334155; font-size: 0.95rem; }
+
+        /* Modal for Submission */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.8); z-index: 2000; align-items: center; justify-content: center; padding: 20px; }
+        .modal-content { background: white; width: 100%; max-width: 500px; border-radius: 24px; padding: 30px; animation: slideUp 0.4s ease; }
+        @keyframes slideUp { from { transform: translateY(50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        
+        .upload-area { border: 2px dashed #cbd5e1; border-radius: 15px; padding: 40px; text-align: center; cursor: pointer; margin: 20px 0; }
+        .upload-area:hover { border-color: #38bdf8; background: #f0f9ff; }
+        
+        input[type="text"], textarea { width: 100%; padding: 12px; border: 1px solid #e2e8f0; border-radius: 10px; margin-top: 8px; font-family: inherit; }
+    </style>
     <script src="../js/guard.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <h2>MUST AI HUB</h2>
-            <nav>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="courses.html">Courses</a>
-                <a href="events.html">Events</a>
-                <a href="projects.html" class="active">My Projects</a>
-                <a href="profile.html">Profile</a>
-            </nav>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </aside>
 
-        <main class="main-content">
-            <header>
-                <h1>My Project Submissions</h1>
-                <button class="btn-submit" onclick="toggleModal()">Submit New Project</button>
-            </header>
+    <div class="project-header">
+        <h1>My AI Projects</h1>
+        <button class="submit-btn" onclick="openModal()"><span>+</span> New Submission</button>
+    </div>
 
-            <div id="project-list" class="grid">
-                <!-- Project details and approval status will appear here -->
-                <div class="card">
-                    <h3>Chatbot Project</h3>
-                    <span class="status-badge" style="background: #ffeaa7;">Pending Review</span>
-                    <p>Submitted on: 2024-11-20</p>
-                    <hr>
-                    <p><em>Feedback will appear here...</em></p>
+    <!-- Project List -->
+    <div class="project-grid" id="project-list">
+        
+        <!-- Example: Approved Project -->
+        <div class="project-card">
+            <div class="status-indicator" style="background: #dcfce7; color: #15803d;">✔</div>
+            <div class="project-info">
+                <h3>Plant Disease Classifier</h3>
+                <p>A CNN model built with PyTorch to identify tomato leaf diseases.</p>
+                <div class="feedback-box">
+                    <h4>Facilitator Feedback</h4>
+                    <p class="feedback-text">"Excellent accuracy on the validation set. Consider optimizing the model for mobile deployment next."</p>
                 </div>
             </div>
-        </main>
+            <div class="project-meta" style="text-align: right;">
+                <span style="color: #15803d; font-weight: bold;">Approved</span><br>
+                <small>Nov 12, 2024</small>
+            </div>
+        </div>
+
+        <!-- Example: Pending Project -->
+        <div class="project-card">
+            <div class="status-indicator" style="background: #fef9c3; color: #a16207;">⏳</div>
+            <div class="project-info">
+                <h3>NLP Sentiment Analyzer</h3>
+                <p>Analyzing Swahili tweets using BERT-based models.</p>
+                <p><em>Waiting for facilitator review...</em></p>
+            </div>
+            <div class="project-meta" style="text-align: right;">
+                <span style="color: #a16207; font-weight: bold;">Pending</span><br>
+                <small>Nov 28, 2024</small>
+            </div>
+        </div>
+
     </div>
-    <script src="../js/utils.js"></script>
+
+    <!-- Submission Modal -->
+    <div class="modal" id="submitModal">
+        <div class="modal-content">
+            <h2>Submit Project</h2>
+            <form id="projectForm">
+                <div style="margin-bottom: 15px;">
+                    <label>Project Title</label>
+                    <input type="text" placeholder="e.g. Traffic Sign Recognition" required>
+                </div>
+                <div style="margin-bottom: 15px;">
+                    <label>Brief Description</label>
+                    <textarea rows="3" placeholder="Explain your tech stack and goals..."></textarea>
+                </div>
+                <div class="upload-area">
+                    <p>📂 <strong>Click to upload</strong> or drag file</p>
+                    <small>ZIP, PDF, or GitHub Link</small>
+                    <input type="file" id="fileInput" hidden>
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="button" class="join-btn" style="background: #f1f5f9; color: #475569;" onclick="closeModal()">Cancel</button>
+                    <button type="submit" class="submit-btn" style="flex: 1;">Submit Final Version</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="../js/student_layout.js"></script>
+    <script>
+        function openModal() { document.getElementById('submitModal').style.display = 'flex'; }
+        function closeModal() { document.getElementById('submitModal').style.display = 'none'; }
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            let modal = document.getElementById('submitModal');
+            if (event.target == modal) closeModal();
+        }
+    </script>
 </body>
 </html>
