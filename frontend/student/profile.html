@@ -2,47 +2,151 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>My Profile - MUST AI HUB</title>
-    <link rel="stylesheet" href="../css/student.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - MUST AI HUB</title>
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            animation: slideUp 0.5s ease;
+        }
+
+        /* Profile Header Card */
+        .profile-card {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .profile-banner {
+            height: 120px;
+            background: linear-gradient(135deg, #0f172a 0%, #38bdf8 100%);
+        }
+        .profile-header-content {
+            padding: 0 40px 30px;
+            margin-top: -50px;
+            display: flex;
+            align-items: flex-end;
+            gap: 20px;
+        }
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            background: white;
+            border: 5px solid #f8fafc;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .header-text h2 { margin: 0; color: #1e293b; font-size: 1.8rem; }
+        .header-text p { margin: 5px 0 0; color: #64748b; font-weight: 500; }
+
+        /* Details Grid */
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            padding: 0 40px 40px;
+        }
+        .info-group {
+            background: #f8fafc;
+            padding: 15px 20px;
+            border-radius: 16px;
+            border: 1px solid #f1f5f9;
+        }
+        .info-group label {
+            display: block;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #94a3b8;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        .info-group span {
+            font-size: 1rem;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        /* Settings Actions */
+        .actions-section {
+            padding: 0 40px 40px;
+            display: flex;
+            gap: 15px;
+        }
+        .btn-outline {
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid #cbd5e1;
+            background: white;
+            cursor: pointer;
+            font-weight: 600;
+            color: #475569;
+        }
+        .btn-outline:hover { background: #f1f5f9; border-color: #94a3b8; }
+
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
     <script src="../js/guard.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <h2>MUST AI HUB</h2>
-            <nav>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="courses.html">Courses</a>
-                <a href="events.html">Events</a>
-                <a href="projects.html">My Projects</a>
-                <a href="profile.html" class="active">Profile</a>
-            </nav>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </aside>
 
-        <main class="main-content">
-            <h1>My Profile</h1>
-            <div class="card" style="max-width: 600px;">
-                <div class="form-group">
-                    <label>Full Name</label>
-                    <input type="text" id="prof-name" disabled>
-                </div>
-                <div class="form-group">
-                    <label>Email Address</label>
-                    <input type="email" id="prof-email" disabled>
-                </div>
-                <div class="form-group">
-                    <label>Role</label>
-                    <input type="text" id="prof-role" disabled value="Student">
-                </div>
-                <div class="form-group">
-                    <label>Account Status</label>
-                    <span class="status-badge" style="background: #55efc4;">Active</span>
+    <div class="profile-container">
+        <h1>My Account</h1>
+
+        <div class="profile-card">
+            <div class="profile-banner"></div>
+            
+            <div class="profile-header-content">
+                <div class="avatar-circle">🎓</div>
+                <div class="header-text">
+                    <h2 id="prof-full-name">Loading...</h2>
+                    <p id="prof-role-badge">Student Member</p>
                 </div>
             </div>
-        </main>
+
+            <div class="details-grid">
+                <div class="info-group">
+                    <label>Email Address</label>
+                    <span id="prof-email">email@must.ac.tz</span>
+                </div>
+                <div class="info-group">
+                    <label>Account ID</label>
+                    <span id="prof-id" style="font-family: monospace; font-size: 0.8rem;">UUID-8872-991</span>
+                </div>
+                <div class="info-group">
+                    <label>Membership Status</label>
+                    <span style="color: #10b981;">● Active</span>
+                </div>
+                <div class="info-group">
+                    <label>Institution</label>
+                    <span>MUST Mbeya</span>
+                </div>
+            </div>
+
+            <div class="actions-section">
+                <button class="btn-outline">Edit Information</button>
+                <button class="btn-outline" style="color: #ef4444; border-color: rgba(239, 68, 68, 0.2);">Reset Password</button>
+            </div>
+        </div>
     </div>
-    <script src="../js/utils.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const user = JSON.parse(localStorage.getItem("user"));
+            if (user) {
+                document.getElementById("prof-full-name").innerText = user.name;
+                document.getElementById("prof-email").innerText = user.email;
+                document.getElementById("prof-id").innerText = user.id;
+                document.getElementById("prof-role-badge").innerText = `${user.role.charAt(0).toUpperCase() + user.role.slice(1)} Member`;
+            }
+        });
+    </script>
+    <script src="../js/student_layout.js"></script>
 </body>
 </html>
