@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>My Projects - MUST AI HUB</title>
+    <link rel="stylesheet" href="../css/student.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <h2>MUST AI HUB</h2>
+            <nav>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="courses.html">Courses</a>
+                <a href="events.html">Events</a>
+                <a href="projects.html" class="active">My Projects</a>
+                <a href="profile.html">Profile</a>
+            </nav>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </aside>
+
+        <main class="main-content">
+            <header>
+                <h1>My Project Submissions</h1>
+                <button class="btn-submit" onclick="toggleModal()">Submit New Project</button>
+            </header>
+
+            <div id="project-list" class="grid">
+                <!-- Project details and approval status will appear here -->
+                <div class="card">
+                    <h3>Chatbot Project</h3>
+                    <span class="status-badge" style="background: #ffeaa7;">Pending Review</span>
+                    <p>Submitted on: 2024-11-20</p>
+                    <hr>
+                    <p><em>Feedback will appear here...</em></p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/utils.js"></script>
+</body>
+</html>

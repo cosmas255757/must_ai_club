@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Events - MUST AI HUB</title>
+    <link rel="stylesheet" href="../css/student.css">
+    <link rel="stylesheet" href="../css/style.css">
+    <script src="../js/guard.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <h2>MUST AI HUB</h2>
+            <nav>
+                <a href="dashboard.html">Dashboard</a>
+                <a href="courses.html">Courses</a>
+                <a href="events.html" class="active">Events</a>
+                <a href="projects.html">My Projects</a>
+                <a href="profile.html">Profile</a>
+            </nav>
+            <button class="logout-btn" onclick="logout()">Logout</button>
+        </aside>
+
+        <main class="main-content">
+            <h1>Upcoming Events</h1>
+            <div id="event-list" class="grid">
+                <div class="card">
+                    <h3>AI Ethics Workshop</h3>
+                    <p><strong>Date:</strong> 2024-12-15</p>
+                    <p>A discussion on the social impact of AI.</p>
+                    <button class="btn-submit">Register to Attend</button>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/utils.js"></script>
+</body>
+</html>
