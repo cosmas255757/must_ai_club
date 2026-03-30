@@ -2,37 +2,166 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Events - MUST AI HUB</title>
-    <link rel="stylesheet" href="../css/student.css">
-    <link rel="stylesheet" href="../css/style.css">
+    <style>
+        /* Event Header & Filters */
+        .event-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .filter-group {
+            display: flex;
+            background: #e2e8f0;
+            padding: 5px;
+            border-radius: 12px;
+            gap: 5px;
+        }
+        .filter-btn {
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            background: transparent;
+            color: #64748b;
+        }
+        .filter-btn.active {
+            background: white;
+            color: #0f172a;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Event Cards Grid */
+        .event-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 25px;
+        }
+        .event-card {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+        .event-card:hover {
+            transform: translateY(-8px);
+            border-color: #38bdf8;
+        }
+        .event-banner {
+            height: 140px;
+            background: linear-gradient(45deg, #0f172a, #334155);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+        }
+        .event-content { padding: 20px; }
+        .event-date {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .event-date span { display: block; font-weight: bold; font-size: 1.1rem; color: #0f172a; }
+        .event-date small { color: #38bdf8; text-transform: uppercase; font-weight: 800; }
+
+        .event-tag {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+            color: #38bdf8;
+            margin-bottom: 10px;
+            display: block;
+        }
+        .event-title { font-size: 1.25rem; margin: 0 0 10px 0; color: #1e293b; }
+        .event-details { color: #64748b; font-size: 0.9rem; line-height: 1.5; margin-bottom: 20px; }
+        
+        .event-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #f1f5f9;
+        }
+        .location { font-size: 0.85rem; color: #94a3b8; display: flex; align-items: center; gap: 5px; }
+        .join-btn {
+            background: #0f172a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .join-btn:hover { background: #38bdf8; color: #0f172a; }
+    </style>
     <script src="../js/guard.js"></script>
 </head>
 <body>
-    <div class="dashboard-container">
-        <aside class="sidebar">
-            <h2>MUST AI HUB</h2>
-            <nav>
-                <a href="dashboard.html">Dashboard</a>
-                <a href="courses.html">Courses</a>
-                <a href="events.html" class="active">Events</a>
-                <a href="projects.html">My Projects</a>
-                <a href="profile.html">Profile</a>
-            </nav>
-            <button class="logout-btn" onclick="logout()">Logout</button>
-        </aside>
 
-        <main class="main-content">
-            <h1>Upcoming Events</h1>
-            <div id="event-list" class="grid">
-                <div class="card">
-                    <h3>AI Ethics Workshop</h3>
-                    <p><strong>Date:</strong> 2024-12-15</p>
-                    <p>A discussion on the social impact of AI.</p>
-                    <button class="btn-submit">Register to Attend</button>
+    <div class="event-header">
+        <h1>Upcoming Events</h1>
+        <div class="filter-group">
+            <button class="filter-btn active">All</button>
+            <button class="filter-btn">Workshops</button>
+            <button class="filter-btn">Hackathons</button>
+        </div>
+    </div>
+
+    <!-- Event List Container -->
+    <div class="event-grid" id="event-list">
+        
+        <!-- Mockup Event Card 1 -->
+        <div class="event-card">
+            <div class="event-banner">💻</div>
+            <div class="event-date">
+                <span>15</span>
+                <small>DEC</small>
+            </div>
+            <div class="event-content">
+                <span class="event-tag">Workshop</span>
+                <h3 class="event-title">Neural Networks 101</h3>
+                <p class="event-details">A hands-on session building your first perceptron model using Python and TensorFlow.</p>
+                <div class="event-footer">
+                    <span class="location">📍 AI Lab - Block B</span>
+                    <button class="join-btn">Register</button>
                 </div>
             </div>
-        </main>
+        </div>
+
+        <!-- Mockup Event Card 2 -->
+        <div class="event-card">
+            <div class="event-banner">🏆</div>
+            <div class="event-date">
+                <span>22</span>
+                <small>DEC</small>
+            </div>
+            <div class="event-content">
+                <span class="event-tag">Hackathon</span>
+                <h3 class="event-title">MUST AI Challenge</h3>
+                <p class="event-details">48 hours to solve local community problems using Artificial Intelligence. Great prizes!</p>
+                <div class="event-footer">
+                    <span class="location">📍 Main Hall</span>
+                    <button class="join-btn">Join Team</button>
+                </div>
+            </div>
+        </div>
+
     </div>
-    <script src="../js/utils.js"></script>
+
+    <!-- Layout script handles Sidebar and Footer -->
+    <script src="../js/student_layout.js"></script>
 </body>
 </html>
