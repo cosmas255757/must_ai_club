@@ -4,6 +4,11 @@ import {
   createStudent, 
   findUserByEmail, 
   createUserByAdmin, 
+  getTotalUsersCount, 
+  getTotalEnrollmentsCount, 
+  getPendingReviewsCount, 
+  getTotalLogsCount,
+  getSystemLogs,
   findUserById 
 } from "../models/userModel.js";
 import dotenv from "dotenv";
@@ -122,5 +127,60 @@ export const login = async (req, res) => {
   } catch (error) {
     console.error("Login Error:", error);
     res.status(500).json({ message: "Server error" });
+  }
+};
+
+
+
+//--------------------------------------------------------------------------------
+//=====================ADMIN COUNTS================================================
+//---------------------------------------------------------------------------------
+
+//get all 4 activity counts for the admin dashboard
+export const getDashboardStats = async (req, res) => {
+  try {
+    // Execute all 4 count functions concurrently
+    const [totalUsers, totalEnrollments, pendingReviews, totalLogs] = await Promise.all([
+      getTotalUsersCount(),
+      getTotalEnrollmentsCount(),
+      getPendingReviewsCount(),
+      getTotalLogsCount(),
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalUsers,
+        totalEnrollments,
+        pendingReviews,
+        totalLogs
+      },
+    });
+  } catch (error) {
+    console.error("Dashboard Stats Error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch dashboard statistics",
+      error: error.message
+    });
+  }
+};
+
+//get the actual list of system logs
+export const getRecentActivityLogs = async (req, res) => {
+  try {
+    const limit = req.query.limit || 50;
+    const logs = await getSystemLogs(limit);
+
+    res.status(200).json({
+      success: true,
+      data: logs,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch activity logs",
+      error: error.message
+    });
   }
 };

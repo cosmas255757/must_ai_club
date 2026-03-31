@@ -2,6 +2,8 @@ import express from "express";
 import { 
   registerStudent, 
   registerUserByAdmin, 
+  getDashboardStats,
+getRecentActivityLogs,
   login 
 } from "../controllers/authController.js";
 import { 
@@ -70,5 +72,32 @@ router.delete("/admin/user/:id", protect, authorizeRoles("admin"), async (req, r
     res.status(500).json({ message: "Server error" });
   }
 });
+
+
+
+/**
+ * @route   GET /api/admin/dashboard-stats
+ * @desc    Get counts for users, enrollments, pending reviews, and logs
+ * @access  Private (Admin only)
+ */
+router.get(
+  "/dashboard-stats", 
+  protect, 
+  authorizeRoles("admin"), 
+  getDashboardStats
+);
+
+/**
+ * @route   GET /api/admin/logs
+ * @desc    Get detailed list of system activity logs
+ * @access  Private (Admin only)
+ */
+router.get(
+  "/logs", 
+  protect, 
+  authorizeRoles("admin"), 
+  getRecentActivityLogs
+);
+
 
 export default router;
