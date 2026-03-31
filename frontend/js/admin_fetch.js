@@ -13,7 +13,7 @@ const loadAdminDashboard = async () => {
     }
 
     try {
-        const response = await fetch("/api/admin/dashboard-stats", {
+        const response = await fetch("/api/auth/dashboard-stats", {
             method: "GET",
             headers: {
                 "Authorization": `Bearer ${token}`,
