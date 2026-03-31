@@ -8,7 +8,6 @@ import {
   getTotalEnrollmentsCount, 
   getPendingReviewsCount, 
   getTotalLogsCount,
-  getSystemLogs,
   findUserById 
 } from "../models/userModel.js";
 import dotenv from "dotenv";
