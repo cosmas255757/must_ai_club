@@ -90,65 +90,47 @@ export const deleteUser = async (id) => {
   return result.rows[0];
 };
 
-
-
-// Count Total Users
+//  Count Total Users
 export const getTotalUsersCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM users`;
   try {
     const { rows } = await pool.query(query);
-    return parseInt(rows[0].count);
+    // rows[0].count extracts the value from the first row returned
+    return parseInt(rows[0].count, 10) || 0;
   } catch (error) {
     throw new Error("Error counting users: " + error.message);
   }
 };
 
-//  Count Total Enrollments
+// Count Total Enrollments
 export const getTotalEnrollmentsCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM enrollments`;
   try {
     const { rows } = await pool.query(query);
-    return parseInt(rows[0].count);
+    return parseInt(rows[0].count, 10) || 0;
   } catch (error) {
     throw new Error("Error counting enrollments: " + error.message);
   }
 };
 
-// Count Pending Project Reviews
+//  Count Pending Project Reviews
 export const getPendingReviewsCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM project_reviews WHERE approved = FALSE`;
   try {
     const { rows } = await pool.query(query);
-    return parseInt(rows[0].count);
+    return parseInt(rows[0].count, 10) || 0;
   } catch (error) {
     throw new Error("Error counting pending reviews: " + error.message);
   }
 };
 
-// Count Total System Logs
+//  Count Total System Logs
 export const getTotalLogsCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM activity_logs`;
   try {
     const { rows } = await pool.query(query);
-    return parseInt(rows[0].count);
+    return parseInt(rows[0].count, 10) || 0;
   } catch (error) {
     throw new Error("Error counting activity logs: " + error.message);
-  }
-};
-
-// Fetch Actual System Logs (Detailed list)
-export const getSystemLogs = async (limit = 50) => {
-  const query = `
-    SELECT al.*, u.name as user_name 
-    FROM activity_logs al
-    LEFT JOIN users u ON al.user_id = u.id
-    ORDER BY al.created_at DESC
-    LIMIT $1
-  `;
-  try {
-    const { rows } = await pool.query(query, [limit]);
-    return rows;
-  } catch (error) {
-    throw new Error("Error fetching system logs: " + error.message);
   }
 };
