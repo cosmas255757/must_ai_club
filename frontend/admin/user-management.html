@@ -1,249 +1,293 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>User Management - Admin</title>
     <style>
-       /* --- BASE STYLES --- */
-.page-header { 
-    display: flex; 
-    justify-content: space-between; 
-    align-items: center; 
-    margin-bottom: 30px; 
-}
+        /* --- BASE STYLES --- */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
 
-.create-btn { 
-    background: #ef4444; 
-    color: white; 
-    border: none; 
-    padding: 12px 24px; 
-    border-radius: 12px; 
-    font-weight: 700; 
-    cursor: pointer; 
-    transition: 0.3s;
-}
+        .create-btn {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: 0.3s;
+        }
 
-.create-btn:hover { 
-    background: #dc2626; 
-    transform: translateY(-2px); 
-}
+        .create-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
 
-/* Search & Filter Bar */
-.filter-bar { 
-    background: white; 
-    padding: 15px 25px; 
-    border-radius: 15px; 
-    border: 1px solid #e2e8f0; 
-    margin-bottom: 25px; 
-    display: flex; 
-    gap: 15px; 
-    align-items: center; 
-}
+        /* Search & Filter Bar */
+        .filter-bar {
+            background: white;
+            padding: 15px 25px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 25px;
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
 
-.filter-bar input { 
-    flex: 1; 
-    padding: 10px; 
-    border: 1px solid #f1f5f9; 
-    border-radius: 8px; 
-    outline: none; 
-}
+        .filter-bar input {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #f1f5f9;
+            border-radius: 8px;
+            outline: none;
+        }
 
-/* User Table */
-.table-container { 
-    background: white; 
-    border-radius: 24px; 
-    border: 1px solid #e2e8f0; 
-    overflow: hidden; 
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); 
-}
+        /* User Table */
+        .table-container {
+            background: white;
+            border-radius: 24px;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
 
-table { width: 100%; border-collapse: collapse; text-align: left; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+        }
 
-th { 
-    background: #f8fafc; 
-    padding: 18px 25px; 
-    color: #64748b; 
-    font-size: 0.8rem; 
-    text-transform: uppercase; 
-    letter-spacing: 1px; 
-}
+        th {
+            background: #f8fafc;
+            padding: 18px 25px;
+            color: #64748b;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
-td { 
-    padding: 18px 25px; 
-    border-top: 1px solid #f1f5f9; 
-    font-size: 0.95rem; 
-    vertical-align: middle; 
-}
+        td {
+            padding: 18px 25px;
+            border-top: 1px solid #f1f5f9;
+            font-size: 0.95rem;
+            vertical-align: middle;
+        }
 
-.role-badge { 
-    padding: 4px 10px; 
-    border-radius: 20px; 
-    font-size: 0.75rem; 
-    font-weight: 700; 
-    text-transform: capitalize; 
-}
+        .role-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: capitalize;
+        }
 
-.student { background: #e0f2fe; color: #0369a1; }
-.facilitator { background: #e0e7ff; color: #4338ca; }
-.sponsor { background: #dcfce7; color: #15803d; }
-.admin { background: #fee2e2; color: #991b1b; }
+        .student {
+            background: #e0f2fe;
+            color: #0369a1;
+        }
 
-.status-indicator { 
-    display: inline-block; 
-    width: 8px; 
-    height: 8px; 
-    border-radius: 50%; 
-    margin-right: 5px; 
-}
+        .facilitator {
+            background: #e0e7ff;
+            color: #4338ca;
+        }
 
-.active-status { background: #10b981; }
-.suspended-status { background: #ef4444; }
+        .sponsor {
+            background: #dcfce7;
+            color: #15803d;
+        }
 
-.action-btn { 
-    background: none; 
-    border: none; 
-    cursor: pointer; 
-    font-size: 1.1rem; 
-    padding: 5px; 
-    transition: 0.2s;
-}
+        .admin {
+            background: #fee2e2;
+            color: #991b1b;
+        }
 
-.action-btn:hover { transform: scale(1.2); }
+        .status-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 5px;
+        }
 
-/* Modal */
-.modal { 
-    display: none; 
-    position: fixed; 
-    inset: 0; 
-    background: rgba(15, 23, 42, 0.7); 
-    z-index: 2000; 
-    align-items: center; 
-    justify-content: center; 
-    backdrop-filter: blur(4px); 
-}
+        .active-status {
+            background: #10b981;
+        }
 
-.modal-content { 
-    background: white; 
-    width: 90%; 
-    max-width: 500px; 
-    border-radius: 24px; 
-    padding: 35px; 
-    animation: slideUp 0.3s ease; 
-}
+        .suspended-status {
+            background: #ef4444;
+        }
 
-.form-group { margin-bottom: 15px; }
-.form-group label { 
-    display: block; 
-    margin-bottom: 5px; 
-    font-weight: 600; 
-    color: #1e293b; 
-}
+        .action-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 5px;
+            transition: 0.2s;
+        }
 
-.form-group input, .form-group select { 
-    width: 100%; 
-    padding: 12px; 
-    border: 1px solid #e2e8f0; 
-    border-radius: 10px; 
-}
+        .action-btn:hover {
+            transform: scale(1.2);
+        }
 
-@keyframes slideUp { 
-    from { transform: translateY(20px); opacity: 0; } 
-    to { transform: translateY(0); opacity: 1; } 
-}
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.7);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
 
-/* --- ADVANCED MOBILE RESPONSIVENESS --- */
-@media (max-width: 850px) {
-    .page-header {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 15px;
-    }
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            border-radius: 24px;
+            padding: 35px;
+            animation: slideUp 0.3s ease;
+        }
 
-    .filter-bar {
-        flex-direction: column;
-        align-items: stretch;
-    }
+        .form-group {
+            margin-bottom: 15px;
+        }
 
-    .table-container {
-        background: transparent;
-        border: none;
-        box-shadow: none;
-        overflow: visible;
-    }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #1e293b;
+        }
 
-    /* Transform Table to Cards */
-    table, thead, tbody, th, td, tr { 
-        display: block; 
-    }
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+        }
 
-    thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
 
-    tr {
-        background: white;
-        border: 1px solid #e2e8f0;
-        border-radius: 20px;
-        margin-bottom: 20px;
-        padding: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-    }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
 
-    td {
-        border: none;
-        padding: 10px 0;
-        position: relative;
-        padding-left: 50%; /* Space for the label */
-        text-align: right;
-    }
+        /* --- ADVANCED MOBILE RESPONSIVENESS --- */
+        @media (max-width: 850px) {
+            .page-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
 
-    /* Advanced Labels */
-    td::before {
-        content: attr(data-label);
-        position: absolute;
-        left: 0;
-        width: 45%;
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
-        font-weight: 700;
-        color: #64748b;
-        font-size: 0.75rem;
-        text-transform: uppercase;
-    }
+            .filter-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
 
-    /* Adjusting specific elements for cards */
-    td:first-child {
-        text-align: left;
-        padding-left: 0;
-        font-size: 1.2rem;
-        border-bottom: 2px solid #f1f5f9;
-        margin-bottom: 10px;
-    }
+            .table-container {
+                background: transparent;
+                border: none;
+                box-shadow: none;
+                overflow: visible;
+            }
 
-    td:first-child::before {
-        display: none;
-    }
+            /* Transform Table to Cards */
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
 
-    td:last-child {
-        border-top: 1px solid #f1f5f9;
-        margin-top: 10px;
-        padding-top: 15px;
-        text-align: center;
-        padding-left: 0;
-    }
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
 
-    td:last-child::before {
-        display: none;
-    }
-}
+            tr {
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 20px;
+                margin-bottom: 20px;
+                padding: 20px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            }
 
+            td {
+                border: none;
+                padding: 10px 0;
+                position: relative;
+                padding-left: 50%;
+                /* Space for the label */
+                text-align: right;
+            }
+
+            /* Advanced Labels */
+            td::before {
+                content: attr(data-label);
+                position: absolute;
+                left: 0;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: 700;
+                color: #64748b;
+                font-size: 0.75rem;
+                text-transform: uppercase;
+            }
+
+            /* Adjusting specific elements for cards */
+            td:first-child {
+                text-align: left;
+                padding-left: 0;
+                font-size: 1.2rem;
+                border-bottom: 2px solid #f1f5f9;
+                margin-bottom: 10px;
+            }
+
+            td:first-child::before {
+                display: none;
+            }
+
+            td:last-child {
+                border-top: 1px solid #f1f5f9;
+                margin-top: 10px;
+                padding-top: 15px;
+                text-align: center;
+                padding-left: 0;
+            }
+
+            td:last-child::before {
+                display: none;
+            }
+        }
     </style>
     <script src="../js/guard.js"></script>
 </head>
+
 <body>
 
     <div class="page-header">
@@ -251,16 +295,16 @@ td {
         <button class="create-btn" onclick="openModal()">+ Register Staff</button>
     </div>
     <div class="filter-bar">
-    <span>🔍</span>
-    <input type="text" id="user-search" placeholder="Search by name, email, or UUID...">
-    <select id="role-filter" style="padding: 10px; border-radius: 8px; border: 1px solid #f1f5f9;">
-        <option value="all">All Roles</option>
-        <option value="student">Students</option>
-        <option value="facilitator">Facilitators</option>
-        <option value="sponsor">Sponsors</option>
-        <option value="admin">Admin</option>
-    </select>
-</div>
+        <span>🔍</span>
+        <input type="text" id="user-search" placeholder="Search by name, email, or UUID...">
+        <select id="role-filter" style="padding: 10px; border-radius: 8px; border: 1px solid #f1f5f9;">
+            <option value="all">All Roles</option>
+            <option value="student">Students</option>
+            <option value="facilitator">Facilitators</option>
+            <option value="sponsor">Sponsors</option>
+            <option value="admin">Admin</option>
+        </select>
+    </div>
 
 
     <div class="table-container">
@@ -311,20 +355,20 @@ td {
             <form id="adminCreateUserForm">
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" placeholder="Full Name" required>
+                    <input type="text" id="admin-name" placeholder="Full Name" required>
                 </div>
                 <div class="form-group">
                     <label>Email Address</label>
-                    <input type="email" placeholder="cosmas@gmail.com" required>
+                    <input type="email" id="admin-email" placeholder="cosmas@gmail.com" required>
                 </div>
                 <div class="form-group">
                     <label>Temporary Password</label>
-                    <input type="password" placeholder="••••••••" required>
+                    <input type="password" id="admin-password" placeholder="••••••••" required>
                 </div>
                 <div class="form-group">
                     <label>Assign Role</label>
-                    <select required>
-                        <option value="#">--select role--</option>
+                    <select id="admin-role" required>
+                        <option value="">--select role--</option>
                         <option value="student">student</option>
                         <option value="facilitator">Facilitator</option>
                         <option value="sponsor">Sponsor</option>
@@ -332,7 +376,8 @@ td {
                     </select>
                 </div>
                 <div style="display: flex; gap: 10px; margin-top: 25px;">
-                    <button type="button" class="create-btn" style="background:#f1f5f9; color:#475569;" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="create-btn" style="background:#f1f5f9; color:#475569;"
+                        onclick="closeModal()">Cancel</button>
                     <button type="submit" class="create-btn" style="flex:1;">Create Account</button>
                 </div>
             </form>
@@ -346,4 +391,5 @@ td {
     </script>
     <script src="../js/adminManageUser.js"></script>
 </body>
+
 </html>

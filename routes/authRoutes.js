@@ -60,4 +60,6 @@ router.delete("/users/:id", protect, authorizeRoles("admin"), deleteUser);
 
 router.get("/users/search", protect, authorizeRoles("admin"), searchUsers);
 
+router.post("/register-admin", protect, authorizeRoles("admin"), registerUserByAdmin);
+
 export default router;

@@ -194,3 +194,65 @@ document.addEventListener("DOMContentLoaded", () => {
         document.getElementById("role-filter")?.addEventListener("change", handleSearch);
     }
 });
+
+// --- MODAL LOGIC ---
+window.openModal = () => {
+    const modal = document.getElementById("userModal");
+    if (modal) modal.style.display = "flex";
+};
+
+window.closeModal = () => {
+    const modal = document.getElementById("userModal");
+    const form = document.getElementById("adminCreateUserForm");
+    if (modal) modal.style.display = "none";
+    if (form) form.reset(); // Clear fields on close
+};
+
+// --- FORM SUBMISSION LOGIC ---
+const handleAdminCreateUser = async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("admin-name").value;
+    const email = document.getElementById("admin-email").value;
+    const password = document.getElementById("admin-password").value;
+    const role = document.getElementById("admin-role").value;
+    const token = localStorage.getItem("token");
+
+    if (!role) {
+        alert("Please select a valid role");
+        return;
+    }
+
+    try {
+        const response = await fetch("/api/auth/register-admin", { // Path from your server.js + routes
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ name, email, password, role })
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+            alert(`Account for ${name} created successfully!`);
+            closeModal();
+            loadAllUsers(); // Refresh the table automatically
+        } else {
+            alert(`Error: ${result.message}`);
+        }
+    } catch (error) {
+        console.error("Admin creation failed:", error);
+        alert("Failed to connect to the server.");
+    }
+};
+
+// --- INITIALIZE ---
+document.addEventListener("DOMContentLoaded", () => {
+    const createForm = document.getElementById("adminCreateUserForm");
+    if (createForm) {
+        createForm.addEventListener("submit", handleAdminCreateUser);
+    }
+});
+
