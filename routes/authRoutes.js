@@ -14,6 +14,7 @@ import {
 } from "../models/userModel.js";
 import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
 import{ getAllUsers, toggleUserStatus,  deleteUser,  searchUsers } from "../controllers/adminController.js"
+import { getSystemReport } from "../controllers/reportController.js";
 const router = express.Router();
 
 // -------------------------------------------------------
@@ -61,5 +62,7 @@ router.delete("/users/:id", protect, authorizeRoles("admin"), deleteUser);
 router.get("/users/search", protect, authorizeRoles("admin"), searchUsers);
 
 router.post("/register-admin", protect, authorizeRoles("admin"), registerUserByAdmin);
+
+router.get("/admin/reports", protect, authorizeRoles("admin"), getSystemReport);
 
 export default router;

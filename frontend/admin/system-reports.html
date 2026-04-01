@@ -1,112 +1,196 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>System Reports - Admin Command</title>
     <style>
-        .report-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; margin-bottom: 40px; }
-        
+        .report-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
         /* Analytics Cards */
-        .analytics-card { background: white; border-radius: 24px; padding: 30px; border: 1px solid #e2e8f0; position: relative; overflow: hidden; }
-        .analytics-card h3 { margin: 0; font-size: 0.9rem; color: #64748b; text-transform: uppercase; letter-spacing: 1px; }
-        .analytics-card .value { font-size: 2.2rem; font-weight: 800; color: #0f172a; margin: 10px 0; }
-        .trend { font-size: 0.85rem; font-weight: 700; display: flex; align-items: center; gap: 5px; }
-        .up { color: #10b981; }
-        
+        .analytics-card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .analytics-card h3 {
+            margin: 0;
+            font-size: 0.9rem;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .analytics-card .value {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin: 10px 0;
+        }
+
+        .trend {
+            font-size: 0.85rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .up {
+            color: #10b981;
+        }
+
         /* Chart Placeholders */
-        .chart-container { background: white; border-radius: 24px; padding: 30px; border: 1px solid #e2e8f0; margin-bottom: 30px; }
-        .chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .mock-bar-chart { display: flex; align-items: flex-end; gap: 15px; height: 200px; padding-top: 20px; }
-        .bar { background: #ef4444; width: 100%; border-radius: 8px 8px 0 0; transition: height 1s ease; position: relative; }
-        .bar:hover { background: #0f172a; }
-        .bar span { position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 0.75rem; font-weight: bold; color: #64748b; }
+        .chart-container {
+            background: white;
+            border-radius: 24px;
+            padding: 30px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 30px;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .mock-bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 15px;
+            height: 200px;
+            padding-top: 20px;
+        }
+
+        .bar {
+            background: #ef4444;
+            width: 100%;
+            border-radius: 8px 8px 0 0;
+            transition: height 1s ease;
+            position: relative;
+        }
+
+        .bar:hover {
+            background: #0f172a;
+        }
+
+        .bar span {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.75rem;
+            font-weight: bold;
+            color: #64748b;
+        }
 
         /* Report Table */
-        .summary-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .summary-table th { text-align: left; padding: 12px; color: #94a3b8; font-size: 0.8rem; border-bottom: 1px solid #f1f5f9; }
-        .summary-table td { padding: 15px 12px; border-bottom: 1px solid #f1f5f9; font-size: 0.9rem; }
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .summary-table th {
+            text-align: left;
+            padding: 12px;
+            color: #94a3b8;
+            font-size: 0.8rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+
+        .summary-table td {
+            padding: 15px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
     </style>
     <script src="../js/guard.js"></script>
 </head>
+
 <body>
-
-    <header style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
-        <div>
-            <h1>System Analytics</h1>
-            <p style="color: #64748b;">Comprehensive data on platform engagement and financial growth.</p>
-        </div>
-        <button onclick="window.print()" style="padding: 10px 20px; background: #0f172a; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
-            📥 Export PDF
-        </button>
-    </header>
-
-    <!-- Top Metrics -->
-    <div class="report-grid">
-        <div class="analytics-card">
-            <h3>Total Revenue</h3>
-            <div class="value">TZS 4.2M</div>
-            <div class="trend up">▲ 12% vs last month</div>
-        </div>
-        <div class="analytics-card">
-            <h3>Active Enrollments</h3>
-            <div class="value">1,204</div>
-            <div class="trend up">▲ 8% new students</div>
-        </div>
-        <div class="analytics-card">
-            <h3>Project Success</h3>
-            <div class="value">84%</div>
-            <div class="trend" style="color: #64748b;">Approval rate</div>
-        </div>
+<header style="margin-bottom: 30px; display: flex; justify-content: space-between; align-items: flex-end;">
+    <div>
+        <h1>System Analytics</h1>
+        <p style="color: #64748b;">Comprehensive data on platform engagement and financial growth.</p>
     </div>
+    <button onclick="window.print()"
+        style="padding: 10px 20px; background: #0f172a; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: 600;">
+        📥 Export PDF
+    </button>
+</header>
 
-    <!-- Visual Growth Chart -->
-    <div class="chart-container">
-        <div class="chart-header">
-            <h2>User Registration Trend</h2>
-            <select style="padding: 5px; border-radius: 5px; border: 1px solid #e2e8f0;">
-                <option>Last 6 Months</option>
-            </select>
-        </div>
-        <div class="mock-bar-chart">
-            <div class="bar" style="height: 40%;"><span>Jul</span></div>
-            <div class="bar" style="height: 60%;"><span>Aug</span></div>
-            <div class="bar" style="height: 55%;"><span>Sep</span></div>
-            <div class="bar" style="height: 85%;"><span>Oct</span></div>
-            <div class="bar" style="height: 70%;"><span>Nov</span></div>
-            <div class="bar" style="height: 95%;"><span>Dec</span></div>
-        </div>
+<!-- Top Metrics -->
+<div class="report-grid">
+    <div class="analytics-card">
+        <h3>Total Revenue</h3>
+        <!-- Added ID: total-revenue -->
+        <div class="value" id="total-revenue">TZS 0</div>
+        <div class="trend up">▲ 12% vs last month</div>
     </div>
+    <div class="analytics-card">
+        <h3>Active Enrollments</h3>
+        <!-- Added ID: active-enrollments -->
+        <div class="value" id="active-enrollments">0</div>
+        <div class="trend up">▲ 8% new students</div>
+    </div>
+    <div class="analytics-card">
+        <h3>Project Success</h3>
+        <!-- Added ID: success-rate -->
+        <div class="value" id="success-rate">0%</div>
+        <div class="trend" style="color: #64748b;">Approval rate</div>
+    </div>
+</div>
 
-    <!-- Sponsorship Breakdown -->
-    <div class="chart-container">
-        <h2>Sponsorship Breakdown</h2>
-        <table class="summary-table">
-            <thead>
-                <tr>
-                    <th>Sponsor Name</th>
-                    <th>Type</th>
-                    <th>Total Contribution</th>
-                    <th>Last Active</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td><strong>AI Mbeya Solutions</strong></td>
-                    <td><span style="color: #10b981;">Money</span></td>
-                    <td>TZS 1,500,000</td>
-                    <td>2 days ago</td>
-                </tr>
-                <tr>
-                    <td><strong>Global Tech Hub</strong></td>
-                    <td><span style="color: #3b82f6;">Tools</span></td>
-                    <td>10x RTX GPUs</td>
-                    <td>1 week ago</td>
-                </tr>
-            </tbody>
-        </table>
+<!-- Visual Growth Chart -->
+<div class="chart-container">
+    <div class="chart-header">
+        <h2>User Registration Trend</h2>
+        <select id="trend-filter" style="padding: 5px; border-radius: 5px; border: 1px solid #e2e8f0;">
+            <option value="6">Last 6 Months</option>
+            <option value="3">Last 3 Months</option>
+            <option value="1">Last 1 Month</option>
+        </select>
     </div>
+    <!-- Added ID: registration-chart -->
+    <div class="mock-bar-chart" id="registration-chart">
+        <!-- Bars will be injected here by JS -->
+    </div>
+</div>
+
+<!-- Sponsorship Breakdown -->
+<div class="chart-container">
+    <h2>Sponsorship Breakdown</h2>
+    <table class="summary-table">
+        <thead>
+            <tr>
+                <th>Sponsor Name</th>
+                <th>Type</th>
+                <th>Total Contribution</th>
+                <th>Last Active</th>
+            </tr>
+        </thead>
+        <!-- Added ID: sponsorship-table-body -->
+        <tbody id="sponsorship-table-body">
+            <!-- Rows will be injected here by JS -->
+        </tbody>
+    </table>
+</div>
 
     <script src="../js/admin_layout.js"></script>
+    <script src="../js/analytics.js"></script>
 </body>
+
 </html>
