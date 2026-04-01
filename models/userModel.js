@@ -126,7 +126,7 @@ export const getPendingReviewsCount = async () => {
 
 //  Count Total System Logs
 export const getTotalLogsCount = async () => {
-  const query = `SELECT COUNT(*) AS count FROM activity_logs`;
+  const query = `SELECT COUNT(*) AS count FROM activity_logs WHERE created_at >= NOW() - INTERVAL '72 hours'`;
   try {
     const { rows } = await pool.query(query);
     return parseInt(rows[0].count, 10) || 0;
@@ -149,7 +149,7 @@ export const getSystemLogs = async (limit = 50) => {
 
   try {
     const { rows } = await pool.query(query, [limit]);
-    return rows; // <--- CRITICAL: This must be here to send data to the controller
+    return rows; 
   } catch (error) {
     console.error("Database Error in getSystemLogs:", error.message);
     throw new Error("Could not retrieve system logs: " + error.message);
