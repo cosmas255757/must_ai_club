@@ -189,3 +189,73 @@ document.addEventListener("DOMContentLoaded", () => {
         loadActivityLogs();
     }, 300000); 
 });
+
+
+
+//===================================================================================
+//====================================================================================
+
+const loadFullAuditLogs = async () => {
+    const tableBody = document.getElementById("log-body");
+    const token = localStorage.getItem("token");
+
+    if (!tableBody) return;
+    if (!token) {
+        window.location.href = "/login.html";
+        return;
+    }
+
+    try {
+        // Fetch more logs for this page (limit=100)
+        const response = await fetch("/api/admin/logs?limit=100", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+            // 1. Wipe the static HTML rows
+            tableBody.innerHTML = "";
+
+            if (result.data && result.data.length > 0) {
+                // 2. Loop and create table rows
+                result.data.forEach(log => {
+                    const row = document.createElement("tr");
+
+                    // Format Date: YYYY-MM-DD HH:MM:SS
+                    const date = new Date(log.created_at);
+                    const formattedDate = date.toISOString().split('T')[0] + ' ' + date.toLocaleTimeString();
+
+                    // Shorten User ID for clean display
+                    const shortId = log.id ? `${log.id.substring(0, 8)}...` : "System";
+
+                    row.innerHTML = `
+                        <td class="timestamp" data-label="Timestamp">${formattedDate}</td>
+                        <td class="user-ref" data-label="User ID">${log.user_name || shortId}</td>
+                        <td class="action-text" data-label="Action">${log.action}</td>
+                        <td style="color: #10b981;" data-label="Status">SUCCESS</td>
+                    `;
+
+                    tableBody.appendChild(row);
+                });
+            } else {
+                tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; padding: 20px;">No logs found in the last 72 hours.</td></tr>`;
+            }
+        }
+    } catch (error) {
+        console.error("Audit Log Error:", error);
+        tableBody.innerHTML = `<tr><td colspan="4" style="text-align:center; color: #ef4444;">Failed to connect to database.</td></tr>`;
+    }
+};
+
+// Initialize
+document.addEventListener("DOMContentLoaded", () => {
+    loadFullAuditLogs();
+    
+    // Auto-refresh every 60 seconds for the full table
+    setInterval(loadFullAuditLogs, 60000);
+});
