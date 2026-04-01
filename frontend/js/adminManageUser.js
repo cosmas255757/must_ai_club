@@ -83,3 +83,50 @@ document.addEventListener("DOMContentLoaded", () => {
         loadAllUsers();
     }
 });
+
+// Function to toggle status
+window.toggleUserStatus = async (userId, currentStatus) => {
+    const actionText = currentStatus === 'active' ? 'SUSPEND' : 'ACTIVATE';
+    if (!confirm(`Are you sure you want to ${actionText} this user?`)) return;
+
+    const token = localStorage.getItem("token");
+    try {
+        const response = await fetch(`/api/auth/users/${userId}/status`, {
+            method: "PATCH",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ currentStatus })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert(result.message);
+            loadAllUsers(); // Refresh the list
+        }
+    } catch (error) {
+        alert("Failed to update status.");
+    }
+};
+
+// Function to delete user
+window.deleteUser = async (userId) => {
+    if (!confirm("CRITICAL: This will permanently delete the user. Continue?")) return;
+
+    const token = localStorage.getItem("token");
+    try {
+        const response = await fetch(`/api/auth/users/${userId}`, {
+            method: "DELETE",
+            headers: { "Authorization": `Bearer ${token}` }
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert("User removed from system.");
+            loadAllUsers(); // Refresh the list
+        }
+    } catch (error) {
+        alert("Delete failed.");
+    }
+};

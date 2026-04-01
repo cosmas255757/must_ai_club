@@ -57,15 +57,18 @@ export const findUserById = async (id) => {
 // ------------------------------------------------------------------------------------
 // ---------------------UPDATE USER STATUS (SUSPEND/ACTIVE)----------------------------
 // -----------------------------------------------------------------------------------
-export const updateUserStatus = async (id, status) => {
-  const query = `
-    UPDATE users
-    SET status = $2
-    WHERE id = $1
-    RETURNING id, name, status
-  `;
-  const result = await pool.query(query, [id, status]);
-  return result.rows[0];
+// Toggle between 'active' and 'suspended'
+export const toggleUserStatusModel = async (id, newStatus) => {
+  const query = `UPDATE users SET status = $1 WHERE id = $2 RETURNING id, status`;
+  const { rows } = await pool.query(query, [newStatus, id]);
+  return rows[0];
+};
+
+// Permanently delete a user
+export const deleteUserModel = async (id) => {
+  const query = `DELETE FROM users WHERE id = $1 RETURNING id`;
+  const { rows } = await pool.query(query, [id]);
+  return rows[0];
 };
 
 // ----------------------------------------------------------------------------
@@ -84,15 +87,6 @@ export const getAllUsersModel = async () => {
   } catch (error) {
     throw new Error("Error fetching all users: " + error.message);
   }
-};
-
-// ----------------------------------------------------------------------
-// ------------------------------DELETE USER-----------------------------
-// ----------------------------------------------------------------------
-export const deleteUser = async (id) => {
-  const query = `DELETE FROM users WHERE id = $1 RETURNING id`;
-  const result = await pool.query(query, [id]);
-  return result.rows[0];
 };
 
 //  Count Total Users

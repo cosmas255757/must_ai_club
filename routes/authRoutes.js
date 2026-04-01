@@ -11,11 +11,9 @@ import {
 } from "../controllers/authController.js";
 import {
   findUserById,
-  updateUserStatus,
-  deleteUser
 } from "../models/userModel.js";
 import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
-import{ getAllUsers } from "../controllers/adminController.js"
+import{ getAllUsers, toggleUserStatus,  deleteUser} from "../controllers/adminController.js"
 const router = express.Router();
 
 // -------------------------------------------------------
@@ -44,46 +42,7 @@ router.get("/profile", protect, async (req, res) => {
 
 router.post("/admin/create", protect, authorizeRoles("admin"), registerUserByAdmin);
 
-
-
-router.patch("/admin/status/:id", protect, authorizeRoles("admin"), async (req, res) => {
-  try {
-    const { status } = req.body; // e.g., 'suspended' or 'active'
-    const updatedUser = await updateUserStatus(req.params.id, status);
-
-    if (!updatedUser) return res.status(404).json({ message: "User not found" });
-    res.json({ message: "User status updated", updatedUser });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-router.delete("/admin/user/:id", protect, authorizeRoles("admin"), async (req, res) => {
-  try {
-    const deleted = await deleteUser(req.params.id);
-    if (!deleted) return res.status(404).json({ message: "User not found" });
-    res.json({ message: "User deleted successfully" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
-
-/**
- * @route   GET /api/admin/dashboard-stats
- * @desc    Get counts for users, enrollments, pending reviews, and logs
- * @access  Private (Admin only)
- */
-router.get(
-  "/dashboard-stats",
-  protect,
-  authorizeRoles("admin"),
-  getDashboardStats
-);
-
-
-// -----------------------------------------------------------
-// ----------------- ADMIN QUICK ACTIONS ---------------------
-// -----------------------------------------------------------
+router.get(  "/dashboard-stats",  protect,  authorizeRoles("admin"),  getDashboardStats);
 
 router.post("/backup", protect, authorizeRoles("admin"), backupDatabase);
 
@@ -94,5 +53,9 @@ router.post("/lockdown", protect, authorizeRoles("admin"), emergencyLockdown);
 router.get(  "/logs",  protect,  authorizeRoles("admin"),  getRecentActivityLogs);
 
 router.get("/users", protect, authorizeRoles("admin"), getAllUsers);
+
+router.patch("/users/:id/status", protect, authorizeRoles("admin"), toggleUserStatus);
+
+router.delete("/users/:id", protect, authorizeRoles("admin"), deleteUser);
 
 export default router;
