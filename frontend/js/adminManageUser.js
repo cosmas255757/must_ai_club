@@ -2,7 +2,7 @@
 let allUsers = []; 
 let searchTimeout;
 
-// 2. Core Data Fetching Function (Fetches initial list)
+// 2. Core Data Fetching Function
 const loadAllUsers = async () => {
     const userTableBody = document.getElementById("user-list");
     const token = localStorage.getItem("token");
@@ -40,7 +40,7 @@ const loadAllUsers = async () => {
     }
 };
 
-// 3. Rendering Logic (Reusable for Search and Load)
+// 3. Rendering Logic
 const renderUserTable = (usersToDisplay) => {
     const userTableBody = document.getElementById("user-list");
     if (!userTableBody) return;
@@ -79,26 +79,22 @@ const renderUserTable = (usersToDisplay) => {
     });
 };
 
-// 4. Server-Side Search Logic (100% Accuracy with DB)
+// 4. Search & Filter Logic
 const handleSearch = () => {
     const searchEl = document.getElementById("user-search");
     const roleEl = document.getElementById("role-filter");
     const token = localStorage.getItem("token");
-    const userTableBody = document.getElementById("user-list");
 
     const query = searchEl ? searchEl.value.trim() : "";
     const roleValue = roleEl ? roleEl.value.toLowerCase() : "all";
 
-    // Clear previous timer
     clearTimeout(searchTimeout);
 
-    // If search is empty, just use local filtering on the full list to be fast
     if (query === "") {
         filterUsersLocal(); 
         return;
     }
 
-    // Debounce: Wait 300ms after user stops typing to hit the DB
     searchTimeout = setTimeout(async () => {
         try {
             const response = await fetch(`/api/auth/users/search?q=${encodeURIComponent(query)}`, {
@@ -108,19 +104,16 @@ const handleSearch = () => {
             const result = await response.json();
 
             if (result.success) {
-                // Apply Role filter on top of DB search results
                 const filtered = result.data.filter(u => roleValue === "all" || u.role.toLowerCase() === roleValue);
                 renderUserTable(filtered);
             }
         } catch (error) {
             console.error("Search Error:", error);
-            // Fallback to local filter if DB search fails
             filterUsersLocal();
         }
     }, 300);
 };
 
-// Local Filter Fallback (Used for Roles and instant typing)
 const filterUsersLocal = () => {
     const searchEl = document.getElementById("user-search");
     const roleEl = document.getElementById("role-filter");
@@ -184,18 +177,7 @@ window.deleteUser = async (userId) => {
     }
 };
 
-// 6. Initialization
-document.addEventListener("DOMContentLoaded", () => {
-    if (document.getElementById("user-list")) {
-        loadAllUsers();
-        
-        // Setup Search (DB-based) and Filter (Local-based)
-        document.getElementById("user-search")?.addEventListener("input", handleSearch);
-        document.getElementById("role-filter")?.addEventListener("change", handleSearch);
-    }
-});
-
-// --- MODAL LOGIC ---
+// 6. Modal & Form Logic
 window.openModal = () => {
     const modal = document.getElementById("userModal");
     if (modal) modal.style.display = "flex";
@@ -205,10 +187,9 @@ window.closeModal = () => {
     const modal = document.getElementById("userModal");
     const form = document.getElementById("adminCreateUserForm");
     if (modal) modal.style.display = "none";
-    if (form) form.reset(); // Clear fields on close
+    if (form) form.reset();
 };
 
-// --- FORM SUBMISSION LOGIC ---
 const handleAdminCreateUser = async (e) => {
     e.preventDefault();
 
@@ -218,13 +199,8 @@ const handleAdminCreateUser = async (e) => {
     const role = document.getElementById("admin-role").value;
     const token = localStorage.getItem("token");
 
-    if (!role) {
-        alert("Please select a valid role");
-        return;
-    }
-
     try {
-        const response = await fetch("/api/auth/register-admin", { // Path from your server.js + routes
+        const response = await fetch("/api/auth/users/create", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -234,25 +210,25 @@ const handleAdminCreateUser = async (e) => {
         });
 
         const result = await response.json();
-
-        if (response.ok) {
-            alert(`Account for ${name} created successfully!`);
+        if (result.success) {
+            alert("User created successfully!");
             closeModal();
-            loadAllUsers(); // Refresh the table automatically
+            loadAllUsers();
         } else {
-            alert(`Error: ${result.message}`);
+            alert(result.message);
         }
     } catch (error) {
-        console.error("Admin creation failed:", error);
-        alert("Failed to connect to the server.");
+        alert("Failed to create user.");
     }
 };
 
-// --- INITIALIZE ---
+// 7. Initialization
 document.addEventListener("DOMContentLoaded", () => {
-    const createForm = document.getElementById("adminCreateUserForm");
-    if (createForm) {
-        createForm.addEventListener("submit", handleAdminCreateUser);
+    if (document.getElementById("user-list")) {
+        loadAllUsers();
+        
+        document.getElementById("user-search")?.addEventListener("input", handleSearch);
+        document.getElementById("role-filter")?.addEventListener("change", handleSearch);
+        document.getElementById("adminCreateUserForm")?.addEventListener("submit", handleAdminCreateUser);
     }
 });
-

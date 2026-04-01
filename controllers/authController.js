@@ -44,7 +44,6 @@ export const registerStudent = async (req, res) => {
 export const registerUserByAdmin = async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
-    // ... (Your existing validation logic here)
 
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await createUserByAdmin(name, email, hashedPassword, role);
