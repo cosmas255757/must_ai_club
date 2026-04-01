@@ -84,3 +84,53 @@ document.getElementById("btn-lockdown").addEventListener("click", () => {
         performAdminAction("btn-lockdown", "lockdown", "Lockdown");
     }
 });
+
+
+const loadActivityLogs = async () => {
+    const logContainer = document.querySelector(".log-preview");
+    const token = localStorage.getItem("token");
+
+    try {
+        // 1. Fetch the logs from the backend
+        const response = await fetch("/api/admin/logs?limit=5", {
+            method: "GET",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const result = await response.json();
+
+        if (result.success && result.data.length > 0) {
+            // 2. Keep the Header, but clear the static log items
+            const header = logContainer.querySelector("h3");
+            logContainer.innerHTML = ""; 
+            logContainer.appendChild(header);
+
+            // 3. Loop through  real database logs
+            result.data.forEach(log => {
+                const logItem = document.createElement("div");
+                logItem.className = "log-item";
+                
+                // Format the timestamp (Optional)
+                const time = new Date(log.created_at).toLocaleTimeString();
+                
+                // Display the User Name (if joined) and the Action
+                logItem.innerText = `> ${time} - ${log.user_name || 'System'}: ${log.action}`;
+                
+                logContainer.appendChild(logItem);
+            });
+        } else if (result.data.length === 0) {
+            // If no logs exist yet
+            logContainer.innerHTML += `<div class="log-item">> No activity recorded yet.</div>`;
+        }
+    } catch (error) {
+        console.error("Error loading logs:", error);
+    }
+};
+
+document.addEventListener("DOMContentLoaded", () => {
+    loadAdminDashboard(); 
+    loadActivityLogs(); 
+});
