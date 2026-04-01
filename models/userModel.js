@@ -136,13 +136,10 @@ export const getTotalLogsCount = async () => {
 };
 export const getSystemLogs = async (limit = 50) => {
   const query = `
-    SELECT 
-      al.id, 
-      al.action, 
-      al.created_at, 
-      u.name AS user_name 
+     SELECT al.id, al.action, al.created_at, u.name AS user_name 
     FROM activity_logs al
     LEFT JOIN users u ON al.user_id = u.id
+    WHERE al.created_at >= NOW() - INTERVAL '72 hours'
     ORDER BY al.created_at DESC
     LIMIT $1
   `;
