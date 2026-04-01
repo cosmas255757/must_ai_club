@@ -200,7 +200,7 @@ const handleAdminCreateUser = async (e) => {
     const token = localStorage.getItem("token");
 
     try {
-        const response = await fetch("/api/auth/users/create", {
+        const response = await fetch("/api/auth/register-admin", {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
