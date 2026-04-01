@@ -250,17 +250,18 @@ td {
         <h1>User Directory</h1>
         <button class="create-btn" onclick="openModal()">+ Register Staff</button>
     </div>
-
     <div class="filter-bar">
-        <span>🔍</span>
-        <input type="text" placeholder="Search by name, email, or UUID...">
-        <select style="padding: 10px; border-radius: 8px; border: 1px solid #f1f5f9;">
-            <option>All Roles</option>
-            <option>Students</option>
-            <option>Facilitators</option>
-            <option>Sponsors</option>
-        </select>
-    </div>
+    <span>🔍</span>
+    <input type="text" id="user-search" placeholder="Search by name, email, or UUID...">
+    <select id="role-filter" style="padding: 10px; border-radius: 8px; border: 1px solid #f1f5f9;">
+        <option value="all">All Roles</option>
+        <option value="student">Students</option>
+        <option value="facilitator">Facilitators</option>
+        <option value="sponsor">Sponsors</option>
+        <option value="admin">Admin</option>
+    </select>
+</div>
+
 
     <div class="table-container">
         <table>
@@ -306,7 +307,7 @@ td {
     <div class="modal" id="userModal">
         <div class="modal-content">
             <h2 style="margin-top:0;">Register New Staff</h2>
-            <p style="color: #64748b; font-size: 0.9rem;">Manually create accounts for Facilitators and Sponsors.</p>
+            <p style="color: #64748b; font-size: 0.9rem;">Manually create accounts for users</p>
             <form id="adminCreateUserForm">
                 <div class="form-group">
                     <label>Full Name</label>
@@ -324,6 +325,7 @@ td {
                     <label>Assign Role</label>
                     <select required>
                         <option value="#">--select role--</option>
+                        <option value="student">student</option>
                         <option value="facilitator">Facilitator</option>
                         <option value="sponsor">Sponsor</option>
                         <option value="admin">Admin</option>

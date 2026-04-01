@@ -1,11 +1,15 @@
+// 1. Global State
+let allUsers = []; 
+let searchTimeout;
+
+// 2. Core Data Fetching Function (Fetches initial list)
 const loadAllUsers = async () => {
     const userTableBody = document.getElementById("user-list");
     const token = localStorage.getItem("token");
 
-    // 1. Safety check for the HTML element
     if (!userTableBody) return;
 
-    // 2. Initial Loading State (User Friendly)
+    // Loading State
     userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">Fetching users... Please wait.</td></tr>`;
 
     if (!token) {
@@ -14,7 +18,6 @@ const loadAllUsers = async () => {
     }
 
     try {
-        // 3. Fetch from Backend
         const response = await fetch("/api/auth/users", {
             method: "GET",
             headers: {
@@ -26,65 +29,116 @@ const loadAllUsers = async () => {
         const result = await response.json();
 
         if (result.success) {
-            // 4. Handle Empty Database
-            if (!result.data || result.data.length === 0) {
-                userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No users found in the database.</td></tr>`;
-                return;
-            }
-
-            // 5. Clear table and Render Data
-            userTableBody.innerHTML = ""; 
-
-            result.data.forEach(user => {
-                const row = document.createElement("tr");
-
-                // Format Date: Nov 12, 2024
-                const date = new Date(user.created_at).toLocaleDateString('en-US', {
-                    month: 'short', day: 'numeric', year: 'numeric'
-                });
-
-                // Status Logic: active-status (green) vs suspended-status (red/gray)
-                const statusClass = user.status === 'active' ? 'active-status' : 'suspended-status';
-                const statusText = user.status.charAt(0).toUpperCase() + user.status.slice(1);
-                
-                // Role formatting
-                const roleText = user.role.charAt(0).toUpperCase() + user.role.slice(1);
-
-                row.innerHTML = `
-                    <td><strong>${user.name}</strong></td>
-                    <td>${user.email}</td>
-                    <td><span class="role-badge ${user.role}">${roleText}</span></td>
-                    <td><span class="status-indicator ${statusClass}"></span> ${statusText}</td>
-                    <td>${date}</td>
-                    <td>
-                        <button class="action-btn" onclick="toggleUserStatus('${user.id}', '${user.status}')" title="${user.status === 'active' ? 'Suspend' : 'Activate'}">
-                            ${user.status === 'active' ? '🚫' : '✅'}
-                        </button>
-                        <button class="action-btn" onclick="deleteUser('${user.id}')" title="Delete" style="color: #ef4444;">🗑️</button>
-                    </td>
-                `;
-                userTableBody.appendChild(row);
-            });
+            allUsers = result.data || []; 
+            renderUserTable(allUsers); 
         } else {
-            // Backend returned success: false
             userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #ef4444; padding: 20px;">Error: ${result.message}</td></tr>`;
         }
     } catch (error) {
-        // Network or Server crash
         console.error("Fetch Error:", error);
         userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #ef4444; padding: 20px;">Connection Failed. Make sure the backend is running.</td></tr>`;
     }
 };
 
-// --- INITIALIZE ---
-document.addEventListener("DOMContentLoaded", () => {
-    // Only trigger if we are on the User Management page
-    if (document.getElementById("user-list")) {
-        loadAllUsers();
-    }
-});
+// 3. Rendering Logic (Reusable for Search and Load)
+const renderUserTable = (usersToDisplay) => {
+    const userTableBody = document.getElementById("user-list");
+    if (!userTableBody) return;
 
-// Function to toggle status
+    userTableBody.innerHTML = ""; 
+
+    if (!usersToDisplay || usersToDisplay.length === 0) {
+        userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No matching users found.</td></tr>`;
+        return;
+    }
+
+    usersToDisplay.forEach(user => {
+        const row = document.createElement("tr");
+
+        const date = new Date(user.created_at).toLocaleDateString('en-US', {
+            month: 'short', day: 'numeric', year: 'numeric'
+        });
+        const statusClass = user.status === 'active' ? 'active-status' : 'suspended-status';
+        const statusText = user.status.charAt(0).toUpperCase() + user.status.slice(1);
+        const roleText = user.role.charAt(0).toUpperCase() + user.role.slice(1);
+
+        row.innerHTML = `
+            <td><strong>${user.name}</strong></td>
+            <td>${user.email}</td>
+            <td><span class="role-badge ${user.role.toLowerCase()}">${roleText}</span></td>
+            <td><span class="status-indicator ${statusClass}"></span> ${statusText}</td>
+            <td>${date}</td>
+            <td>
+                <button class="action-btn" onclick="toggleUserStatus('${user.id}', '${user.status}')" title="${user.status === 'active' ? 'Suspend' : 'Activate'}">
+                    ${user.status === 'active' ? '🚫' : '✅'}
+                </button>
+                <button class="action-btn" onclick="deleteUser('${user.id}')" title="Delete" style="color: #ef4444;">🗑️</button>
+            </td>
+        `;
+        userTableBody.appendChild(row);
+    });
+};
+
+// 4. Server-Side Search Logic (100% Accuracy with DB)
+const handleSearch = () => {
+    const searchEl = document.getElementById("user-search");
+    const roleEl = document.getElementById("role-filter");
+    const token = localStorage.getItem("token");
+    const userTableBody = document.getElementById("user-list");
+
+    const query = searchEl ? searchEl.value.trim() : "";
+    const roleValue = roleEl ? roleEl.value.toLowerCase() : "all";
+
+    // Clear previous timer
+    clearTimeout(searchTimeout);
+
+    // If search is empty, just use local filtering on the full list to be fast
+    if (query === "") {
+        filterUsersLocal(); 
+        return;
+    }
+
+    // Debounce: Wait 300ms after user stops typing to hit the DB
+    searchTimeout = setTimeout(async () => {
+        try {
+            const response = await fetch(`/api/auth/users/search?q=${encodeURIComponent(query)}`, {
+                method: "GET",
+                headers: { "Authorization": `Bearer ${token}` }
+            });
+            const result = await response.json();
+
+            if (result.success) {
+                // Apply Role filter on top of DB search results
+                const filtered = result.data.filter(u => roleValue === "all" || u.role.toLowerCase() === roleValue);
+                renderUserTable(filtered);
+            }
+        } catch (error) {
+            console.error("Search Error:", error);
+            // Fallback to local filter if DB search fails
+            filterUsersLocal();
+        }
+    }, 300);
+};
+
+// Local Filter Fallback (Used for Roles and instant typing)
+const filterUsersLocal = () => {
+    const searchEl = document.getElementById("user-search");
+    const roleEl = document.getElementById("role-filter");
+
+    const searchTerm = searchEl ? searchEl.value.toLowerCase() : "";
+    const roleTerm = roleEl ? roleEl.value.toLowerCase() : "all";
+
+    const filtered = allUsers.filter(user => {
+        const matchesSearch = user.name.toLowerCase().includes(searchTerm) || 
+                              user.email.toLowerCase().includes(searchTerm);
+        const matchesRole = roleTerm === "all" || user.role.toLowerCase() === roleTerm;
+        return matchesSearch && matchesRole;
+    });
+
+    renderUserTable(filtered);
+};
+
+// 5. Action Functions
 window.toggleUserStatus = async (userId, currentStatus) => {
     const actionText = currentStatus === 'active' ? 'SUSPEND' : 'ACTIVATE';
     if (!confirm(`Are you sure you want to ${actionText} this user?`)) return;
@@ -103,16 +157,15 @@ window.toggleUserStatus = async (userId, currentStatus) => {
         const result = await response.json();
         if (result.success) {
             alert(result.message);
-            loadAllUsers(); // Refresh the list
+            loadAllUsers(); 
         }
     } catch (error) {
         alert("Failed to update status.");
     }
 };
 
-// Function to delete user
 window.deleteUser = async (userId) => {
-    if (!confirm("CRITICAL: This will permanently delete the user. Continue?")) return;
+    if (!confirm("CRITICAL: Permanently delete this user?")) return;
 
     const token = localStorage.getItem("token");
     try {
@@ -123,10 +176,21 @@ window.deleteUser = async (userId) => {
 
         const result = await response.json();
         if (result.success) {
-            alert("User removed from system.");
-            loadAllUsers(); // Refresh the list
+            alert("User removed.");
+            loadAllUsers(); 
         }
     } catch (error) {
         alert("Delete failed.");
     }
 };
+
+// 6. Initialization
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("user-list")) {
+        loadAllUsers();
+        
+        // Setup Search (DB-based) and Filter (Local-based)
+        document.getElementById("user-search")?.addEventListener("input", handleSearch);
+        document.getElementById("role-filter")?.addEventListener("change", handleSearch);
+    }
+});

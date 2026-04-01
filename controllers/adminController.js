@@ -1,4 +1,4 @@
-import { toggleUserStatusModel, getAllUsersModel, deleteUserModel  } from "../models/userModel.js";
+import { toggleUserStatusModel, getAllUsersModel, deleteUserModel, searchUsersModel  } from "../models/userModel.js";
 import pool from "../config/db.js";
 
 
@@ -49,5 +49,40 @@ export const deleteUser = async (req, res) => {
     res.status(200).json({ success: true, message: "User deleted successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+
+export const searchUsers = async (req, res) => {
+  try {
+    // 1. Get the search term from the query parameter 'q'
+    const searchTerm = req.query.q;
+
+    // 2. If no search term is provided, return an empty array or all users
+    if (!searchTerm || searchTerm.trim() === "") {
+      return res.status(200).json({
+        success: true,
+        data: [],
+        message: "No search term provided"
+      });
+    }
+
+    // 3. Call the model function to query PostgreSQL
+    const users = await searchUsersModel(searchTerm);
+
+    // 4. Return the results
+    res.status(200).json({
+      success: true,
+      count: users.length,
+      data: users
+    });
+
+  } catch (error) {
+    console.error("Search Users Error:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Failed to perform user search",
+      error: error.message
+    });
   }
 };

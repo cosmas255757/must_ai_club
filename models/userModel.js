@@ -89,6 +89,21 @@ export const getAllUsersModel = async () => {
   }
 };
 
+
+export const searchUsersModel = async (searchTerm) => {
+  const query = `
+    SELECT id, name, email, role, status, created_at 
+    FROM users 
+    WHERE name ILIKE $1 OR email ILIKE $1 OR id::text ILIKE $1
+    ORDER BY created_at DESC
+  `;
+  try {
+    const { rows } = await pool.query(query, [`%${searchTerm}%`]);
+    return rows;
+  } catch (error) {
+    throw new Error("Database error searching users: " + error.message);
+  }
+};
 //  Count Total Users
 export const getTotalUsersCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM users`;

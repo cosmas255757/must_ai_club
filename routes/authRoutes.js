@@ -13,7 +13,7 @@ import {
   findUserById,
 } from "../models/userModel.js";
 import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
-import{ getAllUsers, toggleUserStatus,  deleteUser} from "../controllers/adminController.js"
+import{ getAllUsers, toggleUserStatus,  deleteUser,  searchUsers } from "../controllers/adminController.js"
 const router = express.Router();
 
 // -------------------------------------------------------
@@ -57,5 +57,7 @@ router.get("/users", protect, authorizeRoles("admin"), getAllUsers);
 router.patch("/users/:id/status", protect, authorizeRoles("admin"), toggleUserStatus);
 
 router.delete("/users/:id", protect, authorizeRoles("admin"), deleteUser);
+
+router.get("/users/search", protect, authorizeRoles("admin"), searchUsers);
 
 export default router;
