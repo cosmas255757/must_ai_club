@@ -163,5 +163,5 @@ document.addEventListener("DOMContentLoaded", () => {
     setInterval(() => {
         if (typeof loadAdminDashboard === "function") loadAdminDashboard();
         loadActivityLogs();
-    }, 30000); 
+    }, 30000000); 
 });

@@ -69,3 +69,6 @@ const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`🚀 MUST AI HUB Server running on port ${PORT}`);
 });
+
+// server.keepAliveTimeout = 120000; // 120 seconds
+// server.headersTimeout = 120500; 
