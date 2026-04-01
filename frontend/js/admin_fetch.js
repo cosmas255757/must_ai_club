@@ -84,15 +84,16 @@ document.getElementById("btn-lockdown").addEventListener("click", () => {
         performAdminAction("btn-lockdown", "lockdown", "Lockdown");
     }
 });
-
 const loadActivityLogs = async () => {
+    // Select the container using the class from your HTML
     const logContainer = document.querySelector(".log-preview");
-    const token = localStorage.getItem("token");
+    if (!logContainer) return;
 
+    const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-        // 1. Fetch the logs from the backend
+        // 1. Fetch data from your backend
         const response = await fetch("/api/admin/logs?limit=5", {
             method: "GET",
             headers: {
@@ -104,27 +105,43 @@ const loadActivityLogs = async () => {
         const result = await response.json();
 
         if (result.success) {
-            // 2. Clear the static log items but keep the <h3> header
+            // 2. CRITICAL STEP: Identify the Header
             const header = logContainer.querySelector("h3");
+            
+            // 3. Clear EVERYTHING inside the box (Removes those static manual divs)
             logContainer.innerHTML = ""; 
-            if (header) logContainer.appendChild(header);
+            
+            // 4. Put the Header back in so the title doesn't disappear
+            if (header) {
+                logContainer.appendChild(header);
+            } else {
+                // Fallback if header was somehow missing
+                const newHeader = document.createElement("h3");
+                newHeader.style.marginTop = "0";
+                newHeader.innerText = "Live Activity Stream";
+                logContainer.appendChild(newHeader);
+            }
 
+            // 5. Populate with REAL data from database
             if (result.data && result.data.length > 0) {
-                // 3. Loop through real database logs
                 result.data.forEach(log => {
                     const logItem = document.createElement("div");
                     logItem.className = "log-item";
                     
-                    // Format the timestamp (HH:MM:SS)
-                    const time = new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    // Simple HH:MM:SS format
+                    const time = new Date(log.created_at).toLocaleTimeString([], { 
+                        hour: '2-digit', 
+                        minute: '2-digit', 
+                        second: '2-digit' 
+                    });
                     
-                    // Display the User Name and the Action
+                    // Display: > [Time] - [User Name]: [Action]
                     logItem.innerText = `> ${time} - ${log.user_name || 'System'}: ${log.action}`;
                     
                     logContainer.appendChild(logItem);
                 });
             } else {
-                // If the table is empty in the database
+                // If database table is empty
                 const emptyMsg = document.createElement("div");
                 emptyMsg.className = "log-item";
                 emptyMsg.innerText = "> No activity recorded yet.";
@@ -132,20 +149,19 @@ const loadActivityLogs = async () => {
             }
         }
     } catch (error) {
-        console.error("Error loading logs:", error);
+        console.error("Error loading real-time logs:", error);
     }
 };
 
 // --- INITIALIZE & AUTO-REFRESH ---
 document.addEventListener("DOMContentLoaded", () => {
-    // Run immediately when page loads
-    loadAdminDashboard(); 
+    // Initial load
+    if (typeof loadAdminDashboard === "function") loadAdminDashboard(); 
     loadActivityLogs(); 
 
-    // Refresh every 30 seconds
+    // Auto-update every 30 seconds to show new logins/registrations
     setInterval(() => {
-        console.log("Auto-refreshing Dashboard Data...");
-        loadAdminDashboard();
+        if (typeof loadAdminDashboard === "function") loadAdminDashboard();
         loadActivityLogs();
     }, 30000); 
 });
