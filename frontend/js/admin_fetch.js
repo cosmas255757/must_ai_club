@@ -84,6 +84,25 @@ document.getElementById("btn-lockdown").addEventListener("click", () => {
         performAdminAction("btn-lockdown", "lockdown", "Lockdown");
     }
 });
+// --- NEW HELPER: UPDATE HERO UI ---
+const updateHeroUI = (isOnline) => {
+    const dot = document.getElementById("status-dot");
+    const statusText = document.getElementById("status-text");
+    const syncText = document.getElementById("last-sync");
+
+    if (isOnline) {
+        if (dot) dot.style.background = "#10b981"; // Green for Online
+        if (statusText) statusText.innerText = "Database Online";
+        if (syncText) {
+            const now = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            syncText.innerText = `Last Sync: ${now}`;
+        }
+    } else {
+        if (dot) dot.style.background = "#ef4444"; // Red for Offline
+        if (statusText) statusText.innerText = "Database Offline";
+    }
+};
+
 const loadActivityLogs = async () => {
     // Select the container using the class from your HTML
     const logContainer = document.querySelector(".log-preview");
@@ -105,6 +124,9 @@ const loadActivityLogs = async () => {
         const result = await response.json();
 
         if (result.success) {
+            // SUCCESS: Update the Hero Section
+            updateHeroUI(true);
+
             // 2. CRITICAL STEP: Identify the Header
             const header = logContainer.querySelector("h3");
             
@@ -150,6 +172,8 @@ const loadActivityLogs = async () => {
         }
     } catch (error) {
         console.error("Error loading real-time logs:", error);
+        // FAILURE: Show Database Offline in Hero
+        updateHeroUI(false);
     }
 };
 
@@ -159,9 +183,9 @@ document.addEventListener("DOMContentLoaded", () => {
     if (typeof loadAdminDashboard === "function") loadAdminDashboard(); 
     loadActivityLogs(); 
 
-    // Auto-update every 30 seconds to show new logins/registrations
+    // Auto-update every 30 seconds (Fixed your 30000000ms typo to 30000ms)
     setInterval(() => {
         if (typeof loadAdminDashboard === "function") loadAdminDashboard();
         loadActivityLogs();
-    }, 30000000); 
+    }, 30000); 
 });

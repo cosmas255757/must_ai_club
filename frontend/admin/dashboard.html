@@ -75,18 +75,23 @@
             border-bottom: 1px solid #f1f5f9;
             color: #334155;
         }
-        .spinner {
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border: 2px solid rgba(255,255,255,.3);
-    border-radius: 50%;
-    border-top-color: #fff;
-    animation: spin 1s ease-in-out infinite;
-    margin-right: 8px;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
 
+        .spinner {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid rgba(255, 255, 255, .3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
     </style>
     <script src="../js/guard.js"></script>
 </head>
@@ -96,10 +101,14 @@
     <div class="admin-hero">
         <div>
             <h1>System Command Center</h1>
-            <p><span class="status-dot"></span> Database Online | <strong>v1.0.4 Stable</strong></p>
+            <p>
+                <span class="status-dot" id="status-dot"></span>
+                <span id="status-text">Checking System...</span> |
+                <strong>v1.0.4 Stable</strong>
+            </p>
         </div>
         <div style="text-align: right;">
-            <small style="color: #64748b;">Last Sync: Just now</small>
+            <small style="color: #64748b;">Last Sync: <span id="last-sync">Never</span></small>
         </div>
     </div>
 
@@ -144,7 +153,7 @@
                 Lockdown</button>
         </div>
     </div>
-       
+
     <script src="../js/admin_layout.js"></script>
     <script src="../js/admin_fetch.js"></script>
 </body>
