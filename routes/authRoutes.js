@@ -16,7 +16,7 @@ import {
   deleteUser
 } from "../models/userModel.js";
 import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
-
+import{ getAllUsers } from "../controllers/adminController.js"
 const router = express.Router();
 
 // -------------------------------------------------------
@@ -100,5 +100,7 @@ router.post("/clear-cache", protect, authorizeRoles("admin"), clearCache);
 router.post("/lockdown", protect, authorizeRoles("admin"), emergencyLockdown);
 
 router.get(  "/logs",  protect,  authorizeRoles("admin"),  getRecentActivityLogs);
+
+router.get("/users", protect, authorizeRoles("admin"), getAllUsers);
 
 export default router;

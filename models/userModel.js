@@ -71,14 +71,19 @@ export const updateUserStatus = async (id, status) => {
 // ----------------------------------------------------------------------------
 // ------------------GET ALL USERS (ADMIN VIEW)---------------------------------
 // -----------------------------------------------------------------------------
-export const getAllUsers = async () => {
+
+export const getAllUsersModel = async () => {
   const query = `
     SELECT id, name, email, role, status, created_at 
     FROM users 
     ORDER BY created_at DESC
   `;
-  const result = await pool.query(query);
-  return result.rows;
+  try {
+    const { rows } = await pool.query(query);
+    return rows;
+  } catch (error) {
+    throw new Error("Error fetching all users: " + error.message);
+  }
 };
 
 // ----------------------------------------------------------------------
