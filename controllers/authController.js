@@ -1,4 +1,5 @@
 import bcrypt from "bcrypt";
+import pool from "../config/db.js"; // To log the action
 import jwt from "jsonwebtoken";
 import { 
   createStudent, 
@@ -8,7 +9,10 @@ import {
   getTotalEnrollmentsCount, 
   getPendingReviewsCount, 
   getTotalLogsCount,
-  findUserById 
+  backupDatabaseModel, 
+  clearSystemCacheModel, 
+  findUserById,
+  triggerLockdownModel
 } from "../models/userModel.js";
 import dotenv from "dotenv";
 
@@ -181,5 +185,66 @@ export const getRecentActivityLogs = async (req, res) => {
       message: "Failed to fetch activity logs",
       error: error.message
     });
+  }
+};
+
+
+// Database Backup
+export const backupDatabase = async (req, res) => {
+  try {
+    const result = await backupDatabaseModel();
+    
+    // Log who did the backup
+    await pool.query(
+      "INSERT INTO activity_logs (user_id, action) VALUES ($1, $2)",
+      [req.user.id, "Admin triggered a full database backup"]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      timestamp: result.timestamp
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Clearing Cache
+export const clearCache = async (req, res) => {
+  try {
+    const result = await clearSystemCacheModel();
+    
+    await pool.query(
+      "INSERT INTO activity_logs (user_id, action) VALUES ($1, $2)",
+      [req.user.id, "Admin cleared system cache"]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: result.message
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// Emergency Lockdown
+export const emergencyLockdown = async (req, res) => {
+  try {
+    const result = await triggerLockdownModel();
+    
+    await pool.query(
+      "INSERT INTO activity_logs (user_id, action) VALUES ($1, $2)",
+      [req.user.id, `EMERGENCY LOCKDOWN: ${result.usersSuspended} users suspended`]
+    );
+
+    res.status(200).json({
+      success: true,
+      message: result.message,
+      affectedUsers: result.usersSuspended
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };

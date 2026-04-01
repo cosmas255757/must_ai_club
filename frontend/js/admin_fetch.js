@@ -4,7 +4,6 @@ const loadAdminDashboard = async () => {
     const reviewsEl = document.getElementById("count-reviews");
     const logsEl = document.getElementById("count-logs");
 
-    // Get token from storage
     const token = localStorage.getItem("token");
 
     if (!token) {
@@ -26,14 +25,12 @@ const loadAdminDashboard = async () => {
         if (result.success) {
             const { totalUsers, totalEnrollments, pendingReviews, totalLogs } = result.data;
 
-            // Update UI: Use || 0 to ensure "0" is displayed if the count is null/undefined
             usersEl.textContent = totalUsers || 0;
             enrollmentsEl.textContent = totalEnrollments || 0;
             reviewsEl.textContent = pendingReviews || 0;
             logsEl.textContent = totalLogs || 0;
             
         } else {
-            // Handle unauthorized access
             if (response.status === 401 || response.status === 403) {
                 alert("Unauthorized: Admin access only.");
                 window.location.href = "/login.html";
@@ -41,7 +38,6 @@ const loadAdminDashboard = async () => {
         }
     } catch (error) {
         console.error("Connection error:", error);
-        // Display 0 on error to keep the UI clean
         usersEl.textContent = "0";
         enrollmentsEl.textContent = "0";
         reviewsEl.textContent = "0";
@@ -49,5 +45,42 @@ const loadAdminDashboard = async () => {
     }
 };
 
-// Execute once the HTML is ready
-document.addEventListener("DOMContentLoaded", loadAdminDashboard);
+// Helper to handle actions with a loading state
+const performAdminAction = async (buttonId, endpoint, actionName) => {
+    const btn = document.getElementById(buttonId);
+    const originalText = btn.innerText;
+    const token = localStorage.getItem("token");
+
+    // 1. Start Loading State
+    btn.disabled = true;
+    btn.innerHTML = `<span class="spinner"></span> Processing...`; 
+
+    try {
+        const response = await fetch(`/api/auth/${endpoint}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Content-Type": "application/json"
+            }
+        });
+
+        const result = await response.json();
+        alert(result.success ? `Success: ${result.message}` : `Error: ${result.message}`);
+        
+    } catch (error) {
+        alert(`Network error while trying to ${actionName}`);
+    } finally {
+        // 2. Reset Button State
+        btn.disabled = false;
+        btn.innerText = originalText;
+    }
+};
+
+// Event Listeners
+document.getElementById("btn-backup").addEventListener("click", () => performAdminAction("btn-backup", "backup", "Backup"));
+document.getElementById("btn-cache").addEventListener("click", () => performAdminAction("btn-cache", "clear-cache", "Clear Cache"));
+document.getElementById("btn-lockdown").addEventListener("click", () => {
+    if (confirm("WARNING: This will suspend all users. Proceed?")) {
+        performAdminAction("btn-lockdown", "lockdown", "Lockdown");
+    }
+});

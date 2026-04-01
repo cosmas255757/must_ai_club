@@ -75,6 +75,18 @@
             border-bottom: 1px solid #f1f5f9;
             color: #334155;
         }
+        .spinner {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 2px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+    margin-right: 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
     </style>
     <script src="../js/guard.js"></script>
 </head>
@@ -121,18 +133,18 @@
 
         <div class="log-preview" style="background: #0f172a; color: #94a3b8;">
             <h3 style="color: white; margin-top: 0;">Quick Actions</h3>
-            <button
+            <button id="btn-backup"
                 style="width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; margin-bottom: 10px; cursor: pointer;">Backup
                 Database</button>
-            <button
+            <button id="btn-cache"
                 style="width: 100%; padding: 12px; background: #1e293b; border: 1px solid #334155; color: white; border-radius: 8px; margin-bottom: 10px; cursor: pointer;">Clear
                 Cache</button>
-            <button
+            <button id="btn-lockdown"
                 style="width: 100%; padding: 12px; background: #7f1d1d; border: none; color: white; border-radius: 8px; cursor: pointer;">Emergency
                 Lockdown</button>
         </div>
     </div>
-
+       
     <script src="../js/admin_layout.js"></script>
     <script src="../js/admin_fetch.js"></script>
 </body>

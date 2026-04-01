@@ -1,16 +1,19 @@
 import express from "express";
-import { 
-  registerStudent, 
-  registerUserByAdmin, 
+import {
+  registerStudent,
+  registerUserByAdmin,
   getDashboardStats,
-getRecentActivityLogs,
-  login 
+  getRecentActivityLogs,
+  login,
+  clearCache,
+  backupDatabase,
+  emergencyLockdown
 } from "../controllers/authController.js";
-import { 
-  getAllUsers, 
-  findUserById, 
-  updateUserStatus, 
-  deleteUser 
+import {
+  getAllUsers,
+  findUserById,
+  updateUserStatus,
+  deleteUser
 } from "../models/userModel.js";
 import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
 
@@ -55,7 +58,7 @@ router.patch("/admin/status/:id", protect, authorizeRoles("admin"), async (req, 
   try {
     const { status } = req.body; // e.g., 'suspended' or 'active'
     const updatedUser = await updateUserStatus(req.params.id, status);
-    
+
     if (!updatedUser) return res.status(404).json({ message: "User not found" });
     res.json({ message: "User status updated", updatedUser });
   } catch (error) {
@@ -73,17 +76,15 @@ router.delete("/admin/user/:id", protect, authorizeRoles("admin"), async (req, r
   }
 });
 
-
-
 /**
  * @route   GET /api/admin/dashboard-stats
  * @desc    Get counts for users, enrollments, pending reviews, and logs
  * @access  Private (Admin only)
  */
 router.get(
-  "/dashboard-stats", 
-  protect, 
-  authorizeRoles("admin"), 
+  "/dashboard-stats",
+  protect,
+  authorizeRoles("admin"),
   getDashboardStats
 );
 
@@ -93,11 +94,21 @@ router.get(
  * @access  Private (Admin only)
  */
 router.get(
-  "/logs", 
-  protect, 
-  authorizeRoles("admin"), 
+  "/logs",
+  protect,
+  authorizeRoles("admin"),
   getRecentActivityLogs
 );
 
+
+// -----------------------------------------------------------
+// ----------------- ADMIN QUICK ACTIONS ---------------------
+// -----------------------------------------------------------
+
+router.post("/backup", protect, authorizeRoles("admin"), backupDatabase);
+
+router.post("/clear-cache", protect, authorizeRoles("admin"), clearCache);
+
+router.post("/lockdown", protect, authorizeRoles("admin"), emergencyLockdown);
 
 export default router;

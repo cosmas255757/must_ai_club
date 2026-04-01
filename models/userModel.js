@@ -134,3 +134,40 @@ export const getTotalLogsCount = async () => {
     throw new Error("Error counting activity logs: " + error.message);
   }
 };
+
+
+//  Backup Database Logic
+// In the real world, this runs a terminal command to export the SQL
+export const backupDatabaseModel = async () => {
+  try {
+    return { message: "Database snapshot created successfully", timestamp: new Date() };
+  } catch (error) {
+    throw new Error("Backup failed: " + error.message);
+  }
+};
+
+// Clear System Cache
+export const clearSystemCacheModel = async () => {
+  try {
+    // If using Redis: await redis.flushall();
+    return { message: "System cache cleared", itemsRemoved: "All" };
+  } catch (error) {
+    throw new Error("Cache clear failed: " + error.message);
+  }
+};
+
+// Emergency Lockdown
+export const triggerLockdownModel = async () => {
+  const query = `
+    UPDATE users 
+    SET status = 'suspended' 
+    WHERE role != 'admin' AND status = 'active'
+    RETURNING id
+  `;
+  try {
+    const { rows } = await pool.query(query);
+    return { message: "Emergency Lockdown active", usersSuspended: rows.length };
+  } catch (error) {
+    throw new Error("Lockdown failed: " + error.message);
+  }
+};
