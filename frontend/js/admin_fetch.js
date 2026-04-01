@@ -85,10 +85,11 @@ document.getElementById("btn-lockdown").addEventListener("click", () => {
     }
 });
 
-
 const loadActivityLogs = async () => {
     const logContainer = document.querySelector(".log-preview");
     const token = localStorage.getItem("token");
+
+    if (!token) return;
 
     try {
         // 1. Fetch the logs from the backend
@@ -102,35 +103,49 @@ const loadActivityLogs = async () => {
 
         const result = await response.json();
 
-        if (result.success && result.data.length > 0) {
-            // 2. Keep the Header, but clear the static log items
+        if (result.success) {
+            // 2. Clear the static log items but keep the <h3> header
             const header = logContainer.querySelector("h3");
             logContainer.innerHTML = ""; 
-            logContainer.appendChild(header);
+            if (header) logContainer.appendChild(header);
 
-            // 3. Loop through  real database logs
-            result.data.forEach(log => {
-                const logItem = document.createElement("div");
-                logItem.className = "log-item";
-                
-                // Format the timestamp (Optional)
-                const time = new Date(log.created_at).toLocaleTimeString();
-                
-                // Display the User Name (if joined) and the Action
-                logItem.innerText = `> ${time} - ${log.user_name || 'System'}: ${log.action}`;
-                
-                logContainer.appendChild(logItem);
-            });
-        } else if (result.data.length === 0) {
-            // If no logs exist yet
-            logContainer.innerHTML += `<div class="log-item">> No activity recorded yet.</div>`;
+            if (result.data && result.data.length > 0) {
+                // 3. Loop through real database logs
+                result.data.forEach(log => {
+                    const logItem = document.createElement("div");
+                    logItem.className = "log-item";
+                    
+                    // Format the timestamp (HH:MM:SS)
+                    const time = new Date(log.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                    
+                    // Display the User Name and the Action
+                    logItem.innerText = `> ${time} - ${log.user_name || 'System'}: ${log.action}`;
+                    
+                    logContainer.appendChild(logItem);
+                });
+            } else {
+                // If the table is empty in the database
+                const emptyMsg = document.createElement("div");
+                emptyMsg.className = "log-item";
+                emptyMsg.innerText = "> No activity recorded yet.";
+                logContainer.appendChild(emptyMsg);
+            }
         }
     } catch (error) {
         console.error("Error loading logs:", error);
     }
 };
 
+// --- INITIALIZE & AUTO-REFRESH ---
 document.addEventListener("DOMContentLoaded", () => {
+    // Run immediately when page loads
     loadAdminDashboard(); 
     loadActivityLogs(); 
+
+    // Refresh every 30 seconds
+    setInterval(() => {
+        console.log("Auto-refreshing Dashboard Data...");
+        loadAdminDashboard();
+        loadActivityLogs();
+    }, 30000); 
 });
