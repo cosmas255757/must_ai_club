@@ -10,7 +10,6 @@ import {
   emergencyLockdown
 } from "../controllers/authController.js";
 import {
-  getAllUsers,
   findUserById,
   updateUserStatus,
   deleteUser
@@ -45,14 +44,7 @@ router.get("/profile", protect, async (req, res) => {
 
 router.post("/admin/create", protect, authorizeRoles("admin"), registerUserByAdmin);
 
-router.get("/admin/users", protect, authorizeRoles("admin"), async (req, res) => {
-  try {
-    const users = await getAllUsers();
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+
 
 router.patch("/admin/status/:id", protect, authorizeRoles("admin"), async (req, res) => {
   try {
