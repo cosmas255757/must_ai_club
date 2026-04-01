@@ -1,5 +1,5 @@
 // 1. Global State
-let allUsers = []; 
+let allUsers = [];
 let searchTimeout;
 
 // 2. Core Data Fetching Function
@@ -29,8 +29,8 @@ const loadAllUsers = async () => {
         const result = await response.json();
 
         if (result.success) {
-            allUsers = result.data || []; 
-            renderUserTable(allUsers); 
+            allUsers = result.data || [];
+            renderUserTable(allUsers);
         } else {
             userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; color: #ef4444; padding: 20px;">Error: ${result.message}</td></tr>`;
         }
@@ -45,7 +45,7 @@ const renderUserTable = (usersToDisplay) => {
     const userTableBody = document.getElementById("user-list");
     if (!userTableBody) return;
 
-    userTableBody.innerHTML = ""; 
+    userTableBody.innerHTML = "";
 
     if (!usersToDisplay || usersToDisplay.length === 0) {
         userTableBody.innerHTML = `<tr><td colspan="6" style="text-align:center; padding: 20px;">No matching users found.</td></tr>`;
@@ -91,7 +91,7 @@ const handleSearch = () => {
     clearTimeout(searchTimeout);
 
     if (query === "") {
-        filterUsersLocal(); 
+        filterUsersLocal();
         return;
     }
 
@@ -122,8 +122,8 @@ const filterUsersLocal = () => {
     const roleTerm = roleEl ? roleEl.value.toLowerCase() : "all";
 
     const filtered = allUsers.filter(user => {
-        const matchesSearch = user.name.toLowerCase().includes(searchTerm) || 
-                              user.email.toLowerCase().includes(searchTerm);
+        const matchesSearch = user.name.toLowerCase().includes(searchTerm) ||
+            user.email.toLowerCase().includes(searchTerm);
         const matchesRole = roleTerm === "all" || user.role.toLowerCase() === roleTerm;
         return matchesSearch && matchesRole;
     });
@@ -150,7 +150,7 @@ window.toggleUserStatus = async (userId, currentStatus) => {
         const result = await response.json();
         if (result.success) {
             alert(result.message);
-            loadAllUsers(); 
+            loadAllUsers();
         }
     } catch (error) {
         alert("Failed to update status.");
@@ -170,7 +170,7 @@ window.deleteUser = async (userId) => {
         const result = await response.json();
         if (result.success) {
             alert("User removed.");
-            loadAllUsers(); 
+            loadAllUsers();
         }
     } catch (error) {
         alert("Delete failed.");
@@ -226,7 +226,7 @@ const handleAdminCreateUser = async (e) => {
 document.addEventListener("DOMContentLoaded", () => {
     if (document.getElementById("user-list")) {
         loadAllUsers();
-        
+
         document.getElementById("user-search")?.addEventListener("input", handleSearch);
         document.getElementById("role-filter")?.addEventListener("change", handleSearch);
         document.getElementById("adminCreateUserForm")?.addEventListener("submit", handleAdminCreateUser);
