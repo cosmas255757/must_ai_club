@@ -109,63 +109,110 @@
     <script src="../js/guard.js"></script>
 </head>
 <body>
+<div class="profile-container">
+    <header style="margin-bottom: 25px;">
+        <h1>Root Administrator</h1>
+        <p style="color: #64748b;">Manage your system credentials and authentication settings.</p>
+    </header>
 
-    <div class="profile-container">
-        <header style="margin-bottom: 25px;">
-            <h1>Root Administrator</h1>
-            <p style="color: #64748b;">Manage your system credentials and authentication settings.</p>
-        </header>
-
-        <div class="profile-card">
-            <div class="profile-banner"></div>
-            
-            <div class="profile-header-content">
-                <div class="avatar-box">🛡️</div>
-                <div class="header-text">
-                    <h2 id="adm-name">Loading Admin...</h2>
-                    <p id="adm-role-badge">System Root</p>
-                </div>
-            </div>
-
-            <div class="info-grid">
-                <div class="info-card">
-                    <label>Admin Email</label>
-                    <span id="adm-email">---</span>
-                </div>
-                <div class="info-card">
-                    <label>System UUID</label>
-                    <span id="adm-id">---</span>
-                </div>
-                <div class="info-card">
-                    <label>Access Level</label>
-                    <span style="color: #ef4444;">● Superuser (Full)</span>
-                </div>
-                <div class="info-card">
-                    <label>Platform Status</label>
-                    <span>v1.0.4 Stable</span>
-                </div>
-            </div>
-
-            <div class="profile-actions">
-                <button class="btn-primary">Update Admin Details</button>
-                <button class="btn-danger">Reset Root Password</button>
+    <div class="profile-card">
+        <div class="profile-banner"></div>
+        
+        <div class="profile-header-content">
+            <div class="avatar-box">🛡️</div>
+            <div class="header-text">
+                <h2 id="adm-name">Loading Admin...</h2>
+                <p id="adm-role-badge">System Root</p>
             </div>
         </div>
-    </div>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const userData = localStorage.getItem("user");
-            if (userData) {
-                const user = JSON.parse(userData);
+        <div class="info-grid">
+            <div class="info-card">
+                <label>Admin Email</label>
+                <span id="adm-email">---</span>
+            </div>
+            <div class="info-card">
+                <label>System UUID</label>
+                <span id="adm-id">---</span>
+            </div>
+            <div class="info-card">
+                <label>Access Level</label>
+                <span id="adm-access-level" style="color: #ef4444;">● Superuser (Full)</span>
+            </div>
+            <div class="info-card">
+                <label>Platform Status</label>
+                <span id="adm-status">v1.0.4 Stable</span>
+            </div>
+        </div>
+
+        <div class="profile-actions">
+            <button id="btn-update-details" class="btn-primary">Update Admin Details</button>
+            <button id="btn-reset-password" class="btn-danger">Reset Root Password</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const userData = localStorage.getItem("user");
+        if (userData) {
+            const user = JSON.parse(userData);
+            document.getElementById("adm-name").textContent = user.name || "N/A";
+            document.getElementById("adm-email").textContent = user.email || "N/A";
+            document.getElementById("adm-id").textContent = user.id || "---";
+            document.getElementById("adm-role-badge").textContent = `Official ${user.role?.toUpperCase() || 'ADMIN'}`;
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        // 1. Get the token from storage (set during login)
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            console.error("No token found. Redirecting to login...");
+            window.location.href = "/login.html";
+            return;
+        }
+
+        try {
+            // 2. Fetch data from the backend route you created
+            const response = await fetch('/api/auth/admin/profile', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                // 3. Extract the user object from the database result
+                // Note: result.data is the array returned from your Postgres model
+                const user = result.data[0]; 
+
+                // 4. Inject 100% accurate database data into your IDs
                 document.getElementById("adm-name").textContent = user.name || "N/A";
                 document.getElementById("adm-email").textContent = user.email || "N/A";
                 document.getElementById("adm-id").textContent = user.id || "---";
                 document.getElementById("adm-role-badge").textContent = `Official ${user.role?.toUpperCase() || 'ADMIN'}`;
+                
+                // Dynamic Status from DB
+                const statusElement = document.getElementById("adm-status");
+                statusElement.textContent = user.status === 'active' ? 'v1.0.4 Stable' : 'Account Suspended';
+                statusElement.style.color = user.status === 'active' ? '#10b981' : '#ef4444';
+
+            } else {
+                console.error("Backend error:", result.message);
+                // If token is expired or user is not admin, result.success will be false
             }
-        });
+        } catch (error) {
+            console.error("Network or Server error:", error);
+        }
+    });
     </script>
-    <!-- The layout script will wrap this content in the Admin sidebar -->
     <script src="../js/admin_layout.js"></script>
 </body>
 </html>

@@ -15,6 +15,8 @@ import {
 import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
 import{ getAllUsers, toggleUserStatus,  deleteUser,  searchUsers } from "../controllers/adminController.js"
 import { getSystemReport } from "../controllers/reportController.js";
+import { getAdminProfile } from "../controllers/adminController.js";
+
 const router = express.Router();
 
 // -------------------------------------------------------
@@ -64,5 +66,7 @@ router.get("/users/search", protect, authorizeRoles("admin"), searchUsers);
 router.post("/register-admin", protect, authorizeRoles("admin"), registerUserByAdmin);
 
 router.get("/admin/reports", protect, authorizeRoles("admin"), getSystemReport);
+
+router.get("/admin/profile", protect, authorizeRoles("admin"), getAdminProfile);
 
 export default router;

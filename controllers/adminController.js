@@ -1,6 +1,6 @@
 import { toggleUserStatusModel, getAllUsersModel, deleteUserModel, searchUsersModel  } from "../models/userModel.js";
 import pool from "../config/db.js";
-
+import * as AdminModel from "../models/adminModel.js";
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -82,6 +82,39 @@ export const searchUsers = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to perform user search",
+      error: error.message
+    });
+  }
+};
+
+
+export const getAdminProfile = async (req, res) => {
+  try {
+    // 1. req.user.id comes from your 'protect' middleware
+    const adminId = req.user.id;
+
+    // 2. Fetch data from our model
+    const adminData = await AdminModel.getAdminProfile(adminId);
+
+    // 3. Check if admin exists
+    if (!adminData || adminData.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin profile not found."
+      });
+    }
+
+    // 4. Send back the real database data
+    res.status(200).json({
+      success: true,
+      data: adminData[0]
+    });
+
+  } catch (error) {
+    console.error("Error in getAdminProfile controller:", error.message);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
       error: error.message
     });
   }
