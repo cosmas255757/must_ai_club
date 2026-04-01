@@ -12,7 +12,8 @@ import {
   backupDatabaseModel, 
   clearSystemCacheModel, 
   findUserById,
-  triggerLockdownModel
+  triggerLockdownModel,
+  getSystemLogs
 } from "../models/userModel.js";
 import dotenv from "dotenv";
 

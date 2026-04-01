@@ -135,6 +135,27 @@ export const getTotalLogsCount = async () => {
   }
 };
 
+export const getSystemLogs = async (limit = 50) => {
+  const query = `
+    SELECT 
+      al.id, 
+      al.action, 
+      al.created_at, 
+      u.name AS user_name 
+    FROM activity_logs al
+    LEFT JOIN users u ON al.user_id = u.id
+    ORDER BY al.created_at DESC
+    LIMIT $1
+  `;
+
+  try {
+    const { rows } = await pool.query(query, [limit]);
+  } catch (error) {
+    console.error("Database Error in getSystemLogs:", error.message);
+    throw new Error("Could not retrieve system logs: " + error.message);
+  }
+};
+
 
 //  Backup Database Logic
 // In the real world, this runs a terminal command to export the SQL

@@ -88,18 +88,6 @@ router.get(
   getDashboardStats
 );
 
-/**
- * @route   GET /api/admin/logs
- * @desc    Get detailed list of system activity logs
- * @access  Private (Admin only)
- */
-router.get(
-  "/logs",
-  protect,
-  authorizeRoles("admin"),
-  getRecentActivityLogs
-);
-
 
 // -----------------------------------------------------------
 // ----------------- ADMIN QUICK ACTIONS ---------------------
@@ -110,5 +98,7 @@ router.post("/backup", protect, authorizeRoles("admin"), backupDatabase);
 router.post("/clear-cache", protect, authorizeRoles("admin"), clearCache);
 
 router.post("/lockdown", protect, authorizeRoles("admin"), emergencyLockdown);
+
+router.get(  "/logs",  protect,  authorizeRoles("admin"),  getRecentActivityLogs);
 
 export default router;
