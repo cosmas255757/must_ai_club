@@ -11,7 +11,6 @@ import {
   getTotalLogsCount,
   backupDatabaseModel, 
   clearSystemCacheModel, 
-  findUserById,
   triggerLockdownModel,
   getSystemLogs
 } from "../models/userModel.js";
@@ -124,7 +123,7 @@ export const getDashboardStats = async (req, res) => {
 
 export const getRecentActivityLogs = async (req, res) => {
   try {
-    // 1. Sanitize the limit from the query string (e.g., ?limit=10)
+    // 1. Sanitize the limit from the query string
     const limit = parseInt(req.query.limit, 10) || 50;
 
     // 2. Call the model to fetch data from PostgreSQL

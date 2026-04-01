@@ -134,8 +134,7 @@ export const getTotalLogsCount = async () => {
     throw new Error("Error counting activity logs: " + error.message);
   }
 };
-
-export const getSystemLogs = async (limit = 5) => {
+export const getSystemLogs = async (limit = 50) => {
   const query = `
     SELECT 
       al.id, 
@@ -150,6 +149,7 @@ export const getSystemLogs = async (limit = 5) => {
 
   try {
     const { rows } = await pool.query(query, [limit]);
+    return rows; // <--- CRITICAL: This must be here to send data to the controller
   } catch (error) {
     console.error("Database Error in getSystemLogs:", error.message);
     throw new Error("Could not retrieve system logs: " + error.message);
