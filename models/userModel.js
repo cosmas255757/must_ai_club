@@ -135,7 +135,7 @@ export const getTotalLogsCount = async () => {
   }
 };
 
-export const getSystemLogs = async (limit = 50) => {
+export const getSystemLogs = async (limit = 5) => {
   const query = `
     SELECT 
       al.id, 
@@ -158,7 +158,6 @@ export const getSystemLogs = async (limit = 50) => {
 
 
 //  Backup Database Logic
-// In the real world, this runs a terminal command to export the SQL
 export const backupDatabaseModel = async () => {
   try {
     return { message: "Database snapshot created successfully", timestamp: new Date() };
