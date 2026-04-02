@@ -6,13 +6,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Profile - MUST AI HUB</title>
     <style>
+        /* Existing Styles */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+        }
+
         .profile-container {
             max-width: 850px;
             margin: 0 auto;
             animation: fadeIn 0.4s ease-out;
         }
 
-        /* Profile Banner & Header */
         .profile-card {
             background: white;
             border-radius: 24px;
@@ -62,7 +69,6 @@
             letter-spacing: 2px;
         }
 
-        /* Information Grid */
         .info-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -93,7 +99,6 @@
             word-break: break-all;
         }
 
-        /* Action Buttons */
         .profile-actions {
             padding: 0 40px 40px;
             display: flex;
@@ -133,19 +138,71 @@
             transform: translateY(-2px);
         }
 
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: scale(0.98);
-            }
+        .btn-ghost {
+            background: transparent;
+            border: none;
+            color: #64748b;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-weight: 600;
+        }
 
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 24px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #475569;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            box-sizing: border-box;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
-    <script src="../js/guard.js"></script>
 </head>
 
 <body>
@@ -186,52 +243,50 @@
             </div>
 
             <div class="profile-actions">
-                <div class="profile-actions">
-                    <button id="btn-update-details" class="btn-primary">Update Admin Details</button>
-                    <button id="btn-reset-password" class="btn-danger">Reset Root Password</button>
-                </div>
-                <!-- Update Profile Modal -->
-                <div id="modal-update" class="modal-overlay" style="display: none;">
-                    <div class="modal-content">
-                        <h3>Update Admin Profile</h3>
-                        <div class="form-group">
-                            <label>Full Name</label>
-                            <input type="text" id="input-new-name" placeholder="Enter new name">
-                        </div>
-                        <div class="form-group">
-                            <label>Email Address</label>
-                            <input type="email" id="input-new-email" placeholder="Enter new email">
-                        </div>
-                        <div class="modal-footer">
-                            <button onclick="closeModals()" class="btn-ghost">Cancel</button>
-                            <button id="save-profile-btn" class="btn-primary">Save Changes</button>
-                        </div>
-                    </div>
-                </div>
+                <button id="btn-update-details" class="btn-primary">Update Admin Details</button>
+                <button id="btn-reset-password" class="btn-danger">Reset Root Password</button>
+            </div>
+        </div>
+    </div>
 
-                <!-- Password Reset Modal -->
-                <div id="modal-password" class="modal-overlay" style="display: none;">
-                    <div class="modal-content">
-                        <h3>Reset Root Password</h3>
-                        <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 15px;">Enter a secure password (min
-                            8 characters).</p>
-                        <div class="form-group">
-                            <label>New Password</label>
-                            <input type="password" id="input-new-pass" placeholder="••••••••">
-                        </div>
-                        <div class="modal-footer">
-                            <button onclick="closeModals()" class="btn-ghost">Cancel</button>
-                            <button id="save-password-btn" class="btn-danger">Update Password</button>
-                        </div>
-                    </div>
-                </div>
+    <!-- Update Profile Modal -->
+    <div id="modal-update" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Update Admin Profile</h3>
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" id="input-new-name" placeholder="Enter new name">
+            </div>
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" id="input-new-email" placeholder="Enter new email">
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModals()" class="btn-ghost">Cancel</button>
+                <button id="save-profile-btn" class="btn-primary">Save Changes</button>
+            </div>
+        </div>
+    </div>
 
+    <!-- Password Reset Modal -->
+    <div id="modal-password" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h3>Reset Root Password</h3>
+            <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 15px;">Enter a secure password (min 8 characters).</p>
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" id="input-new-pass" placeholder="••••••••">
+            </div>
+            <div class="modal-footer">
+                <button onclick="closeModals()" class="btn-ghost">Cancel</button>
+                <button id="save-password-btn" class="btn-danger">Update Password</button>
             </div>
         </div>
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        // Data Handling
+        function loadUserData() {
             const userData = localStorage.getItem("user");
             if (userData) {
                 const user = JSON.parse(userData);
@@ -239,129 +294,59 @@
                 document.getElementById("adm-email").textContent = user.email || "N/A";
                 document.getElementById("adm-id").textContent = user.id || "---";
                 document.getElementById("adm-role-badge").textContent = `Official ${user.role?.toUpperCase() || 'ADMIN'}`;
+                
+                // Pre-fill modal inputs
+                document.getElementById("input-new-name").value = user.name || "";
+                document.getElementById("input-new-email").value = user.email || "";
             }
-        });
-    </script>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const token = localStorage.getItem("token");
-
-            if (!token) {
-                window.location.href = "/login.html";
-                return;
-            }
-
-            try {
-                const response = await fetch('/api/auth/admin/profile', {
-                    method: 'GET',
-                    headers: {
-                        'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                });
-
-                const result = await response.json();
-
-                if (result.success) {
-                    // FIXED: Accessing result.data directly (not as an array)
-                    const user = result.data;
-
-                    document.getElementById("adm-name").textContent = user.name || "N/A";
-                    document.getElementById("adm-email").textContent = user.email || "N/A";
-                    document.getElementById("adm-id").textContent = user.id || "---";
-                    document.getElementById("adm-role-badge").textContent = `Official ${user.role?.toUpperCase()}`;
-
-                    // Matching your DB status (active/suspended)
-                    const statusElement = document.getElementById("adm-status");
-                    statusElement.textContent = user.status === 'active' ? 'v1.0.4 Stable' : 'Account Suspended';
-                    statusElement.style.color = user.status === 'active' ? '#10b981' : '#ef4444';
-
-                    // Optional: Update local storage with fresh data
-                    localStorage.setItem("user", JSON.stringify(user));
-                } else {
-                    console.error("Backend error:", result.message);
-                    // If token is invalid or expired, kick to login
-                    if (response.status === 401 || response.status === 403) {
-                        window.location.href = "/login.html";
-                    }
-                }
-            } catch (error) {
-                console.error("Network error:", error);
-            }
-        });
-    </script>
-    <script>
-        // Modal Toggle Functions
-        function openModal(id) { document.getElementById(id).style.display = 'flex'; }
-        function closeModals() {
-            document.querySelectorAll('.modal-overlay').forEach(m => m.style.display = 'none');
         }
 
-        // 1. Trigger Modals from your existing buttons
-        document.getElementById("btn-update-details").addEventListener("click", () => {
-            // Pre-fill inputs with current data from the UI
-            document.getElementById("input-new-name").value = document.getElementById("adm-name").textContent;
-            document.getElementById("input-new-email").value = document.getElementById("adm-email").textContent;
-            openModal('modal-update');
-        });
+        // Modal Logic
+        const modalUpdate = document.getElementById('modal-update');
+        const modalPassword = document.getElementById('modal-password');
 
-        document.getElementById("btn-reset-password").addEventListener("click", () => openModal('modal-password'));
+        document.getElementById('btn-update-details').onclick = () => modalUpdate.style.display = 'flex';
+        document.getElementById('btn-reset-password').onclick = () => modalPassword.style.display = 'flex';
 
-        // 2. Save Profile Changes (PUT)
-        document.getElementById("save-profile-btn").addEventListener("click", async () => {
-            const name = document.getElementById("input-new-name").value;
-            const email = document.getElementById("input-new-email").value;
+        function closeModals() {
+            modalUpdate.style.display = 'none';
+            modalPassword.style.display = 'none';
+        }
 
-            try {
-                const response = await fetch('/api/auth/admin/profile/update', {
-                    method: 'PUT',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ name, email })
-                });
+        // Close on background click
+        window.onclick = (event) => {
+            if (event.target == modalUpdate || event.target == modalPassword) {
+                closeModals();
+            }
+        }
 
-                const result = await response.json();
-                if (result.success) {
-                    alert("Profile successfully updated!");
-                    location.reload();
-                } else {
-                    alert(result.message);
-                }
-            } catch (err) { console.error("Update error:", err); }
-        });
+        // Save Logic
+        document.getElementById('save-profile-btn').onclick = () => {
+            const newName = document.getElementById('input-new-name').value;
+            const newEmail = document.getElementById('input-new-email').value;
+            
+            const userData = JSON.parse(localStorage.getItem("user") || "{}");
+            userData.name = newName;
+            userData.email = newEmail;
+            
+            localStorage.setItem("user", JSON.stringify(userData));
+            loadUserData();
+            closeModals();
+            alert("Profile Updated Successfully!");
+        };
 
-        // 3. Save New Password (PATCH)
-        document.getElementById("save-password-btn").addEventListener("click", async () => {
-            const newPassword = document.getElementById("input-new-pass").value;
-            if (newPassword.length < 8) return alert("Password too short!");
+        document.getElementById('save-password-btn').onclick = () => {
+            const newPass = document.getElementById('input-new-pass').value;
+            if(newPass.length < 8) {
+                alert("Password must be at least 8 characters.");
+                return;
+            }
+            alert("Password successfully updated (Local Simulated).");
+            closeModals();
+        };
 
-            try {
-                const response = await fetch('/api/auth/admin/password/reset', {
-                    method: 'PATCH',
-                    headers: {
-                        'Authorization': `Bearer ${localStorage.getItem("token")}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ newPassword })
-                });
-
-                const result = await response.json();
-                if (result.success) {
-                    alert("Password updated! Please log in again.");
-                    localStorage.clear();
-                    window.location.href = "/login.html";
-                } else {
-                    alert(result.message);
-                }
-            } catch (err) { console.error("Password error:", err); }
-        });
-
+        // Init
+        document.addEventListener("DOMContentLoaded", loadUserData);
     </script>
-
-    <script src="../js/admin_layout.js"></script>
 </body>
-
 </html>
