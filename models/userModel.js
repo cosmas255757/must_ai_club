@@ -41,30 +41,18 @@ export const findUserByEmail = async (email) => {
   return result.rows[0];
 };
 
-// ---------------------------------------------------------------------
-// --------------------------FIND USER BY ID---------------------------
-// ---------------------------------------------------------------------
-export const findUserById = async (id) => {
-  const query = `
-    SELECT id, name, email, role, status, created_at
-    FROM users
-    WHERE id = $1
-  `;
-  const result = await pool.query(query, [id]);
-  return result.rows[0];
-};
-
 // ------------------------------------------------------------------------------------
 // ---------------------UPDATE USER STATUS (SUSPEND/ACTIVE)----------------------------
 // -----------------------------------------------------------------------------------
-// Toggle between 'active' and 'suspended'
 export const toggleUserStatusModel = async (id, newStatus) => {
   const query = `UPDATE users SET status = $1 WHERE id = $2 RETURNING id, status`;
   const { rows } = await pool.query(query, [newStatus, id]);
   return rows[0];
 };
 
-// Permanently delete a user
+//---------------------------------------------------------------------------------
+// -----------------------------PERMANENTLY DELETE USER--------------------------
+//---------------------------------------------------------------------------------
 export const deleteUserModel = async (id) => {
   const query = `DELETE FROM users WHERE id = $1 RETURNING id`;
   const { rows } = await pool.query(query, [id]);
@@ -88,8 +76,9 @@ export const getAllUsersModel = async () => {
     throw new Error("Error fetching all users: " + error.message);
   }
 };
-
-
+//-----------------------------------------------------------------------------------------
+//------------------------------SEARCH USER------------------------------------------------
+//---------------------------------------------------------------------------------------
 export const searchUsersModel = async (searchTerm) => {
   const query = `
     SELECT id, name, email, role, status, created_at 
@@ -104,7 +93,9 @@ export const searchUsersModel = async (searchTerm) => {
     throw new Error("Database error searching users: " + error.message);
   }
 };
-//  Count Total Users
+//------------------------------------------------------------------------------------------
+//--------------------------------COUNT TOTAL USERS--------------------------------------------
+//------------------------------------------------------------------------------------------
 export const getTotalUsersCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM users`;
   try {
@@ -115,8 +106,9 @@ export const getTotalUsersCount = async () => {
     throw new Error("Error counting users: " + error.message);
   }
 };
-
-// Count Total Enrollments
+//----------------------------------------------------------------------------------------
+//---------------------------COUNT TOTAL ENROLLMENTS--------------------------------------
+//----------------------------------------------------------------------------------------
 export const getTotalEnrollmentsCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM enrollments`;
   try {
@@ -126,8 +118,9 @@ export const getTotalEnrollmentsCount = async () => {
     throw new Error("Error counting enrollments: " + error.message);
   }
 };
-
-//  Count Pending Project Reviews
+//-------------------------------------------------------------------------------------------
+//----------------------------COUNT PENDING PROJECT REVIEWS----------------------------------
+//-------------------------------------------------------------------------------------------
 export const getPendingReviewsCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM project_reviews WHERE approved = FALSE`;
   try {
@@ -137,8 +130,9 @@ export const getPendingReviewsCount = async () => {
     throw new Error("Error counting pending reviews: " + error.message);
   }
 };
-
-//  Count Total System Logs
+//------------------------------------------------------------------------------------------------
+//--------------------------------COUNT TOTAL SYSTEM LOGS FOR LAST 72HRS--------------------------
+//------------------------------------------------------------------------------------------------
 export const getTotalLogsCount = async () => {
   const query = `SELECT COUNT(*) AS count FROM activity_logs WHERE created_at >= NOW() - INTERVAL '72 hours'`;
   try {
@@ -148,6 +142,9 @@ export const getTotalLogsCount = async () => {
     throw new Error("Error counting activity logs: " + error.message);
   }
 };
+//---------------------------------------------------------------------------------------------------
+//---------------------------------GET SYSTEM LOGS---------------------------------------------------
+//-----------------------------------------------------------------------------------------------------
 export const getSystemLogs = async (limit = 50) => {
   const query = `
      SELECT al.id, al.action, al.created_at, u.name AS user_name 
@@ -166,9 +163,9 @@ export const getSystemLogs = async (limit = 50) => {
     throw new Error("Could not retrieve system logs: " + error.message);
   }
 };
-
-
-//  Backup Database Logic
+//-------------------------------------------------------------------------------------------
+//----------------------------BACKUP DATABASE LOGIC-------------------------------------------
+//-----------------------------------------------------------------------------------------------
 export const backupDatabaseModel = async () => {
   try {
     return { message: "Database snapshot created successfully", timestamp: new Date() };
@@ -176,8 +173,9 @@ export const backupDatabaseModel = async () => {
     throw new Error("Backup failed: " + error.message);
   }
 };
-
-// Clear System Cache
+//-------------------------------------------------------------------------------------------------
+//---------------------------CLEAR SYSTEM CACHE----------------------------------------------------
+//---------------------------------------------------------------------------------------------------
 export const clearSystemCacheModel = async () => {
   try {
     // If using Redis: await redis.flushall();
@@ -186,8 +184,9 @@ export const clearSystemCacheModel = async () => {
     throw new Error("Cache clear failed: " + error.message);
   }
 };
-
-// Emergency Lockdown
+//--------------------------------------------------------------------------------------------------
+//------------------------------EMMERGENCY LOCKDOWN--------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 export const triggerLockdownModel = async () => {
   const query = `
     UPDATE users 

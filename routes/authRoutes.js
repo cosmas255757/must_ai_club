@@ -9,13 +9,9 @@ import {
   backupDatabase,
   emergencyLockdown
 } from "../controllers/authController.js";
-import {
-  findUserById,
-} from "../models/userModel.js";
 import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
-import{ getAllUsers, toggleUserStatus,  deleteUser,  searchUsers } from "../controllers/adminController.js"
+import{ getAllUsers, toggleUserStatus,  deleteUser,  searchUsers, getAdminProfile } from "../controllers/adminController.js"
 import { getSystemReport } from "../controllers/reportController.js";
-import { getAdminProfile } from "../controllers/adminController.js";
 
 const router = express.Router();
 
@@ -24,20 +20,6 @@ const router = express.Router();
 // ---------------------------------------------------------
 router.post("/register", registerStudent);
 router.post("/login", login);
-
-// -------------------------------------------------------------
-// -------------PROTECTED ROUTES (Logged-in users)--------------
-// --------------------------------------------------------------
-
-router.get("/profile", protect, async (req, res) => {
-  try {
-    const user = await findUserById(req.user.id);
-    if (!user) return res.status(404).json({ message: "User not found" });
-    res.json(user);
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
 
 // ---------------------------------------------------
 // ----------------ADMIN ONLY ROUTES-------------------

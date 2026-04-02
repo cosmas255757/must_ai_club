@@ -1,7 +1,16 @@
-import { toggleUserStatusModel, getAllUsersModel, deleteUserModel, searchUsersModel  } from "../models/userModel.js";
+import { 
+  toggleUserStatusModel, 
+  getAllUsersModel, 
+  deleteUserModel, 
+  searchUsersModel  
+} from "../models/userModel.js";
 import pool from "../config/db.js";
 import * as AdminModel from "../models/adminModel.js";
 
+
+//------------------------------------------------------------------------------------------------------
+//-------------------------------------------GET ALL USERS------------------------------------------------
+//--------------------------------------------------------------------------------------------------------
 export const getAllUsers = async (req, res) => {
   try {
     const users = await getAllUsersModel();
@@ -14,7 +23,9 @@ export const getAllUsers = async (req, res) => {
   }
 };
 
-
+//-------------------------------------------------------------------------------------------------------
+//---------------------------------CHANGE USER STATUS---------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 export const toggleUserStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -23,7 +34,6 @@ export const toggleUserStatus = async (req, res) => {
 
     const updatedUser = await toggleUserStatusModel(id, newStatus);
     
-    // Log the action
     await pool.query(
       "INSERT INTO activity_logs (user_id, action) VALUES ($1, $2)",
       [req.user.id, `Admin ${newStatus === 'active' ? 'activated' : 'suspended'} user ID: ${id}`]
@@ -34,13 +44,14 @@ export const toggleUserStatus = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
-
+//---------------------------------------------------------------------------------------------------
+//---------------------------DELETE USER------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------
 export const deleteUser = async (req, res) => {
   try {
     const { id } = req.params;
     await deleteUserModel(id);
 
-    // Log the action
     await pool.query(
       "INSERT INTO activity_logs (user_id, action) VALUES ($1, $2)",
       [req.user.id, `Admin permanently deleted user ID: ${id}`]
@@ -52,13 +63,13 @@ export const deleteUser = async (req, res) => {
   }
 };
 
-
+//------------------------------------------------------------------------------------------------------
+//---------------------------SEARCH USER--------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------
 export const searchUsers = async (req, res) => {
   try {
-    // 1. Get the search term from the query parameter 'q'
     const searchTerm = req.query.q;
 
-    // 2. If no search term is provided, return an empty array or all users
     if (!searchTerm || searchTerm.trim() === "") {
       return res.status(200).json({
         success: true,
@@ -67,10 +78,8 @@ export const searchUsers = async (req, res) => {
       });
     }
 
-    // 3. Call the model function to query PostgreSQL
     const users = await searchUsersModel(searchTerm);
 
-    // 4. Return the results
     res.status(200).json({
       success: true,
       count: users.length,
@@ -87,27 +96,24 @@ export const searchUsers = async (req, res) => {
   }
 };
 
-
+//--------------------------------------------------------------------------------
+//--------------------------------GET ADMIN PROFILE--------------------------------
+//-------------------------------------------------------------------------------------
 export const getAdminProfile = async (req, res) => {
   try {
-    // 1. req.user.id comes from your 'protect' middleware
     const adminId = req.user.id;
 
-    // 2. Fetch data from our model
     const adminData = await AdminModel.getAdminProfile(adminId);
 
-    // 3. Check if admin exists
-    if (!adminData || adminData.length === 0) {
+    if (!adminData) {
       return res.status(404).json({
         success: false,
         message: "Admin profile not found."
       });
     }
-
-    // 4. Send back the real database data
     res.status(200).json({
       success: true,
-      data: adminData[0]
+      data: adminData
     });
 
   } catch (error) {
@@ -119,3 +125,4 @@ export const getAdminProfile = async (req, res) => {
     });
   }
 };
+
