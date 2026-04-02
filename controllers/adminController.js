@@ -125,4 +125,49 @@ export const getAdminProfile = async (req, res) => {
     });
   }
 };
+//-----------------------------------------------------------------------------------
+// -------------------------------UPDATE PROFILE CONTROLLER-----------------------
+//----------------------------------------------------------------------------------
+export const updateAdminProfile = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+    const { name, email } = req.body;
 
+    const updatedAdmin = await AdminModel.updateAdminProfile(adminId, { name, email });
+
+    if (!updatedAdmin) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Profile updated successfully",
+      data: updatedAdmin
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+//----------------------------------------------------------------------------------------
+// ---------------------------RESET PASSWORD CONTROLLER-----------------------------------
+//----------------------------------------------------------------------------------------
+export const updateAdminPassword = async (req, res) => {
+  try {
+    const adminId = req.user.id;
+    const { newPassword } = req.body;
+
+    if (!newPassword || newPassword.length < 6) {
+      return res.status(400).json({ success: false, message: "Password must be new at least 6 characters" });
+    }
+
+    const result = await AdminModel.updateAdminPassword(adminId, newPassword);
+
+    if (!result) {
+      return res.status(404).json({ success: false, message: "Admin not found" });
+    }
+
+    res.status(200).json({ success: true, message: "Password updated successfully" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

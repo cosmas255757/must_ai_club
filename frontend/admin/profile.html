@@ -253,6 +253,67 @@
             }
         });
     </script>
+    <script>
+        // --- UPDATE PROFILE LOGIC ---
+document.getElementById("btn-update-details").addEventListener("click", async () => {
+    const newName = prompt("Enter new Admin Name:");
+    const newEmail = prompt("Enter new Admin Email:");
+
+    if (!newName || !newEmail) return;
+
+    try {
+        const response = await fetch('/api/auth/admin/profile/update', {
+            method: 'PUT',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ name: newName, email: newEmail })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert("Profile updated!");
+            location.reload(); // Refresh to show new data
+        } else {
+            alert("Update failed: " + result.message);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+// --- RESET PASSWORD LOGIC ---
+document.getElementById("btn-reset-password").addEventListener("click", async () => {
+    const newPassword = prompt("Enter new Root Password (min 6 chars):");
+
+    if (!newPassword || newPassword.length < 6) {
+        alert("Password too short!");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/auth/admin/password/reset', {
+            method: 'PATCH',
+            headers: {
+                'Authorization': `Bearer ${localStorage.getItem("token")}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ newPassword })
+        });
+
+        const result = await response.json();
+        if (result.success) {
+            alert("Password updated successfully!");
+        } else {
+            alert("Error: " + result.message);
+        }
+    } catch (err) {
+        console.error(err);
+    }
+});
+
+    </script>
 
     <script src="../js/admin_layout.js"></script>
 </body>

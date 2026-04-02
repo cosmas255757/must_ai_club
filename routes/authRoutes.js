@@ -1,4 +1,6 @@
 import express from "express";
+import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
+import { getSystemReport } from "../controllers/reportController.js";
 import {
   registerStudent,
   registerUserByAdmin,
@@ -9,9 +11,14 @@ import {
   backupDatabase,
   emergencyLockdown
 } from "../controllers/authController.js";
-import { protect, authorizeRoles } from "../middleware/authMiddleware.js";
-import{ getAllUsers, toggleUserStatus,  deleteUser,  searchUsers, getAdminProfile } from "../controllers/adminController.js"
-import { getSystemReport } from "../controllers/reportController.js";
+import{ getAllUsers, 
+  toggleUserStatus,  
+  deleteUser,  
+  searchUsers, 
+  getAdminProfile, 
+  updateAdminPassword, 
+  updateAdminProfile 
+} from "../controllers/adminController.js"
 
 const router = express.Router();
 
@@ -50,5 +57,9 @@ router.post("/register-admin", protect, authorizeRoles("admin"), registerUserByA
 router.get("/admin/reports", protect, authorizeRoles("admin"), getSystemReport);
 
 router.get("/admin/profile", protect, authorizeRoles("admin"), getAdminProfile);
+
+router.put("/admin/profile/update", protect, authorizeRoles("admin"), updateAdminProfile);
+
+router.patch("/admin/password/reset", protect, authorizeRoles("admin"), updateAdminPassword);
 
 export default router;
